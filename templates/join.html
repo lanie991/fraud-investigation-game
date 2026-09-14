@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+
+{% block title %}
+Join Investigation
+{% endblock %}
+
+{% block content %}
+
+<div class="join-screen">
+
+    <div class="join-card">
+
+        <h1 class="join-title">
+            WHO STOLE THE MONEY?
+        </h1>
+
+        <h2 class="join-heading">
+            JOIN INVESTIGATION
+        </h2>
+
+        <form
+            action="/join"
+            method="POST"
+            class="join-form"
+        >
+
+            <input
+                type="text"
+                id="team_name"
+                name="team_name"
+                placeholder="Team Name"
+                required
+            >
+
+            <input
+                type="text"
+                id="game_code"
+                name="game_code"
+                placeholder="Game Code"
+                required
+            >
+
+            <div class="avatar-picker">
+                <div class="avatar-picker-label">CHOOSE YOUR TEAM AVATAR</div>
+                <div class="avatar-picker-subtitle">Pick your investigation crew.</div>
+
+                <div class="avatar-grid">
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="detective_black" checked>
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/detective.png') }}" alt="The Detectives">
+                            <strong>THE DETECTIVES</strong>
+                        </span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="investigator_black">
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/investigator.png') }}" alt="The Investigators">
+                            <strong>THE INVESTIGATORS</strong>
+                        </span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="analyst_black">
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/analyst.png') }}" alt="The Analysts">
+                            <strong>THE ANALYSTS</strong>
+                        </span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="researcher_white">
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/researcher.png') }}" alt="The Researchers">
+                            <strong>THE RESEARCHERS</strong>
+                        </span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="surveillance_black">
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/surveillance.png') }}" alt="The Surveillance">
+                            <strong>THE SURVEILLANCE</strong>
+                        </span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="forensics_black">
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/forensics.png') }}" alt="The Forensics">
+                            <strong>THE FORENSICS</strong>
+                        </span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="hacker_white">
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/hacker.png') }}" alt="The Hackers">
+                            <strong>THE HACKERS</strong>
+                        </span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="moneymover_black">
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/money_movers.png') }}" alt="The Money Movers">
+                            <strong>THE MONEY MOVERS</strong>
+                        </span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="k9_unit">
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/k9.png') }}" alt="The K9 Unit">
+                            <strong>THE K9 UNIT</strong>
+                        </span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="field_agent_white">
+                        <span class="avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/field_agents.png') }}" alt="The Field Agents">
+                            <strong>THE FIELD AGENTS</strong>
+                        </span>
+                    </label>
+
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                class="join-submit"
+            >
+                JOIN INVESTIGATION <span aria-hidden="true">→</span>
+            </button>
+
+            <div class="join-tagline">
+                SAME CODE. DIFFERENT MINDS. ONE TRUTH.
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<style>
+/* =========================================================
+   AVATAR PICKER — WIDE, CLEAN, FULL-CHARACTER DISPLAY
+========================================================= */
+.join-card {
+    width: min(760px, 94vw);
+    box-sizing: border-box;
+}
+
+.avatar-picker {
+    margin: 28px 0 30px;
+}
+
+.avatar-picker-label {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.7px;
+    color: #f8fafc;
+    margin-bottom: 4px;
+}
+
+.avatar-picker-subtitle {
+    text-align: center;
+    color: #7f8da5;
+    font-size: 12px;
+    margin-bottom: 18px;
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.avatar-option {
+    position: relative;
+    min-width: 0;
+    cursor: pointer;
+    text-align: center;
+}
+
+.avatar-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.avatar-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    min-height: 180px;
+    border: 1px solid #2a426e;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #142442 0%, #0a1325 100%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.025);
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.avatar-card img {
+    display: block;
+    width: 100%;
+    height: 142px;
+    object-fit: contain;
+    object-position: center bottom;
+    flex: 0 0 142px;
+    padding: 4px 7px 0;
+    box-sizing: border-box;
+}
+
+.avatar-card strong {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 6px 5px 8px;
+    color: #cbd5e1;
+    font-size: 9px;
+    line-height: 1.08;
+    letter-spacing: .65px;
+    text-align: center;
+    white-space: normal;
+}
+
+.avatar-option:hover .avatar-card {
+    transform: translateY(-3px);
+    border-color: #4c6fa8;
+}
+
+.avatar-option input:checked + .avatar-card {
+    border-color: #f5c84b;
+    box-shadow: 0 0 0 2px rgba(245,200,75,.24), 0 12px 28px rgba(0,0,0,.28);
+    transform: translateY(-3px);
+}
+
+.avatar-option input:checked + .avatar-card strong {
+    color: #f5c84b;
+}
+
+/* =========================================================
+   TAGLINE
+========================================================= */
+.join-tagline {
+    margin-top: 15px;
+    text-align: center;
+    color: #7182a3;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    white-space: normal;
+}
+
+@media (max-width: 760px) {
+    .join-card {
+        width: min(680px, 94vw);
+    }
+
+    .avatar-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .avatar-card {
+        min-height: 165px;
+        border-radius: 13px;
+    }
+
+    .avatar-card img {
+        height: 128px;
+        flex-basis: 128px;
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .avatar-card strong {
+        min-height: 37px;
+        font-size: 7.5px;
+        letter-spacing: .45px;
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+
+    .join-tagline {
+        font-size: 7px;
+        letter-spacing: 1.3px;
+    }
+}
+
+@media (max-width: 520px) {
+    .avatar-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .avatar-card {
+        min-height: 190px;
+    }
+
+    .avatar-card img {
+        height: 148px;
+        flex-basis: 148px;
+    }
+
+    .avatar-card strong {
+        font-size: 9px;
+        min-height: 42px;
+    }
+
+    .join-tagline {
+        font-size: 7px;
+        letter-spacing: 1.1px;
+    }
+}
+
+.join-tagline {
+    margin-top: 14px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+/* =========================================================
+   FINAL AVATAR FIX — DO NOT LET GLOBAL CSS CROP THESE
+========================================================= */
+.join-screen .join-card {
+    width: 760px !important;
+    max-width: calc(100vw - 32px) !important;
+    box-sizing: border-box !important;
+}
+
+.join-screen .avatar-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    width: 100% !important;
+}
+
+.join-screen .avatar-card {
+    width: 100% !important;
+    min-height: 190px !important;
+    height: 190px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+.join-screen .avatar-card img {
+    display: block !important;
+    width: 100% !important;
+    height: 146px !important;
+    min-height: 146px !important;
+    max-height: 146px !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    padding: 4px 6px 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+}
+
+.join-screen .avatar-card strong {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 6px 5px 8px !important;
+    box-sizing: border-box !important;
+    font-size: 9px !important;
+    line-height: 1.15 !important;
+    letter-spacing: .35px !important;
+    white-space: normal !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+    text-align: center !important;
+}
+
+.join-screen .join-tagline {
+    margin-top: 14px !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 9px !important;
+    font-weight: 600 !important;
+    letter-spacing: 1.6px !important;
+    color: #64748b !important;
+    text-align: center !important;
+}
+
+@media (max-width: 760px) {
+    .join-screen .join-card {
+        width: calc(100vw - 24px) !important;
+        max-width: 560px !important;
+    }
+
+    .join-screen .avatar-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .join-screen .avatar-card {
+        height: 190px !important;
+        min-height: 190px !important;
+    }
+
+    .join-screen .avatar-card img {
+        height: 148px !important;
+        min-height: 148px !important;
+        max-height: 148px !important;
+    }
+}
+
+</style>
+
+{% endblock %}

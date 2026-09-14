@@ -1,0 +1,1390 @@
+{% extends "base.html" %}
+
+{% block title %}
+Round 3 — Digital Evidence
+{% endblock %}
+
+{% block content %}
+
+<div class="round3-page">
+
+    <!-- =========================================
+         ROUND HEADER
+    ========================================== -->
+
+    <div class="round3-header">
+
+        <div class="round3-back">
+            ←
+        </div>
+
+        <div>
+            <div class="round3-label">
+                CASE FILE #003
+            </div>
+
+            <h1>ROUND 3</h1>
+        </div>
+
+        <div class="round3-points">
+            <span>REWARD</span>
+            <strong>150</strong>
+            <small>PTS</small>
+        </div>
+
+        <div
+    class="round-timer"
+    id="round-timer"
+    data-started-at="{{ round_data['started_at'] }}"
+>
+
+    <span class="round-timer-label">
+        TIME REMAINING
+    </span>
+
+    <span
+        class="round-timer-clock"
+        id="round-timer-clock"
+    >
+        05:00
+    </span>
+
+</div>
+
+    </div>
+
+
+    <!-- =========================================
+         INTRO
+    ========================================== -->
+
+    <section class="round3-intro">
+
+        <div class="round3-status-row">
+
+            <span class="round3-badge danger">
+                DIGITAL EVIDENCE
+            </span>
+
+            <span class="round3-badge active">
+                ● ACTIVE
+            </span>
+
+        </div>
+
+        <h2>
+            The suspect's story doesn't match the computer.
+        </h2>
+
+        <p>
+            Investigators have identified Michael Carter as a person
+            connected to the suspicious transactions. Examine the
+            digital evidence and reconstruct what happened.
+        </p>
+
+    </section>
+
+
+    <!-- =========================================
+         DIGITAL FORENSICS FILE
+    ========================================== -->
+
+    <section class="round3-evidence">
+
+        <div class="round3-evidence-heading">
+
+            <div>
+
+                <span class="round3-evidence-number">
+                    01
+                </span>
+
+                <div>
+
+                    <small>
+                        DIGITAL FORENSICS
+                    </small>
+
+                    <h2>
+                        Digital Evidence File
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round3-evidence-tag">
+                CASE FILE
+            </span>
+
+        </div>
+
+
+        <div class="digital-case-file">
+
+            <div class="digital-file-top">
+
+                <div class="folder-icon">
+                    F
+                </div>
+
+                <div>
+
+                    <span>
+                        DIGITAL FORENSICS FILE
+                    </span>
+
+                    <strong>
+                        FILE #003
+                    </strong>
+
+                </div>
+
+                <div class="digital-file-status">
+                    EVIDENCE
+                </div>
+
+            </div>
+
+
+            <div class="digital-file-divider"></div>
+
+
+            <div class="digital-file-grid">
+
+                <div>
+
+                    <span>
+                        SUBJECT
+                    </span>
+
+                    <strong>
+                        Michael Carter
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        CASE STATUS
+                    </span>
+
+                    <strong>
+                        UNDER INVESTIGATION
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        INCIDENT
+                    </span>
+
+                    <strong>
+                        $45,000 Payment
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        LOCATION CLAIMED
+                    </span>
+
+                    <strong>
+                        Overseas
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="digital-file-statement">
+
+                <div class="statement-label">
+                    SUBJECT STATEMENT
+                </div>
+
+                <p>
+                    Carter claims he did not authorize the payment
+                    and was not in Bermuda when the transaction
+                    occurred.
+                </p>
+
+            </div>
+
+
+            <div class="digital-file-footer">
+
+                <span>
+                    DIGITAL EVIDENCE PACKAGE
+                </span>
+
+                <strong>
+                    05 ITEMS RECOVERED
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 02 — OUTLOOK EMAIL
+    ========================================== -->
+
+    <section class="round3-evidence">
+
+        <div class="round3-evidence-heading">
+
+            <div>
+
+                <span class="round3-evidence-number">
+                    02
+                </span>
+
+                <div>
+
+                    <small>
+                        COMMUNICATION RECORD
+                    </small>
+
+                    <h2>
+                        Email
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round3-evidence-tag outlook-tag">
+                OUTLOOK
+            </span>
+
+        </div>
+
+
+        <div class="round3-outlook">
+
+            <div class="outlook-topbar">
+
+                <div class="outlook-app-icon">
+                    O
+                </div>
+
+                <span>
+                    Outlook
+                </span>
+
+                <div class="outlook-window-controls">
+                    − &nbsp; □ &nbsp; ×
+                </div>
+
+            </div>
+
+
+            <div class="outlook-toolbar">
+
+                <span>New mail</span>
+                <span>Reply</span>
+                <span>Forward</span>
+
+            </div>
+
+
+            <div class="outlook-message">
+
+                <h3>
+                    Payment authorization
+                </h3>
+
+
+                <div class="outlook-sender">
+
+                    <div class="outlook-avatar">
+                        MC
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Michael Carter
+                        </strong>
+
+                        <span>
+                            michael.carter@bermudaholdings.com
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="outlook-details">
+
+                    <div>
+                        <strong>To:</strong>
+                        Accounts Department
+                    </div>
+
+                    <div>
+                        <strong>Date:</strong>
+                        March 14, 2026 — 10:31 PM
+                    </div>
+
+                </div>
+
+
+                <div class="outlook-body">
+
+                    <p>
+                        I did not authorize the $45,000 payment.
+                    </p>
+
+                    <p>
+                        I was overseas at the time.
+                    </p>
+
+                    <p>
+                        Michael Carter
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 03 — LOGIN RECORD
+    ========================================== -->
+
+    <section class="round3-evidence">
+
+        <div class="round3-evidence-heading">
+
+            <div>
+
+                <span class="round3-evidence-number">
+                    03
+                </span>
+
+                <div>
+
+                    <small>
+                        SYSTEM SECURITY LOG
+                    </small>
+
+                    <h2>
+                        Login Record
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round3-evidence-tag login-tag">
+                SECURITY LOG
+            </span>
+
+        </div>
+
+
+        <div class="login-record">
+
+            <div class="login-record-header">
+
+                <div>
+
+                    <span>
+                        AUTHENTICATION EVENT
+                    </span>
+
+                    <strong>
+                        Successful Login
+                    </strong>
+
+                </div>
+
+                <div class="login-success">
+                    ● SUCCESS
+                </div>
+
+            </div>
+
+
+            <div class="login-grid">
+
+                <div>
+
+                    <span>
+                        USER ACCOUNT
+                    </span>
+
+                    <strong>
+                        MCARTER
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        DATE
+                    </span>
+
+                    <strong>
+                        March 14, 2026
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        LOGIN TIME
+                    </span>
+
+                    <strong>
+                        10:42 PM
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        LOCATION
+                    </span>
+
+                    <strong class="location-alert">
+                        Bermuda
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        DEVICE
+                    </span>
+
+                    <strong>
+                        Michael Carter's assigned laptop
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        IP ADDRESS
+                    </span>
+
+                    <strong class="mono-value">
+                        172.16.45.21
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="login-log-footer">
+
+                <span>
+                    EVENT ID
+                </span>
+
+                <strong>
+                    AUTH-MC-031426-1042
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 04 — PAYMENT RECORD
+    ========================================== -->
+
+    <section class="round3-evidence">
+
+        <div class="round3-evidence-heading">
+
+            <div>
+
+                <span class="round3-evidence-number">
+                    04
+                </span>
+
+                <div>
+
+                    <small>
+                        FINANCIAL SYSTEM RECORD
+                    </small>
+
+                    <h2>
+                        Payment Record
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round3-evidence-tag payment-tag">
+                AUTHORIZED
+            </span>
+
+        </div>
+
+
+        <div class="payment-record">
+
+            <div class="payment-record-top">
+
+                <div>
+
+                    <span>
+                        PAYMENT AUTHORIZATION
+                    </span>
+
+                    <strong>
+                        $45,000.00
+                    </strong>
+
+                </div>
+
+                <div class="payment-check">
+                    ✓
+                </div>
+
+            </div>
+
+
+            <div class="payment-divider"></div>
+
+
+            <div class="payment-details">
+
+                <div>
+
+                    <span>
+                        PAYMENT STATUS
+                    </span>
+
+                    <strong>
+                        AUTHORIZED
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        AUTHORIZATION TIME
+                    </span>
+
+                    <strong>
+                        10:44 PM
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        AUTHORIZATION USER
+                    </span>
+
+                    <strong>
+                        MCARTER
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        PAYMENT TYPE
+                    </span>
+
+                    <strong>
+                        Corporate Transfer
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="payment-reference">
+
+                <span>
+                    TRANSACTION REFERENCE
+                </span>
+
+                <strong>
+                    PAY-45000-MC
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 05 — DOCUMENT METADATA
+    ========================================== -->
+
+    <section class="round3-evidence">
+
+        <div class="round3-evidence-heading">
+
+            <div>
+
+                <span class="round3-evidence-number">
+                    05
+                </span>
+
+                <div>
+
+                    <small>
+                        DIGITAL FILE ANALYSIS
+                    </small>
+
+                    <h2>
+                        Document Metadata
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round3-evidence-tag metadata-tag">
+                METADATA
+            </span>
+
+        </div>
+
+
+        <div class="metadata-document">
+
+            <div class="metadata-titlebar">
+
+                <div class="file-type-icon">
+                    DOC
+                </div>
+
+                <div>
+
+                    <strong>
+                        BDA Consulting Invoice INV-4471
+                    </strong>
+
+                    <span>
+                        File Properties
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="metadata-properties">
+
+                <div class="metadata-property">
+
+                    <span>
+                        FILE NAME
+                    </span>
+
+                    <strong>
+                        INV-4471
+                    </strong>
+
+                </div>
+
+                <div class="metadata-property">
+
+                    <span>
+                        AUTHOR
+                    </span>
+
+                    <strong class="metadata-highlight">
+                        MCARTER
+                    </strong>
+
+                </div>
+
+                <div class="metadata-property">
+
+                    <span>
+                        CREATED
+                    </span>
+
+                    <strong>
+                        March 14, 2026 — 10:39 PM
+                    </strong>
+
+                </div>
+
+                <div class="metadata-property">
+
+                    <span>
+                        MODIFIED
+                    </span>
+
+                    <strong>
+                        March 14, 2026 — 10:41 PM
+                    </strong>
+
+                </div>
+
+                <div class="metadata-property">
+
+                    <span>
+                        DOCUMENT TYPE
+                    </span>
+
+                    <strong>
+                        Invoice
+                    </strong>
+
+                </div>
+
+                <div class="metadata-property">
+
+                    <span>
+                        STATUS
+                    </span>
+
+                    <strong class="metadata-highlight">
+                        ANALYSIS REQUIRED
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="metadata-warning">
+
+                <span>
+                    !
+                </span>
+
+                <p>
+                    File activity occurred immediately before
+                    the payment authorization.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 06 — MICROSOFT TEAMS CHAT
+    ========================================== -->
+
+    <section class="round3-evidence">
+
+        <div class="round3-evidence-heading">
+
+            <div>
+
+                <span class="round3-evidence-number">
+                    06
+                </span>
+
+                <div>
+
+                    <small>
+                        COMMUNICATION RECORD
+                    </small>
+
+                    <h2>
+                        Chat Message
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round3-evidence-tag teams-tag">
+                TEAMS
+            </span>
+
+        </div>
+
+
+        <div class="teams-window">
+
+            <div class="teams-topbar">
+
+                <div class="teams-logo">
+                    T
+                </div>
+
+                <span>
+                    Microsoft Teams
+                </span>
+
+                <div class="teams-controls">
+                    − &nbsp; □ &nbsp; ×
+                </div>
+
+            </div>
+
+
+            <div class="teams-chat-header">
+
+                <div class="teams-chat-avatar">
+                    S
+                </div>
+
+                <div>
+
+                    <strong>
+                        Sarah
+                    </strong>
+
+                    <span>
+                        Accounts Department
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="teams-chat-body">
+
+
+                <div class="teams-message">
+
+                    <div class="teams-avatar">
+                        S
+                    </div>
+
+                    <div>
+
+                        <div class="teams-message-name">
+                            Sarah
+                            <span>
+                                10:37 PM
+                            </span>
+                        </div>
+
+                        <div class="teams-bubble">
+
+                            Michael, are you still in the office?
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="teams-message michael-message">
+
+                    <div class="teams-avatar michael">
+                        M
+                    </div>
+
+                    <div>
+
+                        <div class="teams-message-name">
+                            Michael
+                            <span>
+                                10:38 PM
+                            </span>
+                        </div>
+
+                        <div class="teams-bubble">
+
+                            Yes. I'm finishing the payment
+                            paperwork now.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="teams-input">
+
+                <span>
+                    Type a new message
+                </span>
+
+                <strong>
+                    ➤
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         INVESTIGATION
+    ========================================== -->
+
+    <section class="round3-investigation">
+
+        <div class="round3-investigation-heading">
+
+            <span>
+                DIGITAL FORENSICS
+            </span>
+
+            <h2>
+                Analyze the Evidence
+            </h2>
+
+            <p>
+                Compare the digital records and reconstruct
+                the timeline of events.
+            </p>
+
+        </div>
+
+
+        <form
+            action="/player/round/3/{{ team_name }}"
+            method="POST"
+            class="round3-form"
+        >
+
+
+            <!-- QUESTION 1 -->
+
+            <div class="round3-question">
+
+                <div class="round3-question-number">
+                    01
+                </div>
+
+                <div class="round3-question-content">
+
+                    <h3>
+                        Which evidence most directly contradicts
+                        Michael's claim that he was overseas?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="login_location"
+                            required
+                        >
+
+                        <span>
+                            The login record showing his laptop
+                            was accessed from Bermuda.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="email"
+                        >
+
+                        <span>
+                            His email.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="invoice"
+                        >
+
+                        <span>
+                            The invoice number.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="ip"
+                        >
+
+                        <span>
+                            The IP address by itself.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 2 -->
+
+            <div class="round3-question">
+
+                <div class="round3-question-number">
+                    02
+                </div>
+
+                <div class="round3-question-content">
+
+                    <h3>
+                        What evidence connects Michael's account
+                        directly to the payment authorization?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="payment_user"
+                            required
+                        >
+
+                        <span>
+                            The payment record showing authorization
+                            by MCARTER.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="email"
+                        >
+
+                        <span>
+                            The email timestamp.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="chat"
+                        >
+
+                        <span>
+                            The chat message.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="invoice"
+                        >
+
+                        <span>
+                            The invoice number.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 3 -->
+
+            <div class="round3-question">
+
+                <div class="round3-question-number">
+                    03
+                </div>
+
+                <div class="round3-question-content">
+
+                    <h3>
+                        What does the document metadata suggest?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="created_before_payment"
+                            required
+                        >
+
+                        <span>
+                            The invoice was created shortly before
+                            the payment and attributed to MCARTER.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="old_document"
+                        >
+
+                        <span>
+                            The invoice was created months earlier.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="different_author"
+                        >
+
+                        <span>
+                            Someone else created the invoice.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="no_metadata"
+                        >
+
+                        <span>
+                            The document contains no useful metadata.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 4 -->
+
+            <div class="round3-question">
+
+                <div class="round3-question-number">
+                    04
+                </div>
+
+                <div class="round3-question-content">
+
+                    <h3>
+                        Which timeline is most consistent with
+                        the digital evidence?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="investigation_timeline"
+                            required
+                        >
+
+                        <span>
+                            10:37 chat → 10:39 invoice created →
+                            10:42 login → 10:44 payment.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="overseas"
+                        >
+
+                        <span>
+                            Michael was overseas and never accessed
+                            the system.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="random"
+                        >
+
+                        <span>
+                            The timestamps have no relationship.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="email_only"
+                        >
+
+                        <span>
+                            The email alone proves what happened.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="round3-submit"
+            >
+                SUBMIT DIGITAL INVESTIGATION
+            </button>
+
+        </form>
+
+    </section>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const timer = document.getElementById("round-timer");
+    const clock = document.getElementById("round-timer-clock");
+
+    if (!timer || !clock) {
+        return;
+    }
+
+    const startedAt = timer.dataset.startedAt;
+
+    if (!startedAt) {
+        console.log("No round start time found.");
+        return;
+    }
+
+    function updateTimer() {
+
+        /*
+         * SQLite datetime('now') is UTC.
+         * Add Z so JavaScript treats it as UTC.
+         */
+
+        const startTime = new Date(
+            startedAt.replace(" ", "T") + "Z"
+        ).getTime();
+
+        const now = Date.now();
+
+        const elapsedSeconds = Math.floor(
+            (now - startTime) / 1000
+        );
+
+        const totalSeconds = 90;
+
+        let remaining = totalSeconds - elapsedSeconds;
+
+
+        /*
+         * TIME HAS RUN OUT
+         */
+
+        if (remaining <= 0) {
+
+            clock.textContent = "00:00";
+
+            clearInterval(timerInterval);
+
+            window.location.href =
+                "/waiting/{{ team_name }}?from_round={{ round_data['round_number'] }}";
+
+            return;
+        }
+
+
+        /*
+         * CALCULATE TIME
+         */
+
+        const minutes = Math.floor(
+            remaining / 60
+        );
+
+        const seconds = remaining % 60;
+
+
+        /*
+         * DISPLAY TIME
+         */
+
+        clock.textContent =
+            String(minutes).padStart(2, "0") +
+            ":" +
+            String(seconds).padStart(2, "0");
+
+
+        /*
+         * TIMER COLORS
+         */
+
+        timer.classList.remove(
+            "warning",
+            "danger"
+        );
+
+        if (remaining <= 60) {
+
+            timer.classList.add("danger");
+
+        } else if (remaining <= 120) {
+
+            timer.classList.add("warning");
+
+        }
+
+    }
+
+
+    updateTimer();
+
+    const timerInterval = setInterval(
+        updateTimer,
+        1000
+    );
+
+});
+
+</script>
+
+{% endblock %}

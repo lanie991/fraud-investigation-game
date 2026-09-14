@@ -1,0 +1,913 @@
+{% extends "base.html" %}
+
+{% block title %}
+Round 1 — Initial Lead
+{% endblock %}
+
+{% block content %}
+
+<div class="round1-page">
+
+    <!-- =========================================
+         ROUND HEADER
+    ========================================== -->
+
+    <div class="round1-header">
+
+        <div class="round1-back">
+            ←
+        </div>
+
+        <div>
+            <div class="round1-label">
+                CASE FILE #001
+            </div>
+
+            <h1>
+                ROUND 1
+            </h1>
+        </div>
+
+        <div class="round1-points">
+            <span>REWARD</span>
+            <strong>100</strong>
+            <small>PTS</small>
+        </div>
+
+        <div
+    class="round-timer"
+    id="round-timer"
+    data-started-at="{{ round_data['started_at'] }}"
+>
+
+    <span class="round-timer-label">
+        TIME REMAINING
+    </span>
+
+    <span
+        class="round-timer-clock"
+        id="round-timer-clock"
+    >
+        05:00
+    </span>
+
+</div>
+
+    </div>
+
+
+    <!-- =========================================
+         CASE INTRO
+    ========================================== -->
+
+    <section class="round1-intro">
+
+        <div class="round1-status-row">
+
+            <span class="round1-badge danger">
+                INITIAL LEAD
+            </span>
+
+            <span class="round1-badge active">
+                ● ACTIVE
+            </span>
+
+        </div>
+
+        <h2>
+            Something doesn't add up.
+        </h2>
+
+        <p>
+            Your team has been given the first evidence package
+            connected to a suspicious financial transaction.
+            Examine each document carefully.
+        </p>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 01 — BANK TRANSACTION
+    ========================================== -->
+
+    <section class="round1-evidence">
+
+        <div class="evidence-heading">
+
+            <div>
+                <span class="evidence-number">
+                    01
+                </span>
+
+                <div>
+                    <small>
+                        FINANCIAL RECORD
+                    </small>
+
+                    <h2>
+                        Suspicious Transaction
+                    </h2>
+                </div>
+            </div>
+
+            <span class="evidence-tag flagged">
+                FLAGGED
+            </span>
+
+        </div>
+
+
+        <div class="bank-document">
+
+            <div class="bank-top">
+
+                <div>
+
+                    <span class="bank-label">
+                        TRANSACTION RECORD
+                    </span>
+
+                    <h3>
+                        Bermuda Holdings Ltd.
+                    </h3>
+
+                </div>
+
+                <div class="bank-reference">
+
+                    <span>
+                        REFERENCE
+                    </span>
+
+                    <strong>
+                        TXN-45000
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="bank-divider"></div>
+
+
+            <div class="transaction-parties">
+
+                <div>
+
+                    <span>
+                        FROM
+                    </span>
+
+                    <strong>
+                        Bermuda Holdings Ltd.
+                    </strong>
+
+                </div>
+
+                <div class="transaction-arrow">
+                    →
+                </div>
+
+                <div>
+
+                    <span>
+                        TO
+                    </span>
+
+                    <strong>
+                        BDA Consulting Ltd.
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="transaction-main">
+
+                <div>
+
+                    <span>
+                        TRANSACTION DATE
+                    </span>
+
+                    <strong>
+                        March 14, 2026
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        DESCRIPTION
+                    </span>
+
+                    <strong>
+                        Consulting Services
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="transaction-amount">
+
+                <span>
+                    AMOUNT
+                </span>
+
+                <strong>
+                    $45,000.00
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 02 — INVOICE
+    ========================================== -->
+
+    <section class="round1-evidence">
+
+        <div class="evidence-heading">
+
+            <div>
+                <span class="evidence-number">
+                    02
+                </span>
+
+                <div>
+                    <small>
+                        FINANCIAL DOCUMENT
+                    </small>
+
+                    <h2>
+                        Invoice
+                    </h2>
+                </div>
+            </div>
+
+            <span class="evidence-tag document">
+                DOCUMENT
+            </span>
+
+        </div>
+
+
+        <div class="invoice-document">
+
+            <div class="invoice-top">
+
+                <div>
+
+                    <div class="invoice-company">
+                        BDA CONSULTING LTD.
+                    </div>
+
+                    <p>
+                        Professional Consulting Services
+                    </p>
+
+                </div>
+
+                <div class="invoice-title">
+                    INVOICE
+                </div>
+
+            </div>
+
+
+            <div class="invoice-meta">
+
+                <div>
+
+                    <span>
+                        INVOICE NUMBER
+                    </span>
+
+                    <strong>
+                        INV-4471
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        INVOICE DATE
+                    </span>
+
+                    <strong>
+                        March 18, 2026
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="invoice-bill">
+
+                <div>
+
+                    <span>
+                        BILL TO
+                    </span>
+
+                    <strong>
+                        Bermuda Holdings Ltd.
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        SERVICE PERIOD
+                    </span>
+
+                    <strong>
+                        March 1–10, 2026
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="invoice-table">
+
+                <div class="invoice-table-head">
+
+                    <span>
+                        DESCRIPTION
+                    </span>
+
+                    <span>
+                        AMOUNT
+                    </span>
+
+                </div>
+
+                <div class="invoice-table-row">
+
+                    <span>
+                        Consulting Services
+                    </span>
+
+                    <strong>
+                        $45,000.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="invoice-total">
+
+                <span>
+                    TOTAL DUE
+                </span>
+
+                <strong>
+                    $45,000.00
+                </strong>
+
+            </div>
+
+
+            <div class="invoice-note">
+
+                The invoice states that the consulting services
+                were completed before the payment was made.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 03 — OUTLOOK EMAIL
+    ========================================== -->
+
+    <section class="round1-evidence">
+
+        <div class="evidence-heading">
+
+            <div>
+                <span class="evidence-number">
+                    03
+                </span>
+
+                <div>
+                    <small>
+                        COMMUNICATION RECORD
+                    </small>
+
+                    <h2>
+                        Email
+                    </h2>
+                </div>
+            </div>
+
+            <span class="evidence-tag email">
+                EMAIL
+            </span>
+
+        </div>
+
+
+        <div class="outlook-window">
+
+            <!-- Outlook header -->
+
+            <div class="outlook-header">
+
+                <div class="outlook-logo">
+                    O
+                </div>
+
+                <div class="outlook-name">
+                    Outlook
+                </div>
+
+                <div class="outlook-actions">
+                    — □ ×
+                </div>
+
+            </div>
+
+
+            <!-- Outlook toolbar -->
+
+            <div class="outlook-toolbar">
+
+                <span>
+                    New mail
+                </span>
+
+                <span>
+                    Reply
+                </span>
+
+                <span>
+                    Forward
+                </span>
+
+            </div>
+
+
+            <!-- Email -->
+
+            <div class="outlook-email">
+
+                <h3>
+                    Payment instruction
+                </h3>
+
+
+                <div class="email-person">
+
+                    <div class="email-avatar">
+                        MC
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Michael Carter
+                        </strong>
+
+                        <span>
+                            &lt;michael.carter@bermudaholdings.com&gt;
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="email-details">
+
+                    <div>
+                        <strong>To:</strong>
+                        Accounts Department
+                    </div>
+
+                    <div>
+                        <strong>Date:</strong>
+                        March 13, 2026 — 4:18 PM
+                    </div>
+
+                </div>
+
+
+                <div class="email-body">
+
+                    <p>
+                        Please hold the BDA Consulting payment.
+                    </p>
+
+                    <p>
+                        We have not yet received the final
+                        consulting report.
+                    </p>
+
+                    <p>
+                        Thanks,<br>
+                        Michael
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         INVESTIGATION QUESTIONS
+    ========================================== -->
+
+    <section class="round1-investigation">
+
+        <div class="investigation-heading">
+
+            <span>
+                INVESTIGATION
+            </span>
+
+            <h2>
+                Analyze the Evidence
+            </h2>
+
+            <p>
+                Review the evidence above and select the
+                strongest answer for each question.
+            </p>
+
+        </div>
+
+
+        <form
+            action="/player/round/1/{{ team_name }}"
+            method="POST"
+            class="round1-form"
+        >
+
+
+            <!-- QUESTION 1 -->
+
+            <div class="round1-question">
+
+                <div class="question-number">
+                    01
+                </div>
+
+                <div class="question-content">
+
+                    <h3>
+                        What is the biggest red flag?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="payment_amount"
+                            required
+                        >
+
+                        <span>
+                            The payment amount is $45,000.
+                        </span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="invoice_after_payment"
+                        >
+
+                        <span>
+                            The invoice was dated after the payment.
+                        </span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="consulting_company"
+                        >
+
+                        <span>
+                            The recipient is a consulting company.
+                        </span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="march_transaction"
+                        >
+
+                        <span>
+                            The transaction happened in March.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 2 -->
+
+            <div class="round1-question">
+
+                <div class="question-number">
+                    02
+                </div>
+
+                <div class="question-content">
+
+                    <h3>
+                        What evidence conflicts with the payment?
+                    </h3>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="invoice"
+                            required
+                        >
+
+                        <span>
+                            The invoice.
+                        </span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="company_name"
+                        >
+
+                        <span>
+                            The company name.
+                        </span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="email"
+                        >
+
+                        <span>
+                            The email.
+                        </span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="transaction_date"
+                        >
+
+                        <span>
+                            The transaction date.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 3 -->
+
+            <div class="round1-question">
+
+                <div class="question-number">
+                    03
+                </div>
+
+                <div class="question-content">
+
+                    <h3>
+                        What should investigators examine next?
+                    </h3>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="social_media"
+                            required
+                        >
+
+                        <span>
+                            The company's social media.
+                        </span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="office_decorations"
+                        >
+
+                        <span>
+                            The company's office decorations.
+                        </span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="weather"
+                        >
+
+                        <span>
+                            The weather on March 14.
+                        </span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="bank_records"
+                        >
+
+                        <span>
+                            BDA Consulting's bank account
+                            and supporting documents.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="round1-submit"
+            >
+                SUBMIT INVESTIGATION
+            </button>
+
+        </form>
+
+    </section>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const timer = document.getElementById("round-timer");
+    const clock = document.getElementById("round-timer-clock");
+
+    if (!timer || !clock) {
+        return;
+    }
+
+    const startedAt = timer.dataset.startedAt;
+
+    if (!startedAt) {
+        console.log("No round start time found.");
+        return;
+    }
+
+    function updateTimer() {
+
+        /*
+         * SQLite datetime('now') is UTC.
+         * Add Z so JavaScript treats it as UTC.
+         */
+
+        const startTime = new Date(
+            startedAt.replace(" ", "T") + "Z"
+        ).getTime();
+
+        const now = Date.now();
+
+        const elapsedSeconds = Math.floor(
+            (now - startTime) / 1000
+        );
+
+        const totalSeconds = 90;
+
+        let remaining = totalSeconds - elapsedSeconds;
+
+
+        /*
+         * TIME HAS RUN OUT
+         */
+
+        if (remaining <= 0) {
+
+            clock.textContent = "00:00";
+
+            clearInterval(timerInterval);
+
+            window.location.href =
+                "/waiting/{{ team_name }}?from_round={{ round_data['round_number'] }}";
+
+            return;
+        }
+
+
+        /*
+         * CALCULATE TIME
+         */
+
+        const minutes = Math.floor(
+            remaining / 60
+        );
+
+        const seconds = remaining % 60;
+
+
+        /*
+         * DISPLAY TIME
+         */
+
+        clock.textContent =
+            String(minutes).padStart(2, "0") +
+            ":" +
+            String(seconds).padStart(2, "0");
+
+
+        /*
+         * TIMER COLORS
+         */
+
+        timer.classList.remove(
+            "warning",
+            "danger"
+        );
+
+        if (remaining <= 60) {
+
+            timer.classList.add("danger");
+
+        } else if (remaining <= 120) {
+
+            timer.classList.add("warning");
+
+        }
+
+    }
+
+
+    updateTimer();
+
+    const timerInterval = setInterval(
+        updateTimer,
+        1000
+    );
+
+});
+
+</script>
+
+{% endblock %}
+

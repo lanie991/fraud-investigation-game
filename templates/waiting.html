@@ -1,0 +1,525 @@
+{% extends "base.html" %}
+
+{% block title %}
+Waiting Room
+{% endblock %}
+
+{% block content %}
+
+<div class="waiting-page" data-from-round="{{ from_round if from_round is not none else '' }}" data-team-name="{{ team_name }}">
+    <div class="waiting-content">
+
+        {% if game_status == "countdown" and from_round is none %}
+
+        {% if from_round %}
+            <div class="waiting-label">ROUND {{ from_round + 1 }} STARTING</div>
+            <h1>GET READY</h1>
+            <p class="waiting-description">Round {{ from_round + 1 }} will begin automatically.</p>
+        {% else %}
+            <div class="waiting-label">INVESTIGATION STARTING</div>
+            <h1>GAME STARTING</h1>
+            <p class="waiting-description">Your team is ready. Round 1 will begin automatically.</p>
+        {% endif %}
+
+        {% elif from_round %}
+
+        <div class="waiting-label">
+            ROUND {{ from_round }} COMPLETE
+        </div>
+
+        {% if timed_out %}
+        <h1>TIME EXPIRED</h1>
+        {% else %}
+        <h1>ROUND COMPLETE</h1>
+        {% endif %}
+
+        <div class="round-result-card">
+            <div class="score-card-label">YOUR SCORE</div>
+            <div class="round-result-score">
+                {{ round_score }}
+                <span>/ {{ round_points }}</span>
+            </div>
+            <div class="round-result-points">POINTS</div>
+            {% if timed_out %}
+            <p class="round-result-message">
+                Your team ran out of time.
+                <strong>0 points</strong> were awarded for this round.
+            </p>
+            {% else %}
+            <p class="round-result-message">Your investigation has been recorded.</p>
+            {% endif %}
+        </div>
+
+<!-- =========================================
+     CORRECT ANSWERS
+========================================= -->
+
+<div class="correct-answers-card">
+
+    <div class="waiting-label">
+        CORRECT ANSWERS
+    </div>
+
+    {% if from_round == 1 %}
+
+        <div class="correct-answer">
+            <strong>QUESTION 1</strong>
+            <p>The invoice was dated after the payment.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 2</strong>
+            <p>The email.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 3</strong>
+            <p>BDA Consulting's bank account and supporting documents.</p>
+        </div>
+
+    {% elif from_round == 2 %}
+
+        <div class="correct-answer">
+            <strong>QUESTION 1</strong>
+            <p>The movement of money through multiple entities.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 2</strong>
+            <p>Transaction 3.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 3</strong>
+            <p>Layering.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 4</strong>
+            <p>Ocean View Holdings.</p>
+        </div>
+
+    {% elif from_round == 3 %}
+
+        <div class="correct-answer">
+            <strong>QUESTION 1</strong>
+            <p>The login record showing his laptop was accessed from Bermuda.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 2</strong>
+            <p>The payment record showing authorization by MCARTER.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 3</strong>
+            <p>The invoice was created shortly before the payment and attributed to MCARTER.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 4</strong>
+            <p>10:37 chat → 10:39 invoice created → 10:42 login → 10:44 payment.</p>
+        </div>
+
+    {% elif from_round == 4 %}
+
+        <div class="correct-answer">
+            <strong>QUESTION 1</strong>
+            <p>"I never authorized that payment."</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 2</strong>
+            <p>"I was overseas. I wasn't anywhere near the office."</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 3</strong>
+            <p>The 10:42 PM MCARTER login from his assigned laptop.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 4</strong>
+            <p>Multiple statements conflict with independent digital, payment, metadata and chat evidence.</p>
+        </div>
+
+    {% elif from_round == 5 %}
+
+        <div class="correct-answer">
+            <strong>QUESTION 1</strong>
+            <p>Michael Carter (MCARTER)</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 2</strong>
+            <p>The MCARTER login, payment authorization, invoice metadata and chat evidence.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 3</strong>
+            <p>The funds were moved through multiple entities in a way that could obscure their origin.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 4</strong>
+            <p>"I did not use my laptop."</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 5</strong>
+            <p>10:37 chat → 10:39 invoice created → 10:42 MCARTER login → 10:44 payment authorized.</p>
+        </div>
+
+        <div class="correct-answer">
+            <strong>QUESTION 6</strong>
+            <p>Michael Carter</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+<!-- =========================================
+     SUBMITTED ANSWERS
+========================================== -->
+
+<div class="submitted-answers-card">
+    <div class="waiting-label">YOUR SUBMITTED ANSWERS</div>
+
+    {% if answers %}
+        {% for question, answer in answers.items() %}
+            <div class="submitted-answer">
+                <div class="submitted-question">
+                    QUESTION {{ question|replace("q", "") }}
+                </div>
+                <div class="submitted-answer-value">
+                    {% if from_round == 1 %}
+                        {% set labels = {
+                            "payment_amount": "The payment amount is $45,000.",
+                            "invoice_after_payment": "The invoice was dated after the payment.",
+                            "consulting_company": "The recipient is a consulting company.",
+                            "march_transaction": "The transaction happened in March.",
+                            "invoice": "The invoice.",
+                            "company_name": "The company name.",
+                            "email": "The email.",
+                            "transaction_date": "The transaction date.",
+                            "social_media": "The company's social media.",
+                            "office_decorations": "The company's office decorations.",
+                            "weather": "The weather on March 14.",
+                            "bank_records": "BDA Consulting's bank account and supporting documents."
+                        } %}
+                    {% elif from_round == 2 %}
+                        {% set labels = {
+                            "normal_payment": "A normal business payment.",
+                            "money_circular": "The movement of money through multiple entities.",
+                            "salary": "A routine employee salary.",
+                            "refund": "A customer refund.",
+                            "transaction1": "Transaction 1.",
+                            "transaction2": "Transaction 2.",
+                            "transaction3": "Transaction 3.",
+                            "none": "None of them.",
+                            "deposit": "A simple deposit.",
+                            "withdrawal": "A cash withdrawal.",
+                            "layering": "Layering.",
+                            "payroll": "Payroll processing.",
+                            "bermuda_holdings": "Bermuda Holdings Ltd.",
+                            "ocean_view": "Ocean View Holdings.",
+                            "bda_consulting": "BDA Consulting Ltd.",
+                            "accounts_department": "Accounts Department."
+                        } %}
+                    {% elif from_round == 3 %}
+                        {% set labels = {
+                            "login_location": "The login record showing his laptop was accessed from Bermuda.",
+                            "email": "His email.",
+                            "invoice": "The invoice number.",
+                            "ip": "The IP address by itself.",
+                            "payment_user": "The payment record showing authorization by MCARTER.",
+                            "chat": "The chat message.",
+                            "created_before_payment": "The invoice was created shortly before the payment and attributed to MCARTER.",
+                            "old_document": "The invoice was created months earlier.",
+                            "different_author": "Someone else created the invoice.",
+                            "no_metadata": "The document contains no useful metadata.",
+                            "investigation_timeline": "10:37 chat → 10:39 invoice created → 10:42 login → 10:44 payment.",
+                            "overseas": "Michael was overseas and never accessed the system.",
+                            "random": "The timestamps have no relationship.",
+                            "email_only": "The email alone proves what happened."
+                        } %}
+                    {% elif from_round == 4 %}
+                        {% set labels = {
+                            "overseas": "I was overseas.",
+                            "denied_payment": "I never authorized that payment.",
+                            "laptop": "I left my laptop at the office.",
+                            "accounts": "I didn't speak to anyone about the payment.",
+                            "payment": "I never authorized that payment.",
+                            "paperwork": "I was finishing the payment paperwork.",
+                            "invoice": "The invoice number.",
+                            "company": "The name of the consulting company.",
+                            "login": "The 10:42 PM MCARTER login from his assigned laptop.",
+                            "nervous": "He appeared nervous during the interview.",
+                            "multiple_conflicts": "Multiple statements conflict with independent digital, payment, metadata and chat evidence.",
+                            "short": "His answers were short.",
+                            "denial": "He denied the allegations."
+                        } %}
+                    {% elif from_round == 5 %}
+                        {% set labels = {
+                            "michael": "Michael Carter (MCARTER)",
+                            "sarah": "Sarah",
+                            "accounts": "The Accounts Department",
+                            "bda": "BDA Consulting Ltd.",
+                            "login_payment": "The MCARTER login, payment authorization, invoice metadata and chat evidence.",
+                            "digital_evidence": "The MCARTER login, payment authorization, invoice metadata and chat evidence.",
+                            "invoice_only": "The invoice alone.",
+                            "interview": "Michael's interview statement.",
+                            "layering": "The funds were moved through multiple entities in a way that could obscure their origin.",
+                            "normal": "The transactions were a normal consulting payment.",
+                            "refund": "The money represented a customer refund.",
+                            "payroll": "The money was part of normal payroll.",
+                            "laptop": "I did not use my laptop.",
+                            "payment": "The payment was $45,000.",
+                            "invoice": "The invoice existed.",
+                            "consulting": "BDA Consulting was involved.",
+                            "timeline": "10:37 chat → 10:39 invoice created → 10:42 MCARTER login → 10:44 payment authorized.",
+                            "reverse": "Payment → login → chat → invoice.",
+                            "overseas": "Michael was overseas throughout the entire event.",
+                            "unknown": "There is no meaningful timeline."
+                        } %}
+                    {% else %}
+                        {% set labels = {} %}
+                    {% endif %}
+                    {{ labels.get(answer, answer) }}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-answers">No answers were submitted. Your team ran out of time.</p>
+    {% endif %}
+</div>
+
+        {% if from_round != 5 %}
+
+            {% if game_status == "intermission" %}
+
+            <div class="intermission-card">
+                <div class="waiting-label">INTERMISSION</div>
+                <h2>10 MINUTE BREAK</h2>
+                <p>
+                    Round 3 will begin automatically when the intermission ends.
+                </p>
+                <div class="intermission-timer"
+                     id="intermission-timer"
+                     data-until="{{ intermission_until }}">
+                    10:00
+                </div>
+                <div class="intermission-subtext">
+                    ROUND 3 STARTING AUTOMATICALLY
+                </div>
+            </div>
+
+            {% elif from_round and from_round < 5 %}
+
+                {% if game_status != "countdown" %}
+                <div class="waiting-status-card">
+                    <div class="waiting-spinner">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div>
+                        <strong>NEXT ROUND STARTING AUTOMATICALLY</strong>
+                        <p>Keep this screen open.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+            {% endif %}
+
+        {% endif %}
+
+        {% if from_round == 5 %}
+        <div class="final-results-section">
+            <a href="/host/final_results" class="final-results-button">
+                🏆 VIEW FINAL RESULTS
+            </a>
+        </div>
+        {% endif %}
+
+        {% else %}
+
+        <div class="waiting-label">INVESTIGATION LOBBY</div>
+
+        <h1>WAITING FOR HOST</h1>
+
+        <p class="waiting-description">
+            Your team is ready. The investigation will begin
+            when the host starts the game.
+        </p>
+
+        <div class="waiting-card">
+            <div class="waiting-card-label">TEAM</div>
+            <div class="waiting-team">{{ team_name }}</div>
+            <div class="waiting-ready">
+                <span class="waiting-dot"></span>
+                READY TO INVESTIGATE
+            </div>
+        </div>
+
+        <div class="waiting-status-card">
+            <div class="waiting-spinner">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div>
+                <strong>Waiting for host...</strong>
+                <p>Keep this screen open.</p>
+            </div>
+        </div>
+
+        {% endif %}
+
+        {% if game_status == "countdown" %}
+        <div class="waiting-card">
+            <div class="waiting-card-label">
+                {% if from_round %}
+                    NEXT ROUND STARTING IN
+                {% else %}
+                    STARTING IN
+                {% endif %}
+            </div>
+
+            <div
+                id="countdown-clock"
+                class="countdown-clock"
+                data-started-at="{{ game_started_at }}"
+                data-countdown-seconds="90"
+                style="font-size:72px;font-weight:800;line-height:1;text-align:center;margin:25px 0;letter-spacing:4px;font-family:'JetBrains Mono',monospace;">
+                01:30
+            </div>
+
+            <div class="waiting-ready">
+                <span class="waiting-dot"></span>
+                KEEP THIS SCREEN OPEN
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="waiting-footer">
+            INVESTIGATION SYSTEM • STANDING BY
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const countdown = document.getElementById("countdown-clock");
+    const intermission = document.getElementById("intermission-timer");
+    const page = document.querySelector(".waiting-page");
+
+    const fromRoundValue = page ? page.dataset.fromRound : "";
+    const fromRound = fromRoundValue === "" ? null : Number(fromRoundValue);
+
+    const teamName = page ? page.dataset.teamName : "";
+    const statusUrl = "/player/waiting-status/" + encodeURIComponent(teamName);
+
+    let countdownInterval = null;
+    let intermissionInterval = null;
+    let statusInterval = null;
+
+    function goToActiveRound(currentRound) {
+        if (!currentRound || currentRound < 1 || currentRound > 5) {
+            return false;
+        }
+
+        if (fromRound === null || currentRound > fromRound) {
+            window.location.href =
+                "/player/round/" + currentRound + "/{{ team_name|urlencode }}";
+            return true;
+        }
+
+        return false;
+    }
+
+    function checkGameStatus() {
+        fetch(statusUrl, { cache: "no-store" })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("Status request failed");
+                }
+                return response.json();
+            })
+            .then(function (data) {
+                goToActiveRound(data.current_round);
+            })
+            .catch(function () {});
+    }
+
+    if (countdown) {
+        const startedAt = countdown.dataset.startedAt;
+
+        function updateCountdown() {
+            if (!startedAt) return;
+
+            const startTime = new Date(
+                startedAt.replace(" ", "T") + "Z"
+            ).getTime();
+
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const countdownSeconds = 90;
+            let remaining = countdownSeconds - elapsed;
+            if (remaining < 0) remaining = 0;
+
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+
+            countdown.textContent =
+                String(minutes).padStart(2, "0") + ":" +
+                String(seconds).padStart(2, "0");
+
+            if (remaining <= 0) {
+                clearInterval(countdownInterval);
+                checkGameStatus();
+            }
+        }
+
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    if (intermission) {
+        const until = intermission.dataset.until;
+
+        function updateIntermission() {
+            if (!until) return;
+
+            const endTime = new Date(
+                until.replace(" ", "T") + "Z"
+            ).getTime();
+
+            let remaining = Math.ceil((endTime - Date.now()) / 1000);
+            if (remaining < 0) remaining = 0;
+
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+
+            intermission.textContent =
+                String(minutes).padStart(2, "0") + ":" +
+                String(seconds).padStart(2, "0");
+
+            if (remaining <= 0) {
+                clearInterval(intermissionInterval);
+                checkGameStatus();
+            }
+        }
+
+        updateIntermission();
+        intermissionInterval = setInterval(updateIntermission, 1000);
+    }
+
+    // Keep checking the server so the player automatically enters
+    // the next round as soon as the countdown/intermission ends.
+    checkGameStatus();
+    statusInterval = setInterval(checkGameStatus, 1000);
+
+});
+</script>
+{% endblock %}

@@ -1,0 +1,478 @@
+{% extends "base.html" %}
+
+{% block title %}
+Round {{ round_data["round_number"] }} Results
+{% endblock %}
+
+{% block content %}
+
+<div class="results-page">
+
+    <h1>
+        🏆 ROUND {{ round_data["round_number"] }} RESULTS
+    </h1>
+
+    <h2>
+        {{ round_data["round_name"] }}
+    </h2>
+
+    <p class="round-points">
+        <strong>
+            {{ round_data["points"] }} POINTS AVAILABLE
+        </strong>
+    </p>
+
+    <hr>
+
+    <!-- =========================
+         TEAM SCORES
+    ========================== -->
+
+    <div class="results-card">
+
+        <h2>🏆 TEAM SCORES</h2>
+
+        {% if results %}
+
+            {% for result in results %}
+
+                <div class="team-result">
+
+                    <h3>
+                        {{ result["team_name"] }}
+                    </h3>
+
+                    <p class="score">
+                        {{ result["score"] }}
+                        /
+                        {{ round_data["points"] }}
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>
+                No teams submitted an investigation.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =========================
+         ROUND 1 ANSWERS
+    ========================== -->
+
+    {% if round_data["round_number"] == 1 %}
+
+        <div class="answer-section">
+
+            <h2>🔎 INVESTIGATION ANSWERS</h2>
+
+            <details>
+
+                <summary>
+                    REVEAL ROUND 1 ANSWERS
+                </summary>
+
+                <br>
+
+                <h3>
+                    Question 1 — What is the biggest red flag?
+                </h3>
+
+                <p>
+                    ✅ The invoice was dated after the payment.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 2 — What evidence conflicts with the payment?
+                </h3>
+
+                <p>
+                    ✅ The email.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 3 — What should investigators examine next?
+                </h3>
+
+                <p>
+                    ✅ BDA Consulting's bank account and supporting documents.
+                </p>
+
+            </details>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =========================
+         ROUND 2 ANSWERS
+    ========================== -->
+
+    {% if round_data["round_number"] == 2 %}
+
+        <div class="answer-section">
+
+            <h2>💰 INVESTIGATION ANSWERS</h2>
+
+            <details>
+
+                <summary>
+                    REVEAL ROUND 2 ANSWERS
+                </summary>
+
+                <br>
+
+                <h3>
+                    Question 1 — What does the transaction pattern suggest?
+                </h3>
+
+                <p>
+                    ✅ The money moves through several entities and eventually
+                    returns to the original company.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 2 — Which transaction is the key link in the money trail?
+                </h3>
+
+                <p>
+                    ✅ Carter Advisory → Ocean View Holdings.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 3 — What is the primary concern with this transaction pattern?
+                </h3>
+
+                <p>
+                    ✅ The transactions may be designed to move and obscure
+                    the original funds.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 4 — Which entity should investigators examine most closely?
+                </h3>
+
+                <p>
+                    ✅ Ocean View Holdings.
+                </p>
+
+            </details>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =========================
+         ROUND 3 ANSWERS
+    ========================== -->
+
+    {% if round_data["round_number"] == 3 %}
+
+        <div class="answer-section">
+
+            <h2>💻 INVESTIGATION ANSWERS</h2>
+
+            <details>
+
+                <summary>
+                    REVEAL ROUND 3 ANSWERS
+                </summary>
+
+                <br>
+
+                <h3>
+                    Question 1 — Which evidence most directly contradicts
+                    Michael's claim that he was overseas?
+                </h3>
+
+                <p>
+                    ✅ The login record showing his laptop was accessed from Bermuda.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 2 — What evidence connects Michael's account
+                    directly to the payment authorization?
+                </h3>
+
+                <p>
+                    ✅ The payment record showing authorization by MCARTER.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 3 — What does the document metadata suggest?
+                </h3>
+
+                <p>
+                    ✅ The invoice was created shortly before the payment
+                    and attributed to MCARTER.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 4 — Which timeline is most consistent with
+                    the digital evidence?
+                </h3>
+
+                <p>
+                    ✅ 10:37 chat → 10:39 invoice created →
+                    10:42 login → 10:44 payment.
+                </p>
+
+            </details>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =========================
+         ROUND 4 ANSWERS
+    ========================== -->
+
+    {% if round_data["round_number"] == 4 %}
+
+        <div class="answer-section">
+
+            <h2>🕵🏽‍♀️ INVESTIGATION ANSWERS</h2>
+
+            <details>
+
+                <summary>
+                    REVEAL ROUND 4 ANSWERS
+                </summary>
+
+                <br>
+
+                <h3>
+                    Question 1 — Which statement is directly contradicted
+                    by the payment record?
+                </h3>
+
+                <p>
+                    ✅ "I never authorized that payment."
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 2 — Which statement is contradicted by
+                    the login evidence?
+                </h3>
+
+                <p>
+                    ✅ "I was overseas. I wasn't anywhere near the office."
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 3 — Which evidence most strongly contradicts
+                    Michael's claim that he did not use his laptop?
+                </h3>
+
+                <p>
+                    ✅ The 10:42 PM MCARTER login from his assigned laptop.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 4 — What is the strongest reason investigators
+                    should consider Michael's interview statements unreliable?
+                </h3>
+
+                <p>
+                    ✅ Multiple statements conflict with independent digital,
+                    payment, metadata and chat evidence.
+                </p>
+
+            </details>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =========================
+         ROUND 5 ANSWERS
+    ========================== -->
+
+    {% if round_data["round_number"] == 5 %}
+
+        <div class="answer-section final-answer-section">
+
+            <h2>🏆 FINAL INVESTIGATION ANSWERS</h2>
+
+            <details>
+
+                <summary>
+                    REVEAL ROUND 5 ANSWERS
+                </summary>
+
+                <br>
+
+                <h3>
+                    Question 1 — Who is most directly connected to
+                    authorizing the $45,000 payment?
+                </h3>
+
+                <p>
+                    ✅ Michael Carter (MCARTER)
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 2 — Which combination of evidence provides
+                    the strongest link between Michael and the payment?
+                </h3>
+
+                <p>
+                    ✅ The MCARTER login, payment authorization,
+                    invoice metadata and chat evidence.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 3 — What does the money trail most strongly
+                    suggest?
+                </h3>
+
+                <p>
+                    ✅ The funds were moved through multiple entities
+                    in a way that could obscure their origin.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 4 — Which statement from Michael is most
+                    clearly contradicted by the digital evidence?
+                </h3>
+
+                <p>
+                    ✅ "I did not use my laptop."
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 5 — What timeline best explains the events?
+                </h3>
+
+                <p>
+                    ✅ 10:37 chat → 10:39 invoice created →
+                    10:42 MCARTER login → 10:44 payment authorized.
+                </p>
+
+                <hr>
+
+                <h3>
+                    Question 6 — FINAL VERDICT — Who is primarily responsible?
+                </h3>
+
+                <p>
+                    ✅ Michael Carter
+                </p>
+
+            </details>
+
+        </div>
+
+    {% endif %}
+
+    <!-- =========================
+     NEXT ROUND CONTROL
+========================= -->
+
+{% if round_data["round_number"] < 5 %}
+
+    <div class="next-round-card">
+
+        <h2>🔓 NEXT INVESTIGATION ROUND</h2>
+
+        <p>
+            Round {{ round_data["round_number"] }} is complete.
+            The host can now unlock the next investigation round.
+        </p>
+
+        <form
+            action="/host/unlock-round/{{ round_data['round_number'] + 1 }}"
+            method="POST"
+        >
+
+            <button
+                type="submit"
+                class="unlock-button"
+            >
+                🔓 UNLOCK ROUND {{ round_data["round_number"] + 1 }}
+            </button>
+
+        </form>
+
+    </div>
+
+{% endif %}
+
+
+    <!-- =========================
+         GAME COMPLETE
+    ========================== -->
+
+    {% if round_data["round_number"] == 5 %}
+
+        <div class="game-complete-card">
+
+            <h2>🏆 GAME COMPLETE</h2>
+
+            <p>
+                Round 5 is complete.
+                The investigation is officially finished.
+            </p>
+
+            <form
+                action="/host/final-results"
+                method="GET"
+            >
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                >
+                    🏆 VIEW FINAL LEADERBOARD
+                </button>
+
+            </form>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

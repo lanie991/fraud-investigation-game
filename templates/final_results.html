@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final Results</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    .ranking-avatar,
+    .player-avatar {
+      overflow: hidden;
+    }
+
+    .ranking-avatar img,
+    .player-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="final-results-page">
+
+  <!-- =========================================
+       HEADER
+  ========================================== -->
+
+  <div class="final-header">
+
+    <div class="final-back">
+      ←
+    </div>
+
+    <div>
+      <div class="final-kicker">
+        CASE CLOSED
+      </div>
+
+      <h1>
+        GLOBAL RANKINGS
+      </h1>
+    </div>
+
+  </div>
+
+
+  {% if results %}
+
+  <!-- =========================================
+       AVATAR FILE MAP
+  ========================================== -->
+
+  {% set avatar_files = {
+    'detective_black': 'detective.png',
+    'investigator_black': 'investigator.png',
+    'analyst_black': 'analyst.png',
+    'researcher_white': 'researcher.png',
+    'surveillance_black': 'surveillance.png',
+    'forensics_black': 'forensics.png',
+    'hacker_white': 'hacker.png',
+    'moneymover_black': 'money_movers.png',
+    'k9_unit': 'k9.png',
+    'field_agent_white': 'field_agents.png',
+
+    'detective': 'detective.png',
+    'investigator': 'investigator.png',
+    'analyst': 'analyst.png',
+    'researcher': 'researcher.png',
+    'surveillance': 'surveillance.png',
+    'forensics': 'forensics.png',
+    'hacker': 'hacker.png',
+    'money_mover': 'money_movers.png',
+    'money_movers': 'money_movers.png',
+    'k9': 'k9.png',
+    'field_agent': 'field_agents.png',
+    'field_agents': 'field_agents.png'
+  } %}
+
+
+  <!-- =========================================
+       PODIUM
+       ONLY SHOWS WHEN 3+ TEAMS EXIST
+  ========================================== -->
+
+  {% if results|length >= 3 %}
+
+  <div class="leaderboard-podium">
+
+    <!-- SECOND PLACE -->
+    <div class="podium-player second-place">
+
+      <div class="player-avatar silver-avatar">
+
+        {% set avatar_file = avatar_files.get(
+          results[1]["avatar"],
+          "detective.png"
+        ) %}
+
+        <img
+          src="{{ url_for(
+            'static',
+            filename='avatars/' ~ avatar_file
+          ) }}"
+          alt="{{ results[1]['team_name'] }} avatar"
+        >
+
+      </div>
+
+      <div class="player-name">
+        {{ results[1]["team_name"] }}
+      </div>
+
+      <div class="podium-rank">
+        2
+      </div>
+
+      <div class="podium-block silver-block">
+        <div class="podium-trophy">
+          ♜
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- FIRST PLACE -->
+    <div class="podium-player first-place">
+
+      <div class="player-avatar gold-avatar">
+
+        {% set avatar_file = avatar_files.get(
+          results[0]["avatar"],
+          "detective.png"
+        ) %}
+
+        <img
+          src="{{ url_for(
+            'static',
+            filename='avatars/' ~ avatar_file
+          ) }}"
+          alt="{{ results[0]['team_name'] }} avatar"
+        >
+
+      </div>
+
+      <div class="player-name">
+        {{ results[0]["team_name"] }}
+      </div>
+
+      <div class="podium-rank gold-rank">
+        1
+      </div>
+
+      <div class="podium-block gold-block">
+        <div class="podium-trophy">
+          🏆
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- THIRD PLACE -->
+    <div class="podium-player third-place">
+
+      <div class="player-avatar bronze-avatar">
+
+        {% set avatar_file = avatar_files.get(
+          results[2]["avatar"],
+          "detective.png"
+        ) %}
+
+        <img
+          src="{{ url_for(
+            'static',
+            filename='avatars/' ~ avatar_file
+          ) }}"
+          alt="{{ results[2]['team_name'] }} avatar"
+        >
+
+      </div>
+
+      <div class="player-name">
+        {{ results[2]["team_name"] }}
+      </div>
+
+      <div class="podium-rank">
+        3
+      </div>
+
+      <div class="podium-block bronze-block">
+        <div class="podium-trophy">
+          ♜
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  {% endif %}
+
+
+  <!-- =========================================
+       FINAL RANKINGS
+  ========================================== -->
+
+  <div class="rankings-section">
+
+    <div class="rankings-heading">
+      <span>FINAL RANKINGS</span>
+      <span>SCORE</span>
+    </div>
+
+
+    {% for result in results %}
+
+    <div class="ranking-row">
+
+      <!-- RANK -->
+      <div class="ranking-number">
+
+        {% if loop.index == 1 %}
+          ★
+        {% elif loop.index == 2 %}
+          ★
+        {% elif loop.index == 3 %}
+          ★
+        {% else %}
+          #{{ loop.index }}
+        {% endif %}
+
+      </div>
+
+
+      <!-- AVATAR -->
+      <div class="ranking-avatar">
+
+        {% set avatar_file = avatar_files.get(
+          result["avatar"],
+          "detective.png"
+        ) %}
+
+        <img
+          src="{{ url_for(
+            'static',
+            filename='avatars/' ~ avatar_file
+          ) }}"
+          alt="{{ result['team_name'] }} avatar"
+        >
+
+      </div>
+
+
+      <!-- TEAM -->
+      <div class="ranking-team">
+
+        <strong>
+          {{ result["team_name"] }}
+        </strong>
+
+        <span>
+
+          {% if loop.index == 1 %}
+            LEAD INVESTIGATORS
+
+          {% elif loop.index == 2 %}
+            SENIOR DETECTIVES
+
+          {% elif loop.index == 3 %}
+            CASE ANALYSTS
+
+          {% else %}
+            INVESTIGATION TEAM
+
+          {% endif %}
+
+        </span>
+
+      </div>
+
+
+      <!-- SCORE -->
+      <div class="ranking-score">
+
+        <strong>
+          {{ result["total_score"] }}
+        </strong>
+
+        <span>
+          POINTS
+        </span>
+
+      </div>
+
+    </div>
+
+    {% endfor %}
+
+  </div>
+
+
+  <!-- =========================================
+       INVESTIGATION COMPLETE
+  ========================================== -->
+
+  <div class="investigation-complete">
+
+    <div class="complete-icon">
+      ✓
+    </div>
+
+    <div>
+
+      <div class="complete-title">
+        INVESTIGATION COMPLETE
+      </div>
+
+      <p>
+        The case has officially concluded.
+        Review the evidence.
+        Trust the numbers.
+        Follow the trail.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  {% else %}
+
+  <!-- =========================================
+       NO RESULTS
+  ========================================== -->
+
+  <div class="no-results">
+
+    <div class="complete-icon">
+      🔎
+    </div>
+
+    <h2>
+      NO RESULTS YET
+    </h2>
+
+    <p>
+      No teams completed the investigation.
+    </p>
+
+  </div>
+
+  {% endif %}
+
+</div>
+
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

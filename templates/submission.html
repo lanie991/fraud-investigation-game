@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}
+Investigation Submitted
+{% endblock %}
+
+{% block content %}
+
+<div class="submission-page">
+
+    <!-- =========================================
+         WAITING SCREEN
+    ========================================== -->
+
+    <div
+        id="waiting-screen"
+        class="submission-card"
+    >
+
+        <div class="submission-icon">
+            🔎
+        </div>
+
+        <div class="submission-label">
+            INVESTIGATION SUBMITTED
+        </div>
+
+        <h1>
+            Evidence Received
+        </h1>
+
+        <h2>
+            {{ team_name }}
+        </h2>
+
+        <hr>
+
+        <div class="submission-success">
+            ✅ YOUR EVIDENCE HAS BEEN RECORDED
+        </div>
+
+        <p>
+            Your Round {{ round_number }} score will remain hidden
+            until the host closes the round.
+        </p>
+
+        <div class="waiting-divider"></div>
+
+        <div class="submission-waiting">
+
+            <div class="waiting-loader">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+            <h3>
+                ⏳ WAITING FOR THE HOST
+            </h3>
+
+            <p>
+                Waiting for the host to close the round...
+            </p>
+
+            <p class="waiting-status">
+                Please keep this screen open.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         SCORE SCREEN
+    ========================================== -->
+
+    <div
+        id="score-screen"
+        class="submission-card score-result-card"
+        style="display: none;"
+    >
+
+        <div class="submission-icon">
+            🏆
+        </div>
+
+        <div class="submission-label">
+            ROUND COMPLETE
+        </div>
+
+        <h1>
+            Round {{ round_number }} Complete
+        </h1>
+
+        <h2>
+            {{ team_name }}
+        </h2>
+
+        <hr>
+
+        <div class="score-card-label">
+            YOUR SCORE
+        </div>
+
+        <div
+            id="score"
+            class="score final-score"
+        >
+            0 / 0
+        </div>
+
+        <p>
+            ✅ Your investigation has been scored.
+        </p>
+
+        <button
+            id="next-round-button"
+            class="submit-button"
+            style="display: none;"
+            type="button"
+        ></button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+async function checkRound() {
+
+    try {
+
+        const response = await fetch(
+            "/player/check-round/{{ round_number }}/{{ team_name }}",
+            {
+                cache: "no-store"
+            }
+        );
+
+
+        if (!response.ok) {
+            return;
+        }
+
+
+        const data = await response.json();
+
+
+        console.log(
+            "ROUND STATUS:",
+            data
+        );
+
+
+        /*
+        =====================================
+        ROUND STILL OPEN
+        =====================================
+        */
+
+        if (data.closed !== true) {
+            return;
+        }
+
+
+        /*
+        =====================================
+        ROUND CLOSED
+        =====================================
+        */
+
+        document.getElementById(
+            "waiting-screen"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "score-screen"
+        ).style.display = "block";
+
+
+        /*
+        =====================================
+        SHOW SCORE
+        =====================================
+        */
+
+        document.getElementById(
+            "score"
+        ).textContent =
+            data.score +
+            " / " +
+            data.points;
+
+
+        /*
+        =====================================
+        GET BUTTON
+        =====================================
+        */
+
+        const button =
+            document.getElementById(
+                "next-round-button"
+            );
+
+
+        /*
+        =====================================
+        ROUND 5 = FINAL ROUND
+        =====================================
+        */
+
+        if (data.next_round === null) {
+
+            button.style.display =
+                "inline-block";
+
+            button.textContent =
+                "🏆 VIEW LEADERBOARD →";
+
+
+            button.onclick =
+                function () {
+
+                    window.location.href =
+                        "/host/final-results";
+
+                };
+
+        }
+
+
+        /*
+        =====================================
+        ROUNDS 1–4
+        =====================================
+        */
+
+        else {
+
+            button.style.display =
+                "inline-block";
+
+            button.textContent =
+                "CONTINUE TO ROUND " +
+                data.next_round +
+                " →";
+
+
+            button.onclick =
+                function () {
+
+                    window.location.href =
+                        "/player/round/" +
+                        data.next_round +
+                        "/" +
+                        encodeURIComponent(
+                            "{{ team_name }}"
+                        );
+
+                };
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.log(
+            "Waiting for host..."
+        );
+
+    }
+
+}
+
+
+/*
+=========================================
+CHECK IMMEDIATELY
+=========================================
+*/
+
+checkRound();
+
+
+/*
+=========================================
+CHECK EVERY 2 SECONDS
+=========================================
+*/
+
+setInterval(
+    checkRound,
+    2000
+);
+
+</script>
+
+{% endblock %}

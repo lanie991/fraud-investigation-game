@@ -1,0 +1,1145 @@
+{% extends "base.html" %}
+
+{% block title %}
+Round 5 — Final Investigation
+{% endblock %}
+
+{% block content %}
+
+<div class="round5-page">
+
+    <!-- =========================================
+         ROUND HEADER
+    ========================================== -->
+
+    <div class="round5-header">
+
+        <div class="round5-back">
+            ←
+        </div>
+
+        <div>
+            <div class="round5-label">
+                CASE FILE #005
+            </div>
+
+            <h1>ROUND 5</h1>
+        </div>
+
+        <div class="round5-points">
+            <span>FINAL ROUND</span>
+            <strong>🏆</strong>
+        </div>
+
+        <div
+    class="round-timer"
+    id="round-timer"
+    data-started-at="{{ round_data['started_at'] }}"
+>
+
+    <span class="round-timer-label">
+        TIME REMAINING
+    </span>
+
+    <span
+        class="round-timer-clock"
+        id="round-timer-clock"
+    >
+        05:00
+    </span>
+
+</div>
+
+    </div>
+
+
+    <!-- =========================================
+         INTRO
+    ========================================== -->
+
+    <section class="round5-intro">
+
+        <div class="round5-status-row">
+
+            <span class="round5-badge final">
+                FINAL INVESTIGATION
+            </span>
+
+            <span class="round5-badge active">
+                ● CASE OPEN
+            </span>
+
+        </div>
+
+        <h2>
+            Everything leads to this moment.
+        </h2>
+
+        <p>
+            Your team has reviewed the financial records, money trail,
+            digital evidence and interview. Now reconstruct the entire
+            case and determine who is responsible for the $45,000 payment.
+        </p>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 01 — FINAL INVESTIGATION FILE
+    ========================================== -->
+
+    <section class="round5-evidence">
+
+        <div class="round5-evidence-heading">
+
+            <div>
+
+                <span class="round5-evidence-number">
+                    01
+                </span>
+
+                <div>
+
+                    <small>
+                        CASE CLOSURE DOCUMENT
+                    </small>
+
+                    <h2>
+                        Final Investigation File
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round5-evidence-tag">
+                FINAL FILE
+            </span>
+
+        </div>
+
+
+        <div class="final-case-file">
+
+            <div class="final-file-top">
+
+                <div class="final-folder-icon">
+                    005
+                </div>
+
+                <div>
+
+                    <span>
+                        FINANCIAL CRIME INVESTIGATION
+                    </span>
+
+                    <strong>
+                        FINAL INVESTIGATION FILE
+                    </strong>
+
+                </div>
+
+                <div class="final-file-status">
+                    CASE REVIEW
+                </div>
+
+            </div>
+
+
+            <div class="final-file-divider"></div>
+
+
+            <div class="final-file-banner">
+
+                <div class="final-banner-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <span>
+                        INVESTIGATION STATUS
+                    </span>
+
+                    <strong>
+                        FINAL REVIEW REQUIRED
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="final-file-grid">
+
+                <div>
+
+                    <span>
+                        CASE SUBJECT
+                    </span>
+
+                    <strong>
+                        Michael Carter
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        INCIDENT
+                    </span>
+
+                    <strong>
+                        $45,000 Payment
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        EVIDENCE PACKAGES
+                    </span>
+
+                    <strong>
+                        04 ROUNDS REVIEWED
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        CURRENT STAGE
+                    </span>
+
+                    <strong class="final-highlight">
+                        FINAL VERDICT
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="final-file-objective">
+
+                <div>
+                    INVESTIGATION OBJECTIVE
+                </div>
+
+                <p>
+                    Determine who authorized the payment, establish
+                    the sequence of events and identify the person
+                    primarily responsible based on the evidence.
+                </p>
+
+            </div>
+
+
+            <div class="final-file-footer">
+
+                <span>
+                    CASE FILE #005
+                </span>
+
+                <strong>
+                    CONFIDENTIAL — FINAL REVIEW
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 02 — FINAL EVIDENCE SUMMARY
+    ========================================== -->
+
+    <section class="round5-evidence">
+
+        <div class="round5-evidence-heading">
+
+            <div>
+
+                <span class="round5-evidence-number">
+                    02
+                </span>
+
+                <div>
+
+                    <small>
+                        FORENSIC RECONCILIATION
+                    </small>
+
+                    <h2>
+                        Final Evidence Summary
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round5-evidence-tag verified">
+                VERIFIED
+            </span>
+
+        </div>
+
+
+        <div class="final-evidence-summary">
+
+            <div class="summary-header">
+
+                <div>
+
+                    <span>
+                        FINAL EVIDENCE REVIEW
+                    </span>
+
+                    <strong>
+                        CONSOLIDATED FINDINGS
+                    </strong>
+
+                </div>
+
+                <div class="summary-case-number">
+                    CASE #005
+                </div>
+
+            </div>
+
+
+            <div class="summary-finding">
+
+                <div class="finding-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <span>
+                        OVERALL FINDING
+                    </span>
+
+                    <strong>
+                        Multiple independent records connect
+                        MCARTER to the payment activity.
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- DIGITAL -->
+
+            <div class="final-summary-item">
+
+                <div class="summary-number">
+                    01
+                </div>
+
+                <div class="summary-content">
+
+                    <div class="summary-item-top">
+
+                        <strong>
+                            DIGITAL EVIDENCE
+                        </strong>
+
+                        <span>
+                            10:42 PM
+                        </span>
+
+                    </div>
+
+                    <p>
+                        MCARTER logged into his assigned laptop
+                        from Bermuda at 10:42 PM.
+                    </p>
+
+                </div>
+
+                <div class="summary-status">
+                    CONFIRMED
+                </div>
+
+            </div>
+
+
+            <!-- PAYMENT -->
+
+            <div class="final-summary-item">
+
+                <div class="summary-number">
+                    02
+                </div>
+
+                <div class="summary-content">
+
+                    <div class="summary-item-top">
+
+                        <strong>
+                            PAYMENT RECORD
+                        </strong>
+
+                        <span>
+                            10:44 PM
+                        </span>
+
+                    </div>
+
+                    <p>
+                        The $45,000 payment was authorized
+                        by MCARTER at 10:44 PM.
+                    </p>
+
+                </div>
+
+                <div class="summary-status">
+                    CONFIRMED
+                </div>
+
+            </div>
+
+
+            <!-- METADATA -->
+
+            <div class="final-summary-item">
+
+                <div class="summary-number">
+                    03
+                </div>
+
+                <div class="summary-content">
+
+                    <div class="summary-item-top">
+
+                        <strong>
+                            DOCUMENT METADATA
+                        </strong>
+
+                        <span>
+                            10:39 PM
+                        </span>
+
+                    </div>
+
+                    <p>
+                        The invoice was created by MCARTER
+                        at 10:39 PM.
+                    </p>
+
+                </div>
+
+                <div class="summary-status">
+                    CONFIRMED
+                </div>
+
+            </div>
+
+
+            <!-- CHAT -->
+
+            <div class="final-summary-item">
+
+                <div class="summary-number">
+                    04
+                </div>
+
+                <div class="summary-content">
+
+                    <div class="summary-item-top">
+
+                        <strong>
+                            CHAT EVIDENCE
+                        </strong>
+
+                        <span>
+                            10:38 PM
+                        </span>
+
+                    </div>
+
+                    <p>
+                        Michael stated that he was finishing
+                        the payment paperwork.
+                    </p>
+
+                </div>
+
+                <div class="summary-status">
+                    CONFIRMED
+                </div>
+
+            </div>
+
+
+            <!-- INTERVIEW -->
+
+            <div class="final-summary-item">
+
+                <div class="summary-number">
+                    05
+                </div>
+
+                <div class="summary-content">
+
+                    <div class="summary-item-top">
+
+                        <strong>
+                            INTERVIEW
+                        </strong>
+
+                        <span>
+                            FINAL REVIEW
+                        </span>
+
+                    </div>
+
+                    <p>
+                        Michael denied authorizing the payment
+                        and claimed he was overseas.
+                    </p>
+
+                </div>
+
+                <div class="summary-status conflict">
+                    CONFLICT
+                </div>
+
+            </div>
+
+
+            <div class="summary-timeline">
+
+                <div class="timeline-title">
+                    ESTABLISHED TIMELINE
+                </div>
+
+                <div class="timeline-line">
+
+                    <div>
+                        <strong>10:37</strong>
+                        <span>Chat</span>
+                    </div>
+
+                    <div>
+                        <strong>10:39</strong>
+                        <span>Invoice</span>
+                    </div>
+
+                    <div>
+                        <strong>10:42</strong>
+                        <span>Login</span>
+                    </div>
+
+                    <div>
+                        <strong>10:44</strong>
+                        <span>Payment</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-footer">
+
+                <span>
+                    05 EVIDENCE SOURCES REVIEWED
+                </span>
+
+                <strong>
+                    FINAL FINDINGS
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         FINAL INVESTIGATION
+    ========================================== -->
+
+    <section class="round5-investigation">
+
+        <div class="round5-investigation-heading">
+
+            <span>
+                FINAL VERDICT
+            </span>
+
+            <h2>
+                Close the Case
+            </h2>
+
+            <p>
+                Review everything you have discovered and submit
+                your team's final determination.
+            </p>
+
+        </div>
+
+
+        <form
+            action="/player/round/5/{{ team_name }}"
+            method="POST"
+            class="round5-form"
+        >
+
+
+            <!-- QUESTION 1 -->
+
+            <div class="round5-question">
+
+                <div class="round5-question-number">
+                    01
+                </div>
+
+                <div class="round5-question-content">
+
+                    <h3>
+                        Who is most directly connected to authorizing
+                        the $45,000 payment?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="michael"
+                            required
+                        >
+
+                        <span>
+                            Michael Carter (MCARTER)
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="sarah"
+                        >
+
+                        <span>
+                            Sarah
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="accounts"
+                        >
+
+                        <span>
+                            The Accounts Department
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="bda"
+                        >
+
+                        <span>
+                            BDA Consulting Ltd.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 2 -->
+
+            <div class="round5-question">
+
+                <div class="round5-question-number">
+                    02
+                </div>
+
+                <div class="round5-question-content">
+
+                    <h3>
+                        Which combination of evidence provides
+                        the strongest link between Michael and the payment?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="login_payment"
+                            required
+                        >
+
+                        <span>
+                            The MCARTER login, payment authorization,
+                            invoice metadata and chat evidence.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="email"
+                        >
+
+                        <span>
+                            Michael's email only.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="invoice_only"
+                        >
+
+                        <span>
+                            The invoice alone.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="interview"
+                        >
+
+                        <span>
+                            Michael's interview statement.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 3 -->
+
+            <div class="round5-question">
+
+                <div class="round5-question-number">
+                    03
+                </div>
+
+                <div class="round5-question-content">
+
+                    <h3>
+                        What does the money trail most strongly suggest?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="layering"
+                            required
+                        >
+
+                        <span>
+                            The funds were moved through multiple entities
+                            in a way that could obscure their origin.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="normal"
+                        >
+
+                        <span>
+                            The transactions were a normal consulting payment.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="refund"
+                        >
+
+                        <span>
+                            The money represented a customer refund.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="payroll"
+                        >
+
+                        <span>
+                            The money was part of normal payroll.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 4 -->
+
+            <div class="round5-question">
+
+                <div class="round5-question-number">
+                    04
+                </div>
+
+                <div class="round5-question-content">
+
+                    <h3>
+                        Which statement from Michael is most clearly
+                        contradicted by the digital evidence?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="laptop"
+                            required
+                        >
+
+                        <span>
+                            "I did not use my laptop."
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="payment"
+                        >
+
+                        <span>
+                            "The payment was $45,000."
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="invoice"
+                        >
+
+                        <span>
+                            "The invoice existed."
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="consulting"
+                        >
+
+                        <span>
+                            "BDA Consulting was involved."
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 5 -->
+
+            <div class="round5-question">
+
+                <div class="round5-question-number">
+                    05
+                </div>
+
+                <div class="round5-question-content">
+
+                    <h3>
+                        What timeline best explains the events?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q5"
+                            value="timeline"
+                            required
+                        >
+
+                        <span>
+                            10:37 chat → 10:39 invoice created →
+                            10:42 MCARTER login → 10:44 payment authorized.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q5"
+                            value="reverse"
+                        >
+
+                        <span>
+                            Payment → login → chat → invoice.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q5"
+                            value="overseas"
+                        >
+
+                        <span>
+                            Michael was overseas throughout the entire event.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q5"
+                            value="unknown"
+                        >
+
+                        <span>
+                            There is no meaningful timeline.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 6 -->
+
+            <div class="round5-question final-verdict-question">
+
+                <div class="round5-question-number verdict-number">
+                    06
+                </div>
+
+                <div class="round5-question-content">
+
+                    <div class="verdict-label">
+                        FINAL VERDICT
+                    </div>
+
+                    <h3>
+                        Who is primarily responsible?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q6"
+                            value="michael"
+                            required
+                        >
+
+                        <span>
+                            Michael Carter
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q6"
+                            value="sarah"
+                        >
+
+                        <span>
+                            Sarah
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q6"
+                            value="accounts"
+                        >
+
+                        <span>
+                            The Accounts Department
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q6"
+                            value="bda"
+                        >
+
+                        <span>
+                            BDA Consulting Ltd.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="round5-submit"
+            >
+                🏆 SUBMIT FINAL INVESTIGATION
+            </button>
+
+        </form>
+
+    </section>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const timer = document.getElementById("round-timer");
+    const clock = document.getElementById("round-timer-clock");
+
+    if (!timer || !clock) {
+        return;
+    }
+
+    const startedAt = timer.dataset.startedAt;
+
+    if (!startedAt) {
+        console.log("No round start time found.");
+        return;
+    }
+
+    function updateTimer() {
+
+        /*
+         * SQLite datetime('now') is UTC.
+         * Add Z so JavaScript treats it as UTC.
+         */
+
+        const startTime = new Date(
+            startedAt.replace(" ", "T") + "Z"
+        ).getTime();
+
+        const now = Date.now();
+
+        const elapsedSeconds = Math.floor(
+            (now - startTime) / 1000
+        );
+
+        const totalSeconds = 90;
+
+        let remaining = totalSeconds - elapsedSeconds;
+
+
+        /*
+         * TIME HAS RUN OUT
+         */
+
+        if (remaining <= 0) {
+
+            clock.textContent = "00:00";
+
+            clearInterval(timerInterval);
+
+            window.location.href =
+                "/waiting/{{ team_name }}?from_round={{ round_data['round_number'] }}";
+
+            return;
+        }
+
+
+        /*
+         * CALCULATE TIME
+         */
+
+        const minutes = Math.floor(
+            remaining / 60
+        );
+
+        const seconds = remaining % 60;
+
+
+        /*
+         * DISPLAY TIME
+         */
+
+        clock.textContent =
+            String(minutes).padStart(2, "0") +
+            ":" +
+            String(seconds).padStart(2, "0");
+
+
+        /*
+         * TIMER COLORS
+         */
+
+        timer.classList.remove(
+            "warning",
+            "danger"
+        );
+
+        if (remaining <= 60) {
+
+            timer.classList.add("danger");
+
+        } else if (remaining <= 120) {
+
+            timer.classList.add("warning");
+
+        }
+
+    }
+
+
+    updateTimer();
+
+    const timerInterval = setInterval(
+        updateTimer,
+        1000
+    );
+
+});
+
+
+
+
+</script>
+
+{% endblock %}

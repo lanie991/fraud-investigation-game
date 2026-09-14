@@ -1,0 +1,1062 @@
+{% extends "base.html" %}
+
+{% block title %}
+Round 2 — Follow the Money
+{% endblock %}
+
+{% block content %}
+
+<div class="round2-page">
+
+    <!-- =========================================
+         ROUND HEADER
+    ========================================== -->
+
+    <div class="round2-header">
+
+        <div class="round2-back">
+            ←
+        </div>
+
+        <div>
+            <div class="round2-label">
+                CASE FILE #002
+            </div>
+
+            <h1>
+                ROUND 2
+            </h1>
+        </div>
+
+        <div class="round2-points">
+            <span>REWARD</span>
+            <strong>150</strong>
+            <small>PTS</small>
+        </div>
+
+        <div
+    class="round-timer"
+    id="round-timer"
+    data-started-at="{{ round_data['started_at'] }}"
+>
+
+    <span class="round-timer-label">
+        TIME REMAINING
+    </span>
+
+    <span
+        class="round-timer-clock"
+        id="round-timer-clock"
+    >
+        05:00
+    </span>
+
+</div>
+
+    </div>
+
+
+    <!-- =========================================
+         INTRO
+    ========================================== -->
+
+    <section class="round2-intro">
+
+        <div class="round2-status-row">
+
+            <span class="round2-badge danger">
+                FOLLOW THE MONEY
+            </span>
+
+            <span class="round2-badge active">
+                ● ACTIVE
+            </span>
+
+        </div>
+
+        <h2>
+            The money doesn't stop at BDA Consulting.
+        </h2>
+
+        <p>
+            Investigators traced the original $45,000 payment
+            through several accounts and entities. Follow the
+            movement of the funds and identify the red flags.
+        </p>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 04 — MONEY TRAIL
+    ========================================== -->
+
+    <section class="round2-evidence">
+
+        <div class="round2-evidence-heading">
+
+            <div>
+
+                <span class="round2-evidence-number">
+                    04
+                </span>
+
+                <div>
+
+                    <small>
+                        FINANCIAL INVESTIGATION
+                    </small>
+
+                    <h2>
+                        Money Trail
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round2-evidence-tag flagged">
+                FLAGGED
+            </span>
+
+        </div>
+
+
+        <div class="money-trail">
+
+            <div class="money-trail-header">
+
+                <div>
+
+                    <span>
+                        ORIGINAL FUNDS
+                    </span>
+
+                    <strong>
+                        $45,000.00
+                    </strong>
+
+                </div>
+
+                <div class="trail-warning">
+                    MULTIPLE TRANSFERS
+                </div>
+
+            </div>
+
+
+            <!-- TRANSACTION 1 -->
+
+            <div class="money-step">
+
+                <div class="money-step-number">
+                    01
+                </div>
+
+                <div class="money-step-content">
+
+                    <div class="money-step-top">
+
+                        <span>
+                            ORIGIN
+                        </span>
+
+                        <span class="money-date">
+                            MAR 14, 2026
+                        </span>
+
+                    </div>
+
+                    <strong>
+                        Bermuda Holdings Ltd.
+                    </strong>
+
+                    <p>
+                        Original suspicious payment
+                    </p>
+
+                </div>
+
+                <div class="money-amount">
+                    $45,000
+                </div>
+
+            </div>
+
+
+            <div class="money-arrow">
+                ↓
+            </div>
+
+
+            <!-- TRANSACTION 2 -->
+
+            <div class="money-step">
+
+                <div class="money-step-number">
+                    02
+                </div>
+
+                <div class="money-step-content">
+
+                    <div class="money-step-top">
+
+                        <span>
+                            RECEIVED BY
+                        </span>
+
+                        <span class="money-date">
+                            AFTER PAYMENT
+                        </span>
+
+                    </div>
+
+                    <strong>
+                        BDA Consulting Ltd.
+                    </strong>
+
+                    <p>
+                        Consulting payment received
+                    </p>
+
+                </div>
+
+                <div class="money-amount">
+                    $45,000
+                </div>
+
+            </div>
+
+
+            <div class="money-arrow">
+                ↓
+            </div>
+
+
+            <!-- TRANSACTION 3 -->
+
+            <div class="money-step">
+
+                <div class="money-step-number">
+                    03
+                </div>
+
+                <div class="money-step-content">
+
+                    <div class="money-step-top">
+
+                        <span>
+                            TRANSFERRED TO
+                        </span>
+
+                        <span class="money-date">
+                            RAPID MOVEMENT
+                        </span>
+
+                    </div>
+
+                    <strong>
+                        Ocean View Holdings
+                    </strong>
+
+                    <p>
+                        Funds transferred onward
+                    </p>
+
+                </div>
+
+                <div class="money-amount">
+                    $38,000
+                </div>
+
+            </div>
+
+
+            <div class="money-arrow">
+                ↓
+            </div>
+
+
+            <!-- TRANSACTION 4 -->
+
+            <div class="money-step final-step">
+
+                <div class="money-step-number">
+                    04
+                </div>
+
+                <div class="money-step-content">
+
+                    <div class="money-step-top">
+
+                        <span>
+                            FINAL DESTINATION
+                        </span>
+
+                        <span class="money-date">
+                            PRIVATE
+                        </span>
+
+                    </div>
+
+                    <strong>
+                        Private Account
+                    </strong>
+
+                    <p>
+                        Funds moved outside the corporate chain
+                    </p>
+
+                </div>
+
+                <div class="money-amount">
+                    $35,000
+                </div>
+
+            </div>
+
+
+            <div class="money-trail-footer">
+
+                <span>
+                    TOTAL TRACEABLE MOVEMENT
+                </span>
+
+                <strong>
+                    $35,000
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 05 — TRANSACTION TRAIL
+    ========================================== -->
+
+    <section class="round2-evidence">
+
+        <div class="round2-evidence-heading">
+
+            <div>
+
+                <span class="round2-evidence-number">
+                    05
+                </span>
+
+                <div>
+
+                    <small>
+                        BANKING RECORD
+                    </small>
+
+                    <h2>
+                        Transaction Trail
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round2-evidence-tag transaction">
+                TRANSACTIONS
+            </span>
+
+        </div>
+
+
+        <div class="transaction-document">
+
+            <div class="transaction-document-header">
+
+                <div>
+
+                    <span>
+                        TRANSACTION HISTORY
+                    </span>
+
+                    <h3>
+                        BDA Consulting Ltd.
+                    </h3>
+
+                </div>
+
+                <div class="transaction-account">
+                    ACCOUNT ACTIVITY
+                </div>
+
+            </div>
+
+
+            <div class="transaction-table">
+
+                <div class="transaction-table-head">
+
+                    <span>
+                        DATE
+                    </span>
+
+                    <span>
+                        DESCRIPTION
+                    </span>
+
+                    <span>
+                        AMOUNT
+                    </span>
+
+                </div>
+
+
+                <div class="transaction-row">
+
+                    <span>
+                        MAR 14
+                    </span>
+
+                    <span>
+                        Bermuda Holdings Ltd.
+                    </span>
+
+                    <strong class="credit">
+                        +$45,000.00
+                    </strong>
+
+                </div>
+
+
+                <div class="transaction-row">
+
+                    <span>
+                        MAR 14
+                    </span>
+
+                    <span>
+                        Transfer — Ocean View Holdings
+                    </span>
+
+                    <strong class="debit">
+                        -$38,000.00
+                    </strong>
+
+                </div>
+
+
+                <div class="transaction-row">
+
+                    <span>
+                        MAR 14
+                    </span>
+
+                    <span>
+                        Transfer — Private Account
+                    </span>
+
+                    <strong class="debit">
+                        -$35,000.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="transaction-balance">
+
+                <span>
+                    REMAINING BALANCE
+                </span>
+
+                <strong>
+                    $7,000.00
+                </strong>
+
+            </div>
+
+
+            <div class="transaction-alert">
+
+                <span>
+                    !
+                </span>
+
+                <div>
+
+                    <strong>
+                        UNUSUAL ACTIVITY DETECTED
+                    </strong>
+
+                    <p>
+                        Multiple outgoing transfers occurred
+                        shortly after the incoming payment.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 06 — INVESTIGATOR'S NOTE
+    ========================================== -->
+
+    <section class="round2-evidence">
+
+        <div class="round2-evidence-heading">
+
+            <div>
+
+                <span class="round2-evidence-number">
+                    06
+                </span>
+
+                <div>
+
+                    <small>
+                        INTERNAL DOCUMENT
+                    </small>
+
+                    <h2>
+                        Investigator's Note
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round2-evidence-tag note">
+                CONFIDENTIAL
+            </span>
+
+        </div>
+
+
+        <div class="investigator-note">
+
+            <div class="note-top">
+
+                <div>
+
+                    <span>
+                        INVESTIGATION UNIT
+                    </span>
+
+                    <strong>
+                        FINANCIAL CRIME REVIEW
+                    </strong>
+
+                </div>
+
+                <div class="note-file">
+                    NOTE #002
+                </div>
+
+            </div>
+
+
+            <div class="note-line"></div>
+
+
+            <div class="note-meta">
+
+                <div>
+
+                    <span>
+                        SUBJECT
+                    </span>
+
+                    <strong>
+                        BDA Consulting Ltd.
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        STATUS
+                    </span>
+
+                    <strong class="note-status">
+                        UNDER REVIEW
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="note-body">
+
+                <div class="note-marker">
+                    FINDING
+                </div>
+
+                <p>
+                    The repeated movement of funds through
+                    multiple entities may indicate an attempt
+                    to make the original source of the money
+                    more difficult to trace.
+                </p>
+
+            </div>
+
+
+            <div class="note-signature">
+
+                <span>
+                    INVESTIGATOR
+                </span>
+
+                <strong>
+                    Financial Crime Review Unit
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         INVESTIGATION
+    ========================================== -->
+
+    <section class="round2-investigation">
+
+        <div class="round2-investigation-heading">
+
+            <span>
+                INVESTIGATION
+            </span>
+
+            <h2>
+                Follow the Money
+            </h2>
+
+            <p>
+                Analyze the transaction pattern and identify
+                the strongest financial crime indicators.
+            </p>
+
+        </div>
+
+
+        <form
+            action="/player/round/2/{{ team_name }}"
+            method="POST"
+            class="round2-form"
+        >
+
+
+            <!-- QUESTION 1 -->
+
+            <div class="round2-question">
+
+                <div class="round2-question-number">
+                    01
+                </div>
+
+                <div class="round2-question-content">
+
+                    <h3>
+                        What does the transaction pattern
+                        most strongly suggest?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="normal_payment"
+                            required
+                        >
+
+                        <span>
+                            A normal business payment.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="money_circular"
+                        >
+
+                        <span>
+                            The movement of money through
+                            multiple entities.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="salary"
+                        >
+
+                        <span>
+                            A routine employee salary.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="refund"
+                        >
+
+                        <span>
+                            A customer refund.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 2 -->
+
+            <div class="round2-question">
+
+                <div class="round2-question-number">
+                    02
+                </div>
+
+                <div class="round2-question-content">
+
+                    <h3>
+                        Which transaction is most important
+                        to investigate further?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="transaction1"
+                            required
+                        >
+
+                        <span>
+                            Transaction 1.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="transaction2"
+                        >
+
+                        <span>
+                            Transaction 2.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="transaction3"
+                        >
+
+                        <span>
+                            Transaction 3.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="none"
+                        >
+
+                        <span>
+                            None of them.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 3 -->
+
+            <div class="round2-question">
+
+                <div class="round2-question-number">
+                    03
+                </div>
+
+                <div class="round2-question-content">
+
+                    <h3>
+                        What is the financial crime concept
+                        most closely associated with this type
+                        of movement?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="deposit"
+                            required
+                        >
+
+                        <span>
+                            A simple deposit.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="withdrawal"
+                        >
+
+                        <span>
+                            A cash withdrawal.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="layering"
+                        >
+
+                        <span>
+                            Layering.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="payroll"
+                        >
+
+                        <span>
+                            Payroll processing.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 4 -->
+
+            <div class="round2-question">
+
+                <div class="round2-question-number">
+                    04
+                </div>
+
+                <div class="round2-question-content">
+
+                    <h3>
+                        Which entity receives the funds after
+                        BDA Consulting?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="bermuda_holdings"
+                            required
+                        >
+
+                        <span>
+                            Bermuda Holdings Ltd.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="ocean_view"
+                        >
+
+                        <span>
+                            Ocean View Holdings.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="bda_consulting"
+                        >
+
+                        <span>
+                            BDA Consulting Ltd.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="accounts_department"
+                        >
+
+                        <span>
+                            Accounts Department.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="round2-submit"
+            >
+                SUBMIT INVESTIGATION
+            </button>
+
+        </form>
+
+    </section>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const timer = document.getElementById("round-timer");
+    const clock = document.getElementById("round-timer-clock");
+
+    if (!timer || !clock) {
+        return;
+    }
+
+    const startedAt = timer.dataset.startedAt;
+
+    if (!startedAt) {
+        console.log("No round start time found.");
+        return;
+    }
+
+    function updateTimer() {
+
+        /*
+         * SQLite datetime('now') is UTC.
+         * Add Z so JavaScript treats it as UTC.
+         */
+
+        const startTime = new Date(
+            startedAt.replace(" ", "T") + "Z"
+        ).getTime();
+
+        const now = Date.now();
+
+        const elapsedSeconds = Math.floor(
+            (now - startTime) / 1000
+        );
+
+        const totalSeconds = 90;
+
+        let remaining = totalSeconds - elapsedSeconds;
+
+
+        /*
+         * TIME HAS RUN OUT
+         */
+
+        if (remaining <= 0) {
+
+            clock.textContent = "00:00";
+
+            clearInterval(timerInterval);
+
+            window.location.href =
+                "/waiting/{{ team_name }}?from_round={{ round_data['round_number'] }}";
+
+            return;
+        }
+
+
+        /*
+         * CALCULATE TIME
+         */
+
+        const minutes = Math.floor(
+            remaining / 60
+        );
+
+        const seconds = remaining % 60;
+
+
+        /*
+         * DISPLAY TIME
+         */
+
+        clock.textContent =
+            String(minutes).padStart(2, "0") +
+            ":" +
+            String(seconds).padStart(2, "0");
+
+
+        /*
+         * TIMER COLORS
+         */
+
+        timer.classList.remove(
+            "warning",
+            "danger"
+        );
+
+        if (remaining <= 60) {
+
+            timer.classList.add("danger");
+
+        } else if (remaining <= 120) {
+
+            timer.classList.add("warning");
+
+        }
+
+    }
+
+
+    updateTimer();
+
+    const timerInterval = setInterval(
+        updateTimer,
+        1000
+    );
+
+});
+
+</script>
+
+{% endblock %}

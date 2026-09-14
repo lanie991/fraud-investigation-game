@@ -1,0 +1,1153 @@
+{% extends "base.html" %}
+
+{% block title %}
+Round 4 — The Interview
+{% endblock %}
+
+{% block content %}
+
+<div class="round4-page">
+
+    <!-- =========================================
+         ROUND HEADER
+    ========================================== -->
+
+    <div class="round4-header">
+
+        <div class="round4-back">
+            ←
+        </div>
+
+        <div>
+            <div class="round4-label">
+                CASE FILE #004
+            </div>
+
+            <h1>ROUND 4</h1>
+        </div>
+
+        <div class="round4-points">
+            <span>REWARD</span>
+            <strong>200</strong>
+            <small>PTS</small>
+        </div>
+
+       <div
+    class="round-timer"
+    id="round-timer"
+    data-started-at="{{ round_data['started_at'] }}"
+>
+
+    <span class="round-timer-label">
+        TIME REMAINING
+    </span>
+
+    <span
+        class="round-timer-clock"
+        id="round-timer-clock"
+    >
+        05:00
+    </span>
+
+</div>
+
+    </div>
+
+
+    <!-- =========================================
+         INTRO
+    ========================================== -->
+
+    <section class="round4-intro">
+
+        <div class="round4-status-row">
+
+            <span class="round4-badge interview">
+                THE INTERVIEW
+            </span>
+
+            <span class="round4-badge active">
+                ● ACTIVE
+            </span>
+
+        </div>
+
+        <h2>
+            The suspect's story is being put to the test.
+        </h2>
+
+        <p>
+            Michael Carter has agreed to an interview about the
+            suspicious $45,000 payment. Compare his statements
+            against the evidence already uncovered.
+        </p>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 01 — INTERVIEW FILE
+    ========================================== -->
+
+    <section class="round4-evidence">
+
+        <div class="round4-evidence-heading">
+
+            <div>
+
+                <span class="round4-evidence-number">
+                    01
+                </span>
+
+                <div>
+
+                    <small>
+                        INVESTIGATION RECORD
+                    </small>
+
+                    <h2>
+                        Interview File
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round4-evidence-tag">
+                CONFIDENTIAL
+            </span>
+
+        </div>
+
+
+        <div class="interview-file">
+
+            <div class="interview-file-top">
+
+                <div class="interview-folder">
+                    INT
+                </div>
+
+                <div>
+
+                    <span>
+                        FINANCIAL CRIME INVESTIGATION
+                    </span>
+
+                    <strong>
+                        INTERVIEW RECORD #004
+                    </strong>
+
+                </div>
+
+                <div class="interview-file-status">
+                    CONFIDENTIAL
+                </div>
+
+            </div>
+
+
+            <div class="interview-file-divider"></div>
+
+
+            <div class="interview-file-grid">
+
+                <div>
+
+                    <span>
+                        SUBJECT
+                    </span>
+
+                    <strong>
+                        Michael Carter
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        INTERVIEW TYPE
+                    </span>
+
+                    <strong>
+                        Suspect Interview
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        INCIDENT
+                    </span>
+
+                    <strong>
+                        $45,000 Payment
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        CASE STATUS
+                    </span>
+
+                    <strong class="interview-highlight">
+                        ACTIVE INVESTIGATION
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="interview-purpose">
+
+                <div>
+                    INVESTIGATOR'S OBJECTIVE
+                </div>
+
+                <p>
+                    Identify statements made by the subject that
+                    conflict with previously established digital,
+                    financial and communication evidence.
+                </p>
+
+            </div>
+
+
+            <div class="interview-file-footer">
+
+                <span>
+                    INTERVIEW FILE
+                </span>
+
+                <strong>
+                    EVIDENCE PACKAGE #004
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 02 — INTERVIEW TRANSCRIPT
+    ========================================== -->
+
+    <section class="round4-evidence">
+
+        <div class="round4-evidence-heading">
+
+            <div>
+
+                <span class="round4-evidence-number">
+                    02
+                </span>
+
+                <div>
+
+                    <small>
+                        RECORDED INTERVIEW
+                    </small>
+
+                    <h2>
+                        Interview Transcript
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round4-evidence-tag transcript">
+                TRANSCRIPT
+            </span>
+
+        </div>
+
+
+        <div class="interview-transcript">
+
+            <div class="transcript-header">
+
+                <div>
+
+                    <span>
+                        INTERVIEW TRANSCRIPT
+                    </span>
+
+                    <strong>
+                        MICHAEL CARTER
+                    </strong>
+
+                </div>
+
+                <div class="transcript-meta">
+
+                    <span>
+                        CASE #004
+                    </span>
+
+                    <span>
+                        MAR 14, 2026
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="transcript-divider"></div>
+
+
+            <!-- QUESTION 1 -->
+
+            <div class="transcript-entry">
+
+                <div class="transcript-time">
+                    10:52 PM
+                </div>
+
+                <div class="transcript-speaker investigator">
+                    INVESTIGATOR
+                </div>
+
+                <div class="transcript-text">
+                    Did you authorize the $45,000 payment
+                    to BDA Consulting?
+                </div>
+
+            </div>
+
+
+            <div class="transcript-entry subject-entry">
+
+                <div class="transcript-time">
+                    10:53 PM
+                </div>
+
+                <div class="transcript-speaker subject">
+                    MICHAEL CARTER
+                </div>
+
+                <div class="transcript-text statement">
+                    "No. I never authorized that payment."
+                </div>
+
+            </div>
+
+
+            <div class="transcript-divider"></div>
+
+
+            <!-- QUESTION 2 -->
+
+            <div class="transcript-entry">
+
+                <div class="transcript-time">
+                    10:54 PM
+                </div>
+
+                <div class="transcript-speaker investigator">
+                    INVESTIGATOR
+                </div>
+
+                <div class="transcript-text">
+                    Where were you on the evening of March 14?
+                </div>
+
+            </div>
+
+
+            <div class="transcript-entry subject-entry">
+
+                <div class="transcript-time">
+                    10:55 PM
+                </div>
+
+                <div class="transcript-speaker subject">
+                    MICHAEL CARTER
+                </div>
+
+                <div class="transcript-text statement">
+                    "I was overseas. I wasn't anywhere near
+                    the office."
+                </div>
+
+            </div>
+
+
+            <div class="transcript-divider"></div>
+
+
+            <!-- QUESTION 3 -->
+
+            <div class="transcript-entry">
+
+                <div class="transcript-time">
+                    10:56 PM
+                </div>
+
+                <div class="transcript-speaker investigator">
+                    INVESTIGATOR
+                </div>
+
+                <div class="transcript-text">
+                    Did you access your company laptop
+                    that evening?
+                </div>
+
+            </div>
+
+
+            <div class="transcript-entry subject-entry">
+
+                <div class="transcript-time">
+                    10:57 PM
+                </div>
+
+                <div class="transcript-speaker subject">
+                    MICHAEL CARTER
+                </div>
+
+                <div class="transcript-text statement">
+                    "No. I left my laptop at the office
+                    and didn't use it."
+                </div>
+
+            </div>
+
+
+            <div class="transcript-divider"></div>
+
+
+            <!-- QUESTION 4 -->
+
+            <div class="transcript-entry">
+
+                <div class="transcript-time">
+                    10:58 PM
+                </div>
+
+                <div class="transcript-speaker investigator">
+                    INVESTIGATOR
+                </div>
+
+                <div class="transcript-text">
+                    Did you communicate with anyone in Accounts
+                    that night?
+                </div>
+
+            </div>
+
+
+            <div class="transcript-entry subject-entry">
+
+                <div class="transcript-time">
+                    10:59 PM
+                </div>
+
+                <div class="transcript-speaker subject">
+                    MICHAEL CARTER
+                </div>
+
+                <div class="transcript-text statement">
+                    "No. I didn't speak to anyone about
+                    the payment."
+                </div>
+
+            </div>
+
+
+            <div class="transcript-footer">
+
+                <span>
+                    END OF TRANSCRIPT
+                </span>
+
+                <strong>
+                    04 STATEMENTS RECORDED
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         EVIDENCE 03 — PREVIOUSLY DISCOVERED
+    ========================================== -->
+
+    <section class="round4-evidence">
+
+        <div class="round4-evidence-heading">
+
+            <div>
+
+                <span class="round4-evidence-number">
+                    03
+                </span>
+
+                <div>
+
+                    <small>
+                        EVIDENCE RECONCILIATION
+                    </small>
+
+                    <h2>
+                        Previously Discovered Evidence
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <span class="round4-evidence-tag evidence">
+                VERIFIED
+            </span>
+
+        </div>
+
+
+        <div class="evidence-review">
+
+            <div class="evidence-review-header">
+
+                <div>
+
+                    <span>
+                        CROSS-REFERENCE REPORT
+                    </span>
+
+                    <strong>
+                        EVIDENCE REVIEW
+                    </strong>
+
+                </div>
+
+                <div class="evidence-review-case">
+                    CASE #004
+                </div>
+
+            </div>
+
+
+            <div class="evidence-review-summary">
+
+                <span>
+                    FINDING
+                </span>
+
+                <strong>
+                    Multiple independent records conflict
+                    with the subject's statements.
+                </strong>
+
+            </div>
+
+
+            <!-- DIGITAL EVIDENCE -->
+
+            <div class="review-item">
+
+                <div class="review-icon">
+                    01
+                </div>
+
+                <div class="review-content">
+
+                    <div class="review-top">
+
+                        <strong>
+                            DIGITAL EVIDENCE
+                        </strong>
+
+                        <span>
+                            10:42 PM
+                        </span>
+
+                    </div>
+
+                    <p>
+                        MCARTER logged into his assigned laptop
+                        from Bermuda at 10:42 PM.
+                    </p>
+
+                </div>
+
+                <div class="review-status">
+                    VERIFIED
+                </div>
+
+            </div>
+
+
+            <!-- PAYMENT -->
+
+            <div class="review-item">
+
+                <div class="review-icon">
+                    02
+                </div>
+
+                <div class="review-content">
+
+                    <div class="review-top">
+
+                        <strong>
+                            PAYMENT RECORD
+                        </strong>
+
+                        <span>
+                            10:44 PM
+                        </span>
+
+                    </div>
+
+                    <p>
+                        The $45,000 payment was authorized
+                        by MCARTER at 10:44 PM.
+                    </p>
+
+                </div>
+
+                <div class="review-status">
+                    VERIFIED
+                </div>
+
+            </div>
+
+
+            <!-- METADATA -->
+
+            <div class="review-item">
+
+                <div class="review-icon">
+                    03
+                </div>
+
+                <div class="review-content">
+
+                    <div class="review-top">
+
+                        <strong>
+                            DOCUMENT METADATA
+                        </strong>
+
+                        <span>
+                            10:39 PM
+                        </span>
+
+                    </div>
+
+                    <p>
+                        The BDA Consulting invoice was created
+                        by MCARTER at 10:39 PM.
+                    </p>
+
+                </div>
+
+                <div class="review-status">
+                    VERIFIED
+                </div>
+
+            </div>
+
+
+            <!-- CHAT -->
+
+            <div class="review-item">
+
+                <div class="review-icon">
+                    04
+                </div>
+
+                <div class="review-content">
+
+                    <div class="review-top">
+
+                        <strong>
+                            CHAT EVIDENCE
+                        </strong>
+
+                        <span>
+                            10:38 PM
+                        </span>
+
+                    </div>
+
+                    <p>
+                        Michael stated that he was finishing
+                        the payment paperwork.
+                    </p>
+
+                </div>
+
+                <div class="review-status">
+                    VERIFIED
+                </div>
+
+            </div>
+
+
+            <div class="evidence-review-footer">
+
+                <span>
+                    EVIDENCE ITEMS CROSS-REFERENCED
+                </span>
+
+                <strong>
+                    04
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         INTERVIEW ANALYSIS
+    ========================================== -->
+
+    <section class="round4-investigation">
+
+        <div class="round4-investigation-heading">
+
+            <span>
+                INTERVIEW ANALYSIS
+            </span>
+
+            <h2>
+                Find the Contradictions
+            </h2>
+
+            <p>
+                Compare each statement against the evidence
+                uncovered during the investigation.
+            </p>
+
+        </div>
+
+
+        <form
+            action="/player/round/4/{{ team_name }}"
+            method="POST"
+            class="round4-form"
+        >
+
+
+            <!-- QUESTION 1 -->
+
+            <div class="round4-question">
+
+                <div class="round4-question-number">
+                    01
+                </div>
+
+                <div class="round4-question-content">
+
+                    <h3>
+                        Which statement is directly contradicted
+                        by the payment record?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="overseas"
+                            required
+                        >
+
+                        <span>
+                            "I was overseas."
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="denied_payment"
+                        >
+
+                        <span>
+                            "I never authorized that payment."
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="laptop"
+                        >
+
+                        <span>
+                            "I left my laptop at the office."
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="accounts"
+                        >
+
+                        <span>
+                            "I didn't speak to anyone about
+                            the payment."
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 2 -->
+
+            <div class="round4-question">
+
+                <div class="round4-question-number">
+                    02
+                </div>
+
+                <div class="round4-question-content">
+
+                    <h3>
+                        Which statement is contradicted by
+                        the login evidence?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="payment"
+                            required
+                        >
+
+                        <span>
+                            "I never authorized that payment."
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="accounts"
+                        >
+
+                        <span>
+                            "I didn't speak to anyone about
+                            the payment."
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="overseas"
+                        >
+
+                        <span>
+                            "I was overseas. I wasn't anywhere
+                            near the office."
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="paperwork"
+                        >
+
+                        <span>
+                            "I was finishing the payment paperwork."
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 3 -->
+
+            <div class="round4-question">
+
+                <div class="round4-question-number">
+                    03
+                </div>
+
+                <div class="round4-question-content">
+
+                    <h3>
+                        Which evidence most strongly contradicts
+                        Michael's claim that he did not use his laptop?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="invoice"
+                            required
+                        >
+
+                        <span>
+                            The invoice number.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="payment"
+                        >
+
+                        <span>
+                            The amount of the payment.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="company"
+                        >
+
+                        <span>
+                            The name of the consulting company.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="login"
+                        >
+
+                        <span>
+                            The 10:42 PM MCARTER login from
+                            his assigned laptop.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 4 -->
+
+            <div class="round4-question">
+
+                <div class="round4-question-number">
+                    04
+                </div>
+
+                <div class="round4-question-content">
+
+                    <h3>
+                        What is the strongest reason investigators
+                        should consider Michael's interview statements unreliable?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="nervous"
+                            required
+                        >
+
+                        <span>
+                            He appeared nervous during the interview.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="multiple_conflicts"
+                        >
+
+                        <span>
+                            Multiple statements conflict with independent
+                            digital, payment, metadata and chat evidence.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="short"
+                        >
+
+                        <span>
+                            His answers were short.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q4"
+                            value="denial"
+                        >
+
+                        <span>
+                            He denied the allegations.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="round4-submit"
+            >
+                SUBMIT INTERVIEW ANALYSIS
+            </button>
+
+        </form>
+
+    </section>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const timer = document.getElementById("round-timer");
+    const clock = document.getElementById("round-timer-clock");
+
+    if (!timer || !clock) {
+        return;
+    }
+
+    const startedAt = timer.dataset.startedAt;
+
+    if (!startedAt) {
+        console.log("No round start time found.");
+        return;
+    }
+
+    function updateTimer() {
+
+        /*
+         * SQLite datetime('now') is UTC.
+         * Add Z so JavaScript treats it as UTC.
+         */
+
+        const startTime = new Date(
+            startedAt.replace(" ", "T") + "Z"
+        ).getTime();
+
+        const now = Date.now();
+
+        const elapsedSeconds = Math.floor(
+            (now - startTime) / 1000
+        );
+
+        const totalSeconds = 90;
+
+        let remaining = totalSeconds - elapsedSeconds;
+
+
+        /*
+         * TIME HAS RUN OUT
+         */
+
+        if (remaining <= 0) {
+
+            clock.textContent = "00:00";
+
+            clearInterval(timerInterval);
+
+            window.location.href =
+                "/waiting/{{ team_name }}?from_round={{ round_data['round_number'] }}";
+
+            return;
+        }
+
+
+        /*
+         * CALCULATE TIME
+         */
+
+        const minutes = Math.floor(
+            remaining / 60
+        );
+
+        const seconds = remaining % 60;
+
+
+        /*
+         * DISPLAY TIME
+         */
+
+        clock.textContent =
+            String(minutes).padStart(2, "0") +
+            ":" +
+            String(seconds).padStart(2, "0");
+
+
+        /*
+         * TIMER COLORS
+         */
+
+        timer.classList.remove(
+            "warning",
+            "danger"
+        );
+
+        if (remaining <= 60) {
+
+            timer.classList.add("danger");
+
+        } else if (remaining <= 120) {
+
+            timer.classList.add("warning");
+
+        }
+
+    }
+
+
+    updateTimer();
+
+    const timerInterval = setInterval(
+        updateTimer,
+        1000
+    );
+
+});
+
+</script>
+
+{% endblock %}

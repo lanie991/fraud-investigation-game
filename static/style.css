@@ -1,0 +1,12148 @@
+/* =========================================================
+   FRAUD INVESTIGATION GAME
+   GLOBAL DESIGN
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 30px 20px 60px;
+    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+    color: #e5e7eb;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #172554 0%,
+            #0f172a 45%,
+            #020617 100%
+        );
+
+    line-height: 1.55;
+}
+
+/* =========================================================
+   PAGE CONTENT
+========================================================= */
+
+body > * {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+
+h1 {
+    margin: 10px auto 8px;
+
+    color: #facc15;
+
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+
+    letter-spacing: -0.03em;
+}
+
+h2 {
+    margin: 28px auto 12px;
+
+    color: #f8fafc;
+
+    font-size: 1.45rem;
+    font-weight: 800;
+}
+
+h3 {
+    margin: 22px auto 12px;
+
+    color: #60a5fa;
+
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+h4 {
+    color: #f8fafc;
+}
+
+p {
+    color: #cbd5e1;
+}
+
+strong {
+    color: #f8fafc;
+}
+
+/* =========================================================
+   HORIZONTAL LINES
+========================================================= */
+
+hr {
+    max-width: 1000px;
+
+    margin: 28px auto;
+
+    border: 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* =========================================================
+   FORMS
+========================================================= */
+
+form {
+    width: 100%;
+    max-width: 1000px;
+
+    margin: 20px auto;
+}
+
+/* =========================================================
+   QUESTION OPTIONS
+========================================================= */
+
+label {
+    display: block;
+
+    width: 100%;
+
+    margin: 10px 0;
+    padding: 16px 18px;
+
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 12px;
+
+    background: rgba(15, 23, 42, 0.9);
+
+    color: #e2e8f0;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+label:hover {
+    background: rgba(30, 41, 59, 0.98);
+
+    border-color: #60a5fa;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* =========================================================
+   RADIO BUTTONS
+========================================================= */
+
+input[type="radio"] {
+    width: 18px;
+    height: 18px;
+
+    margin-right: 10px;
+
+    accent-color: #facc15;
+
+    vertical-align: middle;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+button {
+    display: inline-block;
+
+    margin-top: 12px;
+    padding: 14px 24px;
+
+    border: none;
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    color: #ffffff;
+
+    font-size: 0.95rem;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(37, 99, 235, 0.35);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    background: #334155;
+
+    color: #94a3b8;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+/* =========================================================
+   LINKS
+========================================================= */
+
+a {
+    color: #60a5fa;
+
+    text-decoration: none;
+}
+
+a:hover {
+    color: #facc15;
+}
+
+/* =========================================================
+   DETAILS / ANSWER REVEAL
+========================================================= */
+
+details {
+    max-width: 1000px;
+
+    margin: 20px auto;
+    padding: 20px;
+
+    border: 1px solid rgba(250, 204, 21, 0.2);
+    border-radius: 14px;
+
+    background: rgba(15, 23, 42, 0.9);
+}
+
+summary {
+    color: #facc15;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+summary:hover {
+    color: #fde68a;
+}
+
+/* =========================================================
+   ROUND CARDS
+========================================================= */
+
+.round-card {
+    width: 100%;
+
+    margin: 16px auto;
+    padding: 22px;
+
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    border-radius: 16px;
+
+    background: rgba(15, 23, 42, 0.9);
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+    display: inline-block;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.active {
+    color: #4ade80;
+
+    background: rgba(34, 197, 94, 0.15);
+}
+
+.closed {
+    color: #f87171;
+
+    background: rgba(239, 68, 68, 0.15);
+}
+
+.locked {
+    color: #94a3b8;
+
+    background: rgba(148, 163, 184, 0.15);
+}
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+.score {
+    color: #facc15;
+
+    font-size: 2.5rem;
+    font-weight: 900;
+}
+
+/* =========================================================
+   FINAL LEADERBOARD
+========================================================= */
+
+body h1:first-child {
+    text-align: center;
+}
+
+body h1:first-child + h2 {
+    text-align: center;
+}
+
+body h1:first-child + h2 + p {
+    text-align: center;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 20px 12px 40px;
+    }
+
+    h1 {
+        margin-top: 15px;
+
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    h3 {
+        font-size: 1rem;
+    }
+
+    label {
+        padding: 14px;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    details {
+        padding: 16px;
+    }
+}
+
+/* =========================================================
+   HOME PAGE BUTTONS
+========================================================= */
+
+.home-page {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.home-page h1 {
+    margin-bottom: 10px;
+}
+
+.home-page h2 {
+    margin-top: 0;
+}
+
+.home-page p {
+    max-width: 600px;
+    margin: 20px auto 35px;
+}
+
+.home-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.game-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 180px;
+
+    padding: 15px 28px;
+
+    border-radius: 10px;
+
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #1d4ed8
+    );
+
+    color: #ffffff !important;
+
+    font-size: 1rem;
+    font-weight: 800;
+
+    text-decoration: none !important;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.game-button:hover {
+    color: #ffffff !important;
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 12px 28px rgba(37, 99, 235, 0.35);
+}
+
+.game-button:active {
+    transform: translateY(0);
+}
+
+/* =========================================================
+   JOIN PAGE
+========================================================= */
+
+.join-page {
+    max-width: 650px;
+    margin: 0 auto;
+    padding-top: 30px;
+}
+
+.join-page h1,
+.join-page h2,
+.join-page p {
+    text-align: center;
+}
+
+.join-page form {
+    margin-top: 30px;
+}
+
+.join-page form label {
+    margin-top: 18px;
+    margin-bottom: 8px;
+    padding: 0;
+
+    border: none;
+    border-radius: 0;
+
+    background: transparent;
+
+    color: #f8fafc;
+
+    cursor: default;
+}
+
+.join-page form label:hover {
+    transform: none;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+}
+
+.join-page input[type="text"] {
+    display: block;
+
+    width: 100%;
+
+    padding: 14px 16px;
+
+    margin-bottom: 18px;
+
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 10px;
+
+    background: #0f172a;
+
+    color: #ffffff;
+
+    font-size: 1rem;
+
+    outline: none;
+}
+
+.join-page input[type="text"]::placeholder {
+    color: #64748b;
+}
+
+.join-page input[type="text"]:focus {
+    border-color: #60a5fa;
+
+    box-shadow:
+        0 0 0 3px rgba(96, 165, 250, 0.12);
+}
+
+.join-page button {
+    display: block;
+
+    width: 100%;
+
+    margin-top: 25px;
+}
+
+/* =========================================================
+   WAITING ROOM
+========================================================= */
+
+.waiting-page {
+    max-width: 750px;
+    margin: 0 auto;
+    padding-top: 30px;
+
+    text-align: center;
+}
+
+.waiting-page h1 {
+    margin-bottom: 10px;
+}
+
+.waiting-page h2 {
+    margin-top: 0;
+}
+
+.waiting-card {
+    margin-top: 40px;
+    padding: 40px 30px;
+
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    border-radius: 18px;
+
+    background: rgba(15, 23, 42, 0.9);
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+.waiting-card h3 {
+    margin-top: 0;
+
+    color: #facc15;
+
+    font-size: 1.6rem;
+}
+
+.ready-message {
+    color: #4ade80;
+
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.waiting-status {
+    color: #94a3b8;
+
+    font-size: 0.9rem;
+}
+
+.waiting-loader {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+
+    margin: 25px 0;
+}
+
+.waiting-loader span {
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: #60a5fa;
+
+    animation: waitingPulse 1.2s infinite ease-in-out;
+}
+
+.waiting-loader span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.waiting-loader span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes waitingPulse {
+    0%,
+    80%,
+    100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* =========================================================
+   ROUND PAGES
+========================================================= */
+
+.round-page {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.round-points {
+    color: #facc15;
+    font-size: 1.1rem;
+}
+
+.evidence-card,
+.question-card {
+    width: 100%;
+    margin: 22px 0;
+    padding: 25px;
+
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 16px;
+
+    background: rgba(15, 23, 42, 0.88);
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.18);
+}
+
+.evidence-card h2,
+.question-card h3 {
+    margin-top: 0;
+}
+
+.evidence-quote {
+    margin-top: 18px;
+    padding: 18px 20px;
+
+    border-left: 4px solid #facc15;
+
+    background: rgba(250, 204, 21, 0.06);
+
+    color: #e2e8f0;
+
+    font-style: italic;
+}
+
+.question-section {
+    margin-top: 35px;
+}
+
+.question-card label {
+    margin: 12px 0;
+}
+
+.submit-button {
+    display: block;
+
+    width: 100%;
+    max-width: 400px;
+
+    margin: 30px auto 10px;
+}
+
+/* =========================================================
+   SUBMISSION / WAITING FOR HOST
+========================================================= */
+
+.submission-page {
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+    padding-top: 45px;
+}
+
+.submission-card {
+    width: 100%;
+    padding: 45px 35px;
+
+    text-align: center;
+
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    border-radius: 20px;
+
+    background: rgba(15, 23, 42, 0.94);
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.submission-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.submission-card h1 {
+    margin-top: 0;
+}
+
+.submission-card h2 {
+    color: #60a5fa;
+}
+
+.submission-success {
+    margin-top: 25px;
+    padding: 16px;
+
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    border-radius: 12px;
+
+    background: rgba(34, 197, 94, 0.08);
+
+    color: #4ade80;
+
+    font-weight: 700;
+}
+
+.submission-card > p {
+    margin-top: 25px;
+}
+
+.waiting-divider {
+    width: 100%;
+    height: 1px;
+
+    margin: 30px 0;
+
+    background: rgba(148, 163, 184, 0.15);
+}
+
+.submission-waiting h3 {
+    color: #facc15;
+}
+
+.submission-waiting p {
+    color: #cbd5e1;
+}
+
+.submission-waiting .waiting-status {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.waiting-loader {
+    display: flex;
+    justify-content: center;
+    gap: 9px;
+
+    margin: 25px 0;
+}
+
+.waiting-loader span {
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: #60a5fa;
+
+    animation: waitingPulse 1.2s infinite ease-in-out;
+}
+
+.waiting-loader span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.waiting-loader span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes waitingPulse {
+
+    0%,
+    80%,
+    100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+.score-result-card {
+    border-color: rgba(250, 204, 21, 0.25);
+}
+
+.final-score {
+    margin: 20px 0;
+
+    color: #facc15;
+
+    font-size: 3.5rem;
+    font-weight: 900;
+}
+
+.score-result-card .submit-button {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* =========================================================
+   ROUND RESULTS — GAME SCOREBOARD
+========================================================= */
+
+.results-page {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px 0 40px;
+}
+
+/* Header */
+
+.results-page > h1 {
+    margin: 15px 0 4px;
+
+    text-align: center;
+
+    color: #f8fafc;
+
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.results-page > h2 {
+    margin: 0 0 10px;
+
+    text-align: center;
+
+    color: #7dd3fc;
+
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.results-page > .round-points {
+    display: table;
+
+    margin: 10px auto 18px;
+
+    padding: 5px 11px;
+
+    font-size: 0.78rem;
+}
+
+/* =========================================================
+   TEAM SCORES
+========================================================= */
+
+.results-card {
+    width: 100%;
+
+    margin: 18px 0;
+    padding: 20px;
+
+    border: 1px solid rgba(71, 85, 105, 0.55);
+    border-radius: 12px;
+
+    background: rgba(10, 24, 40, 0.94);
+}
+
+.results-card > h2 {
+    margin: 0 0 14px;
+
+    font-size: 1.05rem;
+    color: #f8fafc;
+}
+
+/* Individual team */
+
+.team-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 58px;
+
+    margin: 8px 0;
+    padding: 10px 14px;
+
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    border-radius: 8px;
+
+    background: rgba(7, 18, 31, 0.8);
+}
+
+.team-result h3 {
+    margin: 0;
+
+    color: #f1f5f9;
+
+    font-size: 1.1rem;
+    font-weight: 750;
+}
+
+.team-result .score {
+    margin: 0;
+
+    color: #facc15;
+
+    font-size: 1.35rem;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   ANSWER SECTIONS
+========================================================= */
+
+.answer-section {
+    width: 100%;
+
+    margin: 18px 0;
+    padding: 20px;
+
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 12px;
+
+    background: rgba(10, 24, 40, 0.9);
+}
+
+.answer-section > h2 {
+    margin: 0 0 12px;
+
+    color: #f8fafc;
+
+    font-size: 1.05rem;
+}
+
+/* Answer dropdown */
+
+.answer-section details {
+    margin: 0;
+
+    padding: 13px 15px;
+
+    border: 1px solid rgba(71, 85, 105, 0.45);
+    border-radius: 8px;
+
+    background: rgba(7, 18, 31, 0.8);
+}
+
+.answer-section summary {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+/* Questions inside answers */
+
+.answer-section details h3 {
+    margin: 18px 0 6px;
+
+    color: #cbd5e1;
+
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.answer-section details p {
+    margin: 5px 0 12px;
+
+    color: #94a3b8;
+
+    font-size: 0.88rem;
+}
+
+.answer-section details hr {
+    margin: 14px 0;
+}
+
+/* =========================================================
+   NEXT ROUND
+========================================================= */
+
+.next-round-card {
+    width: 100%;
+
+    margin: 20px 0;
+    padding: 20px;
+
+    text-align: center;
+
+    border: 1px solid rgba(250, 204, 21, 0.18);
+    border-radius: 12px;
+
+    background:
+        rgba(250, 204, 21, 0.04);
+}
+
+.next-round-card h2 {
+    margin: 0 0 6px;
+
+    color: #facc15;
+
+    font-size: 1.1rem;
+}
+
+.next-round-card p {
+    margin: 5px auto 12px;
+
+    max-width: 600px;
+
+    font-size: 0.88rem;
+}
+
+.unlock-button {
+    margin-top: 8px;
+
+    padding: 10px 18px;
+
+    font-size: 0.85rem;
+}
+
+/* =========================================================
+   FINAL GAME COMPLETE
+========================================================= */
+
+.game-complete-card {
+    width: 100%;
+
+    margin: 22px 0;
+    padding: 25px;
+
+    text-align: center;
+
+    border: 1px solid rgba(250, 204, 21, 0.22);
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(42, 35, 10, 0.35),
+            rgba(10, 24, 40, 0.95)
+        );
+}
+
+.game-complete-card h2 {
+    margin: 0 0 8px;
+
+    color: #facc15;
+
+    font-size: 1.3rem;
+}
+
+.game-complete-card p {
+    margin: 5px 0 12px;
+
+    font-size: 0.9rem;
+}
+
+.game-complete-card button {
+    margin-top: 10px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .results-page {
+        padding-top: 5px;
+    }
+
+    .results-page > h1 {
+        font-size: 1.6rem;
+    }
+
+    .team-result {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .team-result h3 {
+        font-size: 0.9rem;
+    }
+
+    .team-result .score {
+        font-size: 1.15rem;
+    }
+
+    .answer-section,
+    .results-card {
+        padding: 15px;
+    }
+
+}
+
+
+/* =========================================================
+   CANVA-STYLE HOME SCREEN
+========================================================= */
+
+.home-page {
+    min-height: 78vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    padding: 40px 20px;
+
+    text-align: center;
+}
+
+/* Main title */
+
+.home-page h1 {
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 900;
+
+    line-height: 1.05;
+
+    letter-spacing: -0.04em;
+
+    text-shadow:
+        0 5px 25px rgba(0, 0, 0, 0.35);
+}
+
+/* Gold subtitle */
+
+.home-page h2 {
+    margin: 18px 0 10px;
+
+    color: #facc15;
+
+    font-size: 1.1rem;
+    font-weight: 800;
+
+    letter-spacing: 0.08em;
+}
+
+/* Description */
+
+.home-page > p {
+    max-width: 550px;
+
+    margin: 10px auto 30px;
+
+    color: #cbd5e1;
+
+    font-size: 1rem;
+}
+
+/* Buttons */
+
+.home-buttons {
+    display: flex;
+    justify-content: center;
+
+    gap: 14px;
+
+    margin-top: 8px;
+}
+
+.home-buttons .game-button {
+    min-width: 175px;
+
+    padding: 13px 22px;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    border: 1px solid rgba(96, 165, 250, 0.35);
+
+    color: #ffffff !important;
+
+    font-size: 0.9rem;
+    font-weight: 800;
+
+    letter-spacing: 0.04em;
+
+    text-decoration: none !important;
+
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.25);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.home-buttons .game-button:hover {
+    color: #ffffff !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #3b82f6,
+            #2563eb
+        );
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 28px rgba(37, 99, 235, 0.3);
+}
+
+/* Host button */
+
+.home-buttons .game-button:last-child {
+    background:
+        rgba(15, 23, 42, 0.9);
+
+    border-color:
+        rgba(250, 204, 21, 0.35);
+
+    color: #facc15 !important;
+}
+
+.home-buttons .game-button:last-child:hover {
+    background:
+        rgba(250, 204, 21, 0.08);
+
+    color: #fde68a !important;
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .home-page {
+        min-height: 75vh;
+
+        padding: 30px 12px;
+    }
+
+    .home-page h1 {
+        font-size: 2.5rem;
+    }
+
+    .home-page h2 {
+        font-size: 0.9rem;
+    }
+
+    .home-buttons {
+        width: 100%;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 10px;
+    }
+
+    .home-buttons .game-button {
+        width: 100%;
+        max-width: 320px;
+    }
+}
+
+/* =========================================================
+   WHO STOLE THE MONEY?
+   HOME SCREEN
+========================================================= */
+
+
+/* =========================================================
+   REMOVE APP SHELL ON HOME
+========================================================= */
+
+body:has(.home-screen) {
+    margin: 0;
+    padding: 0;
+
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(79, 70, 229, 0.07),
+            transparent 38%
+        ),
+        #070810;
+}
+
+
+body:has(.home-screen) .game-sidebar,
+body:has(.home-screen) .game-header,
+body:has(.home-screen) .case-panel,
+body:has(.home-screen) .mobile-nav {
+    display: none;
+}
+
+
+body:has(.home-screen) .game-app {
+    display: block;
+
+    min-height: 100vh;
+}
+
+
+body:has(.home-screen) .game-main {
+    width: 100%;
+
+    min-height: 100vh;
+
+    background: transparent;
+}
+
+
+body:has(.home-screen) .game-content {
+    width: 100%;
+
+    max-width: none;
+
+    min-height: 100vh;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.home-screen {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+}
+
+
+/* subtle background grid */
+
+.home-screen::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image:
+
+        linear-gradient(
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 48px 48px;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   CENTER CONTENT
+========================================================= */
+
+.home-content {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: min(420px, calc(100% - 40px));
+
+    margin-top: -30px;
+
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.home-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+/* purple investigation icon */
+
+.home-logo {
+
+    width: 30px;
+
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #5b54f6,
+            #7c3aed
+        );
+
+    box-shadow:
+        0 0 22px rgba(79, 70, 229, 0.4);
+
+    font-size: 13px;
+
+}
+
+
+/* title */
+
+.home-brand h1 {
+
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    letter-spacing: 0.05em;
+
+}
+
+
+/* =========================================================
+   SUBTITLE
+========================================================= */
+
+.home-subtitle {
+
+    margin: 9px 0 20px;
+
+    color: #7d899e;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.home-actions {
+
+    width: 100%;
+
+}
+
+
+/* shared button */
+
+.home-button {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    text-decoration: none;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+
+    border-radius: 10px;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+
+}
+
+
+/* =========================================================
+   JOIN
+========================================================= */
+
+.home-button-primary {
+
+    height: 44px;
+
+    color: #ffffff !important;
+
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+
+    box-shadow:
+        0 8px 25px
+        rgba(79, 70, 229, 0.22);
+
+}
+
+
+.home-button-primary:hover {
+
+    color: #ffffff !important;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 11px 30px
+        rgba(79, 70, 229, 0.35);
+
+}
+
+
+/* =========================================================
+   HOST
+========================================================= */
+
+.home-button-secondary {
+
+    height: 42px;
+
+    margin-top: 8px;
+
+    color: #67e8f9 !important;
+
+    background:
+        rgba(6, 182, 212, 0.025);
+
+    border:
+        1px solid
+        rgba(6, 182, 212, 0.35);
+
+}
+
+
+.home-button-secondary:hover {
+
+    color: #a5f3fc !important;
+
+    background:
+        rgba(6, 182, 212, 0.07);
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   LAPTOP / DESKTOP
+========================================================= */
+
+@media (min-width: 701px) {
+
+    .home-content {
+
+        width: 420px;
+
+    }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .home-content {
+
+        width:
+            min(
+                420px,
+                calc(100% - 36px)
+            );
+
+        margin-top: -20px;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .home-content {
+
+        width:
+            calc(100% - 36px);
+
+    }
+
+
+    .home-brand h1 {
+
+        font-size: 19px;
+
+    }
+
+
+    .home-logo {
+
+        width: 28px;
+
+        height: 28px;
+
+        font-size: 12px;
+
+    }
+
+
+    .home-subtitle {
+
+        font-size: 10px;
+
+        margin-bottom: 18px;
+
+    }
+
+
+    .home-button-primary {
+
+        height: 42px;
+
+    }
+
+
+    .home-button-secondary {
+
+        height: 40px;
+
+    }
+
+}
+
+/* =========================================================
+   REMOVE OLD GAME SHELL
+========================================================= */
+
+.game-sidebar,
+.game-header,
+.case-panel,
+.mobile-nav {
+    display: none !important;
+}
+
+.game-app,
+.game-main,
+.game-content {
+    display: block !important;
+
+    width: 100% !important;
+    max-width: none !important;
+
+    min-height: 100vh !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: transparent !important;
+}
+
+/* =========================================================
+   WHO STOLE THE MONEY?
+   HOME SCREEN
+========================================================= */
+
+
+/* =========================================================
+   FULL PAGE
+========================================================= */
+
+body:has(.home-screen) {
+
+    margin: 0;
+
+    padding: 0;
+
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(79, 70, 229, 0.08),
+            transparent 38%
+        ),
+        #070810;
+
+    color: #f8fafc;
+
+    font-family:
+        "DM Sans",
+        Arial,
+        sans-serif;
+
+}
+
+
+/* =========================================================
+   SUBTLE GRID
+========================================================= */
+
+.home-screen {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+}
+
+
+.home-screen::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image:
+
+        linear-gradient(
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 48px 48px;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.home-content {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 420px;
+
+    max-width: calc(100% - 40px);
+
+    margin-top: -30px;
+
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.home-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+.home-logo {
+
+    width: 30px;
+
+    height: 30px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #5b54f6,
+            #7c3aed
+        );
+
+    box-shadow:
+        0 0 22px
+        rgba(79, 70, 229, 0.4);
+
+    font-size: 13px;
+
+}
+
+
+.home-brand h1 {
+
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    letter-spacing: 0.05em;
+
+}
+
+
+/* =========================================================
+   SUBTITLE
+========================================================= */
+
+.home-subtitle {
+
+    margin:
+        9px 0 20px;
+
+    color: #7d899e;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   BUTTON CONTAINER
+========================================================= */
+
+.home-actions {
+
+    width: 100%;
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.home-button {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    text-decoration: none;
+
+    border-radius: 10px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+
+}
+
+
+/* =========================================================
+   JOIN
+========================================================= */
+
+.home-button-primary {
+
+    height: 44px;
+
+    color: #ffffff !important;
+
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+
+    box-shadow:
+        0 8px 25px
+        rgba(79, 70, 229, 0.22);
+
+}
+
+
+.home-button-primary:hover {
+
+    color: #ffffff !important;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 11px 30px
+        rgba(79, 70, 229, 0.35);
+
+}
+
+
+/* =========================================================
+   HOST
+========================================================= */
+
+.home-button-secondary {
+
+    height: 42px;
+
+    margin-top: 8px;
+
+    color: #67e8f9 !important;
+
+    background:
+        rgba(6, 182, 212, 0.025);
+
+    border:
+        1px solid
+        rgba(6, 182, 212, 0.35);
+
+}
+
+
+.home-button-secondary:hover {
+
+    color: #a5f3fc !important;
+
+    background:
+        rgba(6, 182, 212, 0.07);
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.home-divider {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin:
+        18px 0 11px;
+
+}
+
+
+.home-divider::before,
+.home-divider::after {
+
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background:
+        rgba(148, 163, 184, 0.09);
+
+}
+
+
+.home-divider span {
+
+    color: #414b60;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+    letter-spacing: 0.08em;
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.home-stats {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+
+}
+
+
+.home-stat {
+
+    padding: 10px;
+
+    border:
+        1px solid
+        rgba(148, 163, 184, 0.1);
+
+    border-radius: 9px;
+
+    background:
+        rgba(15, 18, 28, 0.7);
+
+    text-align: center;
+
+}
+
+
+.home-stat strong {
+
+    display: block;
+
+    color: #f1f5f9;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 18px;
+
+    line-height: 1;
+
+}
+
+
+.home-stat span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #53617a;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+    letter-spacing: 0.08em;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.home-footer {
+
+    margin-top: 13px;
+
+    color: #353e50;
+
+    text-align: center;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 4.5px;
+
+    letter-spacing: 0.09em;
+
+}
+
+
+/* =========================================================
+   PHONE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .home-content {
+
+        width:
+            calc(100% - 36px);
+
+        max-width: 420px;
+
+        margin-top: -20px;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .home-content {
+
+        width:
+            calc(100% - 30px);
+
+    }
+
+
+    .home-brand h1 {
+
+        font-size: 19px;
+
+    }
+
+
+    .home-logo {
+
+        width: 28px;
+
+        height: 28px;
+
+        font-size: 12px;
+
+    }
+
+
+    .home-subtitle {
+
+        font-size: 10px;
+
+    }
+
+}
+/* =========================================================
+   JOIN INVESTIGATION
+========================================================= */
+
+.join-screen {
+
+    min-height: 100vh;
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    padding: 40px 20px;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(79, 70, 229, 0.07),
+            transparent 38%
+        ),
+        #070810;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* GRID BACKGROUND */
+
+.join-screen::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image:
+
+        linear-gradient(
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 48px 48px;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.join-card {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+
+    max-width: 430px;
+
+    padding: 34px;
+
+    box-sizing: border-box;
+
+    border-radius: 18px;
+
+    border:
+        1px solid rgba(148, 163, 184, 0.11);
+
+    background:
+        rgba(7, 9, 17, 0.94);
+
+    box-shadow:
+        0 30px 70px rgba(0, 0, 0, 0.55),
+        0 0 45px rgba(79, 70, 229, 0.05);
+
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.join-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-bottom: 22px;
+
+}
+
+
+.join-logo {
+
+    width: 30px;
+
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #5b54f6,
+            #7c3aed
+        );
+
+    box-shadow:
+        0 0 20px rgba(79, 70, 229, 0.4);
+
+    font-size: 13px;
+
+}
+
+
+.join-brand h1 {
+
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    letter-spacing: .05em;
+
+}
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.join-kicker {
+
+    color: #64748b;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: .14em;
+
+}
+
+
+.join-card h2 {
+
+    margin: 5px 0 7px;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+}
+
+
+.join-description {
+
+    margin: 0 0 23px;
+
+    color: #78869c;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.join-form {
+
+    width: 100%;
+
+}
+
+
+.join-field {
+
+    margin-bottom: 11px;
+
+}
+
+
+.join-field label {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #56647a;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+    letter-spacing: .1em;
+
+}
+
+
+.join-field input {
+
+    width: 100%;
+
+    height: 45px;
+
+    box-sizing: border-box;
+
+    padding: 0 13px;
+
+    border:
+        1px solid rgba(148, 163, 184, 0.13);
+
+    border-radius: 10px;
+
+    outline: none;
+
+    background:
+        #111722;
+
+    color: #e2e8f0;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 11px;
+
+    transition:
+        border-color .18s ease,
+        box-shadow .18s ease;
+
+}
+
+
+.join-field input::placeholder {
+
+    color: #536078;
+
+}
+
+
+.join-field input:focus {
+
+    border-color:
+        rgba(99, 102, 241, .6);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(79, 70, 229, .08);
+
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.join-submit {
+
+    width: 100%;
+
+    height: 45px;
+
+    margin-top: 6px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+
+    color: #ffffff;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: .08em;
+
+    box-shadow:
+        0 8px 25px
+        rgba(79, 70, 229, .22);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+
+}
+
+
+.join-submit:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 11px 30px
+        rgba(79, 70, 229, .35);
+
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.join-divider {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin: 22px 0 13px;
+
+}
+
+
+.join-divider::before,
+.join-divider::after {
+
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background:
+        rgba(148, 163, 184, .08);
+
+}
+
+
+.join-divider span {
+
+    color: #3f4b5f;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .08em;
+
+}
+
+
+/* =========================================================
+   FOOTER STATUS
+========================================================= */
+
+.join-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    color: #46536a;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .08em;
+
+}
+
+
+.online-dot {
+
+    width: 5px;
+
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #10b981;
+
+    box-shadow:
+        0 0 7px rgba(16, 185, 129, .7);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .join-screen {
+
+        min-height: 100vh;
+
+        padding:
+            20px 16px;
+
+    }
+
+
+    .join-card {
+
+        max-width: 430px;
+
+        padding: 28px 20px;
+
+        border-radius: 16px;
+
+    }
+
+
+    .join-brand h1 {
+
+        font-size: 18px;
+
+    }
+
+
+    .join-card h2 {
+
+        font-size: 25px;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .join-screen {
+
+        padding:
+            15px 12px;
+
+    }
+
+
+    .join-card {
+
+        padding:
+            24px 17px;
+
+    }
+
+
+    .join-brand h1 {
+
+        font-size: 16px;
+
+    }
+
+
+    .join-card h2 {
+
+        font-size: 23px;
+
+    }
+
+
+    .join-field input,
+    .join-submit {
+
+        height: 43px;
+
+    }
+
+}
+
+
+/* =========================================================
+   CLEAN HOME + JOIN DESIGN
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   HOME
+--------------------------------------------------------- */
+
+body:has(.home-screen),
+body:has(.join-screen) {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(79, 70, 229, 0.07),
+            transparent 40%
+        ),
+        #070810;
+}
+
+
+/* subtle investigation grid */
+
+.home-screen::before,
+.join-screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 48px 48px;
+
+    pointer-events: none;
+}
+
+
+/* ---------------------------------------------------------
+   HOME CONTENT
+--------------------------------------------------------- */
+
+.home-screen {
+
+    position: relative;
+
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+}
+
+
+.home-content {
+
+    position: relative;
+    z-index: 2;
+
+    width: 420px;
+    max-width: calc(100% - 40px);
+
+    margin-top: -20px;
+
+}
+
+
+/* NO MAGNIFYING GLASS */
+
+.home-title {
+
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    letter-spacing: .05em;
+
+}
+
+
+.home-subtitle {
+
+    margin: 10px 0 21px;
+
+    color: #7d899e;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 11px;
+
+}
+
+
+/* HOME BUTTONS */
+
+.home-actions {
+
+    width: 100%;
+
+}
+
+
+.home-button {
+
+    width: 100%;
+
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: .08em;
+
+}
+
+
+.home-button-primary {
+
+    color: white !important;
+
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+
+    box-shadow:
+        0 8px 25px
+        rgba(79, 70, 229, .22);
+
+}
+
+
+.home-button-secondary {
+
+    margin-top: 8px;
+
+    color: #67e8f9 !important;
+
+    background:
+        rgba(6, 182, 212, .025);
+
+    border:
+        1px solid
+        rgba(6, 182, 212, .35);
+
+}
+
+
+/* ---------------------------------------------------------
+   JOIN SCREEN
+--------------------------------------------------------- */
+
+.join-screen {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    padding: 30px 20px;
+
+}
+
+
+.join-card {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+
+    max-width: 420px;
+
+    box-sizing: border-box;
+
+    padding: 30px;
+
+    border-radius: 16px;
+
+    border:
+        1px solid
+        rgba(148, 163, 184, .1);
+
+    background:
+        rgba(8, 10, 18, .95);
+
+    box-shadow:
+        0 25px 60px
+        rgba(0, 0, 0, .5);
+
+}
+
+
+/* TITLE */
+
+.join-title {
+
+    margin: 0 0 8px;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+    letter-spacing: .05em;
+
+}
+
+
+/* HEADING */
+
+.join-heading {
+
+    margin: 0 0 22px;
+
+    color: #818cf8;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    letter-spacing: .06em;
+
+}
+
+
+/* FORM */
+
+.join-form {
+
+    width: 100%;
+
+}
+
+
+.join-form input {
+
+    display: block;
+
+    width: 100%;
+
+    height: 46px;
+
+    box-sizing: border-box;
+
+    margin-bottom: 10px;
+
+    padding:
+        0 13px;
+
+    border:
+        1px solid
+        rgba(148, 163, 184, .12);
+
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #111722;
+
+    color: #e2e8f0;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 11px;
+
+}
+
+
+.join-form input::placeholder {
+
+    color: #536078;
+
+}
+
+
+.join-form input:focus {
+
+    border-color:
+        rgba(99, 102, 241, .6);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(79, 70, 229, .08);
+
+}
+
+
+/* SUBMIT */
+
+.join-submit {
+
+    width: 100%;
+
+    height: 46px;
+
+    margin-top: 3px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+
+    color: white;
+
+    cursor: pointer;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: .08em;
+
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE
+--------------------------------------------------------- */
+
+@media (max-width: 600px) {
+
+    .home-content {
+
+        width:
+            calc(100% - 36px);
+
+        max-width: 420px;
+
+    }
+
+
+    .home-title {
+
+        font-size: 23px;
+
+    }
+
+
+    .join-screen {
+
+        padding: 20px 15px;
+
+    }
+
+
+    .join-card {
+
+        padding: 25px 20px;
+
+        border-radius: 14px;
+
+    }
+
+
+    .join-title {
+
+        font-size: 21px;
+
+    }
+
+
+    .join-heading {
+
+        font-size: 17px;
+
+    }
+
+}
+
+/* =========================================================
+   ROUND 1 — INITIAL LEAD
+========================================================= */
+
+.round1-page {
+
+    width: 100%;
+
+    max-width: 760px;
+
+    margin: 0 auto;
+
+    padding: 28px 22px 60px;
+
+    box-sizing: border-box;
+
+    color: #e5e7eb;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.round1-header {
+
+    display: grid;
+
+    grid-template-columns: 42px 1fr auto;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 28px;
+
+}
+
+
+.round1-back {
+
+    width: 32px;
+
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #171a25;
+
+    border: 1px solid rgba(148,163,184,.1);
+
+    color: #94a3b8;
+
+    font-size: 16px;
+
+}
+
+
+.round1-label {
+
+    color: #64748b;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+
+    letter-spacing: .14em;
+
+}
+
+
+.round1-header h1 {
+
+    margin: 3px 0 0;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 27px;
+
+    line-height: 1;
+
+}
+
+
+.round1-points {
+
+    text-align: right;
+
+}
+
+
+.round1-points span {
+
+    display: block;
+
+    color: #64748b;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .1em;
+
+}
+
+
+.round1-points strong {
+
+    color: #818cf8;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 22px;
+
+}
+
+
+.round1-points small {
+
+    color: #64748b;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 6px;
+
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.round1-intro {
+
+    margin-bottom: 22px;
+
+}
+
+
+.round1-status-row {
+
+    display: flex;
+
+    gap: 7px;
+
+    margin-bottom: 9px;
+
+}
+
+
+.round1-badge {
+
+    padding: 4px 8px;
+
+    border-radius: 20px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+    letter-spacing: .06em;
+
+}
+
+
+.round1-badge.danger {
+
+    background: rgba(239,68,68,.12);
+
+    color: #f87171;
+
+}
+
+
+.round1-badge.active {
+
+    background: rgba(99,102,241,.12);
+
+    color: #818cf8;
+
+}
+
+
+.round1-intro h2 {
+
+    margin: 0 0 7px;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 23px;
+
+}
+
+
+.round1-intro p {
+
+    max-width: 600px;
+
+    margin: 0;
+
+    color: #7d899e;
+
+    font-size: 11px;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   EVIDENCE SECTION
+========================================================= */
+
+.round1-evidence {
+
+    margin-bottom: 22px;
+
+}
+
+
+.evidence-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 9px;
+
+}
+
+
+.evidence-heading > div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+.evidence-number {
+
+    width: 27px;
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    background: #151927;
+
+    border: 1px solid rgba(148,163,184,.1);
+
+    color: #818cf8;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+}
+
+
+.evidence-heading small {
+
+    display: block;
+
+    color: #53617a;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .1em;
+
+}
+
+
+.evidence-heading h2 {
+
+    margin: 2px 0 0;
+
+    color: #e5e7eb;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 18px;
+
+}
+
+
+.evidence-tag {
+
+    padding: 4px 7px;
+
+    border-radius: 10px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .06em;
+
+}
+
+
+.evidence-tag.flagged {
+
+    color: #f87171;
+
+    background: rgba(239,68,68,.1);
+
+}
+
+
+.evidence-tag.document {
+
+    color: #818cf8;
+
+    background: rgba(99,102,241,.1);
+
+}
+
+
+.evidence-tag.email {
+
+    color: #22d3ee;
+
+    background: rgba(6,182,212,.1);
+
+}
+
+
+/* =========================================================
+   BANK TRANSACTION
+========================================================= */
+
+.bank-document {
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    background: #0e131d;
+
+    border: 1px solid rgba(148,163,184,.11);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.18);
+
+}
+
+
+.bank-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+
+.bank-label {
+
+    color: #64748b;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .1em;
+
+}
+
+
+.bank-top h3 {
+
+    margin: 5px 0 0;
+
+    color: #f8fafc;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 14px;
+
+}
+
+
+.bank-reference {
+
+    text-align: right;
+
+}
+
+
+.bank-reference span,
+.transaction-parties span,
+.transaction-main span,
+.transaction-amount span {
+
+    display: block;
+
+    color: #53617a;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .08em;
+
+}
+
+
+.bank-reference strong {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #818cf8;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+
+}
+
+
+.bank-divider {
+
+    height: 1px;
+
+    margin: 18px 0;
+
+    background:
+        rgba(148,163,184,.08);
+
+}
+
+
+.transaction-parties {
+
+    display: grid;
+
+    grid-template-columns: 1fr 25px 1fr;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.transaction-parties strong,
+.transaction-main strong {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color: #dbe3ef;
+
+    font-size: 10px;
+
+}
+
+
+.transaction-arrow {
+
+    color: #6366f1;
+
+    text-align: center;
+
+}
+
+
+.transaction-main {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+
+    margin-top: 20px;
+
+}
+
+
+.transaction-amount {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 20px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid rgba(148,163,184,.08);
+
+}
+
+
+.transaction-amount strong {
+
+    color: #f59e0b;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 24px;
+
+}
+
+
+/* =========================================================
+   INVOICE
+========================================================= */
+
+.invoice-document {
+
+    padding: 22px;
+
+    border-radius: 12px;
+
+    background: #f7f8fa;
+
+    color: #1f2937;
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.2);
+
+}
+
+
+.invoice-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 2px solid #e5e7eb;
+
+}
+
+
+.invoice-company {
+
+    color: #111827;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    letter-spacing: .03em;
+
+}
+
+
+.invoice-top p {
+
+    margin: 4px 0 0;
+
+    color: #6b7280;
+
+    font-size: 8px;
+
+}
+
+
+.invoice-title {
+
+    color: #4f46e5;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+}
+
+
+.invoice-meta,
+.invoice-bill {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+
+    padding: 16px 0;
+
+}
+
+
+.invoice-meta {
+
+    border-bottom: 1px solid #e5e7eb;
+
+}
+
+
+.invoice-meta span,
+.invoice-bill span {
+
+    display: block;
+
+    color: #9ca3af;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .08em;
+
+}
+
+
+.invoice-meta strong,
+.invoice-bill strong {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #374151;
+
+    font-size: 9px;
+
+}
+
+
+.invoice-table {
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius: 7px;
+
+    overflow: hidden;
+
+}
+
+
+.invoice-table-head,
+.invoice-table-row {
+
+    display: grid;
+
+    grid-template-columns: 1fr auto;
+
+    gap: 20px;
+
+    padding: 10px 12px;
+
+}
+
+
+.invoice-table-head {
+
+    background: #eef0f4;
+
+    color: #6b7280;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+}
+
+
+.invoice-table-row {
+
+    color: #374151;
+
+    font-size: 9px;
+
+}
+
+
+.invoice-total {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-top: 16px;
+
+    padding-top: 14px;
+
+    border-top: 2px solid #e5e7eb;
+
+}
+
+
+.invoice-total span {
+
+    color: #6b7280;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 6px;
+
+}
+
+
+.invoice-total strong {
+
+    color: #111827;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 22px;
+
+}
+
+
+.invoice-note {
+
+    margin-top: 15px;
+
+    padding: 10px;
+
+    border-radius: 6px;
+
+    background: #eef2ff;
+
+    color: #4b5563;
+
+    font-size: 8px;
+
+    line-height: 1.45;
+
+}
+
+
+/* =========================================================
+   OUTLOOK EMAIL
+========================================================= */
+
+.outlook-window {
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(148,163,184,.12);
+
+    background: #f5f7fa;
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.2);
+
+}
+
+
+.outlook-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    height: 42px;
+
+    padding: 0 14px;
+
+    background: #0078d4;
+
+    color: white;
+
+}
+
+
+.outlook-logo {
+
+    width: 22px;
+
+    height: 22px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(255,255,255,.18);
+
+    border-radius: 4px;
+
+    font-weight: 700;
+
+}
+
+
+.outlook-name {
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+.outlook-actions {
+
+    margin-left: auto;
+
+    opacity: .8;
+
+    font-size: 10px;
+
+}
+
+
+.outlook-toolbar {
+
+    display: flex;
+
+    gap: 18px;
+
+    padding: 9px 14px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    color: #374151;
+
+    font-size: 7px;
+
+}
+
+
+.outlook-email {
+
+    padding: 20px;
+
+    background: #ffffff;
+
+    color: #1f2937;
+
+}
+
+
+.outlook-email h3 {
+
+    margin: 0 0 18px;
+
+    color: #111827;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+}
+
+
+.email-person {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+.email-avatar {
+
+    width: 32px;
+
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #dbeafe;
+
+    color: #2563eb;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+}
+
+
+.email-person strong {
+
+    display: block;
+
+    color: #111827;
+
+    font-size: 9px;
+
+}
+
+
+.email-person span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: #6b7280;
+
+    font-size: 7px;
+
+}
+
+
+.email-details {
+
+    margin:
+        14px 0 0 41px;
+
+    color: #6b7280;
+
+    font-size: 7px;
+
+    line-height: 1.8;
+
+}
+
+
+.email-details strong {
+
+    color: #374151;
+
+}
+
+
+.email-body {
+    margin-top: 18px;
+
+    padding-top: 17px;
+
+    border-top: 1px solid #e5e7eb;
+
+    color: #111827;
+
+    font-size: 9px;
+
+    line-height: 1.65;
+}
+
+.email-body p {
+    color: #111827;
+}
+
+
+/* =========================================================
+   INVESTIGATION
+========================================================= */
+
+.round1-investigation {
+
+    margin-top: 30px;
+
+}
+
+
+.investigation-heading {
+
+    margin-bottom: 15px;
+
+}
+
+
+.investigation-heading > span {
+
+    color: #6366f1;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .12em;
+
+}
+
+
+.investigation-heading h2 {
+
+    margin: 4px 0 5px;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 23px;
+
+}
+
+
+.investigation-heading p {
+
+    margin: 0;
+
+    color: #68758a;
+
+    font-size: 9px;
+
+}
+
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+.round1-question {
+
+    display: grid;
+
+    grid-template-columns: 32px 1fr;
+
+    gap: 12px;
+
+    margin-bottom: 12px;
+
+    padding: 17px;
+
+    border-radius: 11px;
+
+    background: #0d121c;
+
+    border: 1px solid rgba(148,163,184,.09);
+
+}
+
+
+.question-number {
+
+    width: 27px;
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: rgba(99,102,241,.1);
+
+    color: #818cf8;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 6px;
+
+}
+
+
+.question-content h3 {
+
+    margin: 2px 0 13px;
+
+    color: #e5e7eb;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 15px;
+
+}
+
+
+.question-content label {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin-bottom: 8px;
+
+    padding: 9px;
+
+    border-radius: 7px;
+
+    color: #8491a5;
+
+    background: rgba(255,255,255,.015);
+
+    font-size: 9px;
+
+    line-height: 1.35;
+
+    cursor: pointer;
+
+}
+
+
+.question-content label:hover {
+
+    background: rgba(99,102,241,.06);
+
+    color: #cbd5e1;
+
+}
+
+
+.question-content input {
+
+    margin-top: 1px;
+
+    accent-color: #6366f1;
+
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.round1-submit {
+
+    width: 100%;
+
+    height: 46px;
+
+    margin-top: 5px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+
+    color: white;
+
+    cursor: pointer;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: .08em;
+
+    box-shadow:
+        0 8px 24px rgba(79,70,229,.2);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .round1-page {
+
+        padding:
+            20px 12px 40px;
+
+    }
+
+
+    .round1-header {
+
+        grid-template-columns:
+            32px 1fr auto;
+
+        gap: 8px;
+
+        margin-bottom: 22px;
+
+    }
+
+
+    .round1-header h1 {
+
+        font-size: 23px;
+
+    }
+
+
+    .round1-points strong {
+
+        font-size: 18px;
+
+    }
+
+
+    .round1-intro h2 {
+
+        font-size: 21px;
+
+    }
+
+
+    .evidence-heading h2 {
+
+        font-size: 16px;
+
+    }
+
+
+    .bank-document,
+    .invoice-document,
+    .outlook-email {
+
+        padding: 15px;
+
+    }
+
+
+    .bank-top {
+
+        flex-direction: column;
+
+        gap: 12px;
+
+    }
+
+
+    .bank-reference {
+
+        text-align: left;
+
+    }
+
+
+    .transaction-parties {
+
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+
+    }
+
+
+    .transaction-arrow {
+
+        display: none;
+
+    }
+
+
+    .transaction-main {
+
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+
+    }
+
+
+    .transaction-amount strong {
+
+        font-size: 20px;
+
+    }
+
+
+    .invoice-top {
+
+        flex-direction: column;
+
+        gap: 10px;
+
+    }
+
+
+    .invoice-meta,
+    .invoice-bill {
+
+        grid-template-columns: 1fr;
+
+        gap: 13px;
+
+    }
+
+
+    .invoice-title {
+
+        font-size: 20px;
+
+    }
+
+
+    .outlook-toolbar {
+
+        gap: 12px;
+
+    }
+
+
+    .email-details {
+
+        margin-left: 0;
+
+    }
+
+
+    .round1-question {
+
+        grid-template-columns: 28px 1fr;
+
+        padding: 13px;
+
+    }
+
+
+    .question-content h3 {
+
+        font-size: 14px;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .round1-page {
+
+        padding-left: 9px;
+
+        padding-right: 9px;
+
+    }
+
+
+    .round1-header {
+
+        grid-template-columns:
+            28px 1fr auto;
+
+    }
+
+
+    .round1-back {
+
+        width: 27px;
+
+        height: 27px;
+
+    }
+
+
+    .round1-header h1 {
+
+        font-size: 21px;
+
+    }
+
+
+    .round1-points strong {
+
+        font-size: 16px;
+
+    }
+
+
+    .evidence-heading {
+
+        align-items: flex-start;
+
+    }
+
+
+    .evidence-tag {
+
+        margin-top: 2px;
+
+    }
+
+}
+
+/* =========================================================
+   WAITING ROOM
+   MATCHES HOME + ROUND 1 DESIGN
+========================================================= */
+
+.waiting-page {
+
+    position: relative;
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    padding: 30px 20px;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(79, 70, 229, 0.07),
+            transparent 40%
+        ),
+        #070810;
+
+}
+
+
+/* BACKGROUND GRID */
+
+.waiting-page::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image:
+
+        linear-gradient(
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(99, 102, 241, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 48px 48px;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.waiting-content {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+
+    max-width: 520px;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.waiting-label {
+
+    margin-bottom: 7px;
+
+    color: #6366f1;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: .14em;
+
+}
+
+
+.waiting-content h1 {
+
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    letter-spacing: .04em;
+
+}
+
+
+.waiting-description {
+    width: 100%;
+    max-width: 440px;
+
+    margin: 10px auto 20px;
+
+    color: #7d899e;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 10px;
+
+    line-height: 1.55;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   TEAM CARD
+========================================================= */
+
+.waiting-card {
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    background: #0d121c;
+
+    border:
+        1px solid
+        rgba(148, 163, 184, .1);
+
+    box-shadow:
+        0 15px 35px
+        rgba(0, 0, 0, .2);
+
+}
+
+
+.waiting-card-label {
+
+    color: #53617a;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+    letter-spacing: .12em;
+
+}
+
+
+.waiting-team {
+
+    margin-top: 5px;
+
+    color: #f8fafc;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 24px;
+
+    font-weight: 600;
+
+}
+
+
+.waiting-ready {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-top: 14px;
+
+    color: #34d399;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: .07em;
+
+    text-align: center;
+}
+
+
+.waiting-dot {
+
+    width: 6px;
+
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #10b981;
+
+    box-shadow:
+        0 0 9px
+        rgba(16, 185, 129, .7);
+
+}
+
+
+/* =========================================================
+   WAITING STATUS
+========================================================= */
+
+.waiting-status-card {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 13px;
+
+    margin-top: 10px;
+
+    padding: 18px 20px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(99, 102, 241, .045);
+
+    border:
+        1px solid
+        rgba(99, 102, 241, .12);
+
+    text-align: center;
+}
+
+
+.waiting-status-card strong {
+
+    display: block;
+
+    color: #cbd5e1;
+
+    font-family:
+        "Rajdhani",
+        sans-serif;
+
+    font-size: 15px;
+
+}
+
+
+.waiting-status-card p {
+
+    margin: 3px 0 0;
+
+    color: #59677c;
+
+    font-size: 8px;
+
+}
+
+
+/* =========================================================
+   LOADER
+========================================================= */
+
+.waiting-spinner {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+}
+
+
+.waiting-spinner span {
+
+    width: 5px;
+
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #6366f1;
+
+    animation:
+        waitingPulse 1.4s infinite ease-in-out;
+
+}
+
+
+.waiting-spinner span:nth-child(2) {
+
+    animation-delay: .2s;
+
+}
+
+
+.waiting-spinner span:nth-child(3) {
+
+    animation-delay: .4s;
+
+}
+
+
+@keyframes waitingPulse {
+
+    0%,
+    80%,
+    100% {
+
+        opacity: .25;
+
+        transform: scale(.8);
+
+    }
+
+    40% {
+
+        opacity: 1;
+
+        transform: scale(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.waiting-footer {
+
+    margin-top: 15px;
+
+    color: #354055;
+
+    text-align: center;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .1em;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .waiting-page {
+
+        padding:
+            20px 14px;
+
+    }
+
+
+    .waiting-content {
+
+        max-width: 100%;
+
+    }
+
+
+    .waiting-content h1 {
+
+        font-size: 26px;
+
+    }
+
+
+    .waiting-team {
+
+        font-size: 22px;
+
+    }
+
+
+    .waiting-card {
+
+        padding: 17px;
+
+    }
+
+
+    .waiting-status-card {
+
+        padding: 14px 17px;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .waiting-content h1 {
+
+        font-size: 23px;
+
+    }
+
+
+    .waiting-description {
+
+        font-size: 9px;
+
+    }
+
+
+    .waiting-team {
+
+        font-size: 20px;
+
+    }
+
+}
+
+/* =========================================================
+   ROUND 2 — FOLLOW THE MONEY
+========================================================= */
+
+.round2-page {
+
+    width: 100%;
+    max-width: 760px;
+
+    margin: 0 auto;
+
+    padding: 28px 22px 60px;
+
+    box-sizing: border-box;
+
+    color: #e5e7eb;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.round2-header {
+
+    display: grid;
+
+    grid-template-columns: 42px 1fr auto;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 28px;
+
+}
+
+
+.round2-back {
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #171a25;
+
+    border: 1px solid rgba(148,163,184,.1);
+
+    color: #94a3b8;
+
+    font-size: 16px;
+
+}
+
+
+.round2-label {
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 7px;
+
+    letter-spacing: .14em;
+
+}
+
+
+.round2-header h1 {
+
+    margin: 3px 0 0;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 27px;
+
+    line-height: 1;
+
+}
+
+
+.round2-points {
+
+    text-align: right;
+
+}
+
+
+.round2-points span {
+
+    display: block;
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .1em;
+
+}
+
+
+.round2-points strong {
+
+    color: #818cf8;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 22px;
+
+}
+
+
+.round2-points small {
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.round2-intro {
+
+    margin-bottom: 22px;
+
+}
+
+
+.round2-status-row {
+
+    display: flex;
+
+    gap: 7px;
+
+    margin-bottom: 9px;
+
+}
+
+
+.round2-badge {
+
+    padding: 4px 8px;
+
+    border-radius: 20px;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+    letter-spacing: .06em;
+
+}
+
+
+.round2-badge.danger {
+
+    background: rgba(239,68,68,.12);
+
+    color: #f87171;
+
+}
+
+
+.round2-badge.active {
+
+    background: rgba(99,102,241,.12);
+
+    color: #818cf8;
+
+}
+
+
+.round2-intro h2 {
+
+    margin: 0 0 7px;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 23px;
+
+}
+
+
+.round2-intro p {
+
+    max-width: 600px;
+
+    margin: 0;
+
+    color: #7d899e;
+
+    font-size: 11px;
+
+    line-height: 1.55;
+
+}
+
+
+/* =========================================================
+   EVIDENCE HEADINGS
+========================================================= */
+
+.round2-evidence {
+
+    margin-bottom: 22px;
+
+}
+
+
+.round2-evidence-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 9px;
+
+}
+
+
+.round2-evidence-heading > div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+.round2-evidence-number {
+
+    width: 27px;
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    background: #151927;
+
+    border: 1px solid rgba(148,163,184,.1);
+
+    color: #818cf8;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+}
+
+
+.round2-evidence-heading small {
+
+    display: block;
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .1em;
+
+}
+
+
+.round2-evidence-heading h2 {
+
+    margin: 2px 0 0;
+
+    color: #e5e7eb;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 18px;
+
+}
+
+
+.round2-evidence-tag {
+
+    padding: 4px 7px;
+
+    border-radius: 10px;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .06em;
+
+}
+
+
+.round2-evidence-tag.flagged {
+
+    color: #f87171;
+
+    background: rgba(239,68,68,.1);
+
+}
+
+
+.round2-evidence-tag.transaction {
+
+    color: #22d3ee;
+
+    background: rgba(6,182,212,.1);
+
+}
+
+
+.round2-evidence-tag.note {
+
+    color: #fbbf24;
+
+    background: rgba(245,158,11,.1);
+
+}
+
+
+/* =========================================================
+   MONEY TRAIL
+========================================================= */
+
+.money-trail {
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    background: #0d121c;
+
+    border: 1px solid rgba(148,163,184,.1);
+
+}
+
+
+.money-trail-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding-bottom: 16px;
+
+    border-bottom: 1px solid rgba(148,163,184,.08);
+
+}
+
+
+.money-trail-header span {
+
+    display: block;
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .1em;
+
+}
+
+
+.money-trail-header strong {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 23px;
+
+}
+
+
+.trail-warning {
+
+    padding: 5px 8px;
+
+    border-radius: 8px;
+
+    background: rgba(239,68,68,.1);
+
+    color: #f87171;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    font-weight: 700;
+
+}
+
+
+.money-step {
+
+    display: grid;
+
+    grid-template-columns: 30px 1fr auto;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 15px 0;
+
+}
+
+
+.money-step-number {
+
+    width: 27px;
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: #171d2a;
+
+    color: #818cf8;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+}
+
+
+.money-step-content {
+
+    min-width: 0;
+
+}
+
+
+.money-step-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+}
+
+
+.money-step-top span,
+.money-date {
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .07em;
+
+}
+
+
+.money-step-content > strong {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #e5e7eb;
+
+    font-size: 10px;
+
+}
+
+
+.money-step-content p {
+
+    margin: 3px 0 0;
+
+    color: #66758a;
+
+    font-size: 7px;
+
+}
+
+
+.money-amount {
+
+    color: #cbd5e1;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+}
+
+
+.money-arrow {
+
+    margin-left: 10px;
+
+    color: #6366f1;
+
+    font-size: 14px;
+
+    line-height: 1;
+
+}
+
+
+.final-step {
+
+    margin-top: 1px;
+
+    padding-bottom: 5px;
+
+}
+
+
+.final-step .money-step-number {
+
+    background: rgba(239,68,68,.1);
+
+    color: #f87171;
+
+}
+
+
+.final-step .money-amount {
+
+    color: #f59e0b;
+
+}
+
+
+.money-trail-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-top: 10px;
+
+    padding-top: 14px;
+
+    border-top: 1px solid rgba(148,163,184,.08);
+
+}
+
+
+.money-trail-footer span {
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .08em;
+
+}
+
+
+.money-trail-footer strong {
+
+    color: #f59e0b;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 18px;
+
+}
+
+
+/* =========================================================
+   TRANSACTION DOCUMENT
+========================================================= */
+
+.transaction-document {
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    background: #101722;
+
+    border: 1px solid rgba(148,163,184,.11);
+
+}
+
+
+.transaction-document-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding-bottom: 15px;
+
+    border-bottom: 1px solid rgba(148,163,184,.08);
+
+}
+
+
+.transaction-document-header span {
+
+    display: block;
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .1em;
+
+}
+
+
+.transaction-document-header h3 {
+
+    margin: 5px 0 0;
+
+    color: #f8fafc;
+
+    font-size: 14px;
+
+}
+
+
+.transaction-account {
+
+    color: #818cf8;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+}
+
+
+.transaction-table {
+
+    margin-top: 14px;
+
+}
+
+
+.transaction-table-head,
+.transaction-row {
+
+    display: grid;
+
+    grid-template-columns: 70px 1fr 100px;
+
+    gap: 12px;
+
+    align-items: center;
+
+}
+
+
+.transaction-table-head {
+
+    padding: 8px 10px;
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .08em;
+
+}
+
+
+.transaction-row {
+
+    padding: 12px 10px;
+
+    border-top: 1px solid rgba(148,163,184,.06);
+
+    color: #94a3b8;
+
+    font-size: 8px;
+
+}
+
+
+.transaction-row strong {
+
+    text-align: right;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 14px;
+
+}
+
+
+.transaction-row .credit {
+
+    color: #34d399;
+
+}
+
+
+.transaction-row .debit {
+
+    color: #f87171;
+
+}
+
+
+.transaction-balance {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-top: 12px;
+
+    padding: 13px 10px;
+
+    border-top: 1px solid rgba(148,163,184,.08);
+
+}
+
+
+.transaction-balance span {
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .08em;
+
+}
+
+
+.transaction-balance strong {
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 18px;
+
+}
+
+
+.transaction-alert {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 14px;
+
+    padding: 11px;
+
+    border-radius: 8px;
+
+    background: rgba(239,68,68,.06);
+
+    border: 1px solid rgba(239,68,68,.1);
+
+}
+
+
+.transaction-alert > span {
+
+    width: 18px;
+    height: 18px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: rgba(239,68,68,.12);
+
+    color: #f87171;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+}
+
+
+.transaction-alert strong {
+
+    color: #f87171;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+}
+
+
+.transaction-alert p {
+
+    margin: 3px 0 0;
+
+    color: #718096;
+
+    font-size: 7px;
+
+}
+
+
+/* =========================================================
+   INVESTIGATOR NOTE
+========================================================= */
+
+.investigator-note {
+
+    padding: 21px;
+
+    border-radius: 12px;
+
+    background:
+        #15130d;
+
+    border: 1px solid rgba(245,158,11,.13);
+
+}
+
+
+.note-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+}
+
+
+.note-top span {
+
+    display: block;
+
+    color: #8b7b54;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .1em;
+
+}
+
+
+.note-top strong {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #e7dfc8;
+
+    font-size: 10px;
+
+}
+
+
+.note-file {
+
+    color: #a89056;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+}
+
+
+.note-line {
+
+    height: 1px;
+
+    margin: 16px 0;
+
+    background: rgba(245,158,11,.1);
+
+}
+
+
+.note-meta {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+
+}
+
+
+.note-meta span {
+
+    display: block;
+
+    color: #806f48;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .08em;
+
+}
+
+
+.note-meta strong {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #d6ceb8;
+
+    font-size: 8px;
+
+}
+
+
+.note-meta .note-status {
+
+    color: #fbbf24;
+
+}
+
+
+.note-body {
+
+    margin-top: 20px;
+
+    padding: 15px;
+
+    border-left: 2px solid #d39a24;
+
+    background: rgba(245,158,11,.035);
+
+}
+
+
+.note-marker {
+
+    margin-bottom: 7px;
+
+    color: #a89056;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    font-weight: 700;
+
+    letter-spacing: .1em;
+
+}
+
+
+.note-body p {
+
+    margin: 0;
+
+    color: #d6ceb8;
+
+    font-size: 9px;
+
+    line-height: 1.65;
+
+}
+
+
+.note-signature {
+
+    margin-top: 18px;
+
+    padding-top: 12px;
+
+    border-top: 1px solid rgba(245,158,11,.08);
+
+}
+
+
+.note-signature span {
+
+    display: block;
+
+    color: #806f48;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+}
+
+
+.note-signature strong {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #c9bea2;
+
+    font-size: 8px;
+
+}
+
+
+/* =========================================================
+   INVESTIGATION
+========================================================= */
+
+.round2-investigation {
+
+    margin-top: 30px;
+
+}
+
+
+.round2-investigation-heading {
+
+    margin-bottom: 15px;
+
+}
+
+
+.round2-investigation-heading > span {
+
+    color: #6366f1;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .12em;
+
+}
+
+
+.round2-investigation-heading h2 {
+
+    margin: 4px 0 5px;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 23px;
+
+}
+
+
+.round2-investigation-heading p {
+
+    margin: 0;
+
+    color: #68758a;
+
+    font-size: 9px;
+
+}
+
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+.round2-question {
+
+    display: grid;
+
+    grid-template-columns: 32px 1fr;
+
+    gap: 12px;
+
+    margin-bottom: 12px;
+
+    padding: 17px;
+
+    border-radius: 11px;
+
+    background: #0d121c;
+
+    border: 1px solid rgba(148,163,184,.09);
+
+}
+
+
+.round2-question-number {
+
+    width: 27px;
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: rgba(99,102,241,.1);
+
+    color: #818cf8;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+}
+
+
+.round2-question-content h3 {
+
+    margin: 2px 0 13px;
+
+    color: #e5e7eb;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 15px;
+
+}
+
+
+.round2-question-content label {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin-bottom: 8px;
+
+    padding: 9px;
+
+    border-radius: 7px;
+
+    color: #8491a5;
+
+    background: rgba(255,255,255,.015);
+
+    font-size: 9px;
+
+    line-height: 1.35;
+
+    cursor: pointer;
+
+}
+
+
+.round2-question-content label:hover {
+
+    background: rgba(99,102,241,.06);
+
+    color: #cbd5e1;
+
+}
+
+
+.round2-question-content input {
+
+    margin-top: 1px;
+
+    accent-color: #6366f1;
+
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.round2-submit {
+
+    width: 100%;
+
+    height: 46px;
+
+    margin-top: 5px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+
+    color: white;
+
+    cursor: pointer;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: .08em;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .round2-page {
+
+        padding:
+            20px 12px 40px;
+
+    }
+
+
+    .round2-header {
+
+        grid-template-columns:
+            32px 1fr auto;
+
+        gap: 8px;
+
+        margin-bottom: 22px;
+
+    }
+
+
+    .round2-header h1 {
+
+        font-size: 23px;
+
+    }
+
+
+    .round2-points strong {
+
+        font-size: 18px;
+
+    }
+
+
+    .round2-intro h2 {
+
+        font-size: 21px;
+
+    }
+
+
+    .round2-evidence-heading h2 {
+
+        font-size: 16px;
+
+    }
+
+
+    .money-trail,
+    .transaction-document,
+    .investigator-note {
+
+        padding: 15px;
+
+    }
+
+
+    .money-trail-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .money-step {
+
+        grid-template-columns:
+            28px 1fr;
+
+    }
+
+
+    .money-amount {
+
+        grid-column: 2;
+
+        margin-top: -5px;
+
+        font-size: 15px;
+
+    }
+
+
+    .money-arrow {
+
+        margin-left: 8px;
+
+    }
+
+
+    .transaction-table-head,
+    .transaction-row {
+
+        grid-template-columns:
+            55px 1fr 75px;
+
+        gap: 7px;
+
+    }
+
+
+    .transaction-row {
+
+        font-size: 7px;
+
+    }
+
+
+    .transaction-row strong {
+
+        font-size: 12px;
+
+    }
+
+
+    .note-meta {
+
+        grid-template-columns: 1fr;
+
+        gap: 13px;
+
+    }
+
+
+    .round2-question {
+
+        grid-template-columns:
+            28px 1fr;
+
+        padding: 13px;
+
+    }
+
+
+    .round2-question-content h3 {
+
+        font-size: 14px;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .round2-page {
+
+        padding-left: 9px;
+
+        padding-right: 9px;
+
+    }
+
+
+    .round2-header h1 {
+
+        font-size: 21px;
+
+    }
+
+
+    .round2-points strong {
+
+        font-size: 16px;
+
+    }
+
+
+    .round2-evidence-heading {
+
+        align-items: flex-start;
+
+    }
+
+
+    .money-step-top {
+
+        flex-direction: column;
+
+        gap: 3px;
+
+    }
+
+
+    .transaction-table-head,
+    .transaction-row {
+
+        grid-template-columns:
+            48px 1fr 68px;
+
+    }
+
+}
+
+
+/* =========================================================
+   ROUND 3 — DIGITAL EVIDENCE
+========================================================= */
+
+.round3-page {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 28px 22px 60px;
+    box-sizing: border-box;
+    color: #e5e7eb;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.round3-header {
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.round3-back {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #171a25;
+    border: 1px solid rgba(148,163,184,.1);
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+.round3-label {
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    letter-spacing: .14em;
+}
+
+.round3-header h1 {
+    margin: 3px 0 0;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 27px;
+    line-height: 1;
+}
+
+.round3-points {
+    text-align: right;
+}
+
+.round3-points span {
+    display: block;
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    letter-spacing: .1em;
+}
+
+.round3-points strong {
+    color: #818cf8;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 22px;
+}
+
+.round3-points small {
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.round3-intro {
+    margin-bottom: 22px;
+}
+
+.round3-status-row {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 9px;
+}
+
+.round3-badge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+.round3-badge.danger {
+    background: rgba(239,68,68,.12);
+    color: #f87171;
+}
+
+.round3-badge.active {
+    background: rgba(99,102,241,.12);
+    color: #818cf8;
+}
+
+.round3-intro h2 {
+    margin: 0 0 7px;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 23px;
+}
+
+.round3-intro p {
+    max-width: 600px;
+    margin: 0;
+    color: #7d899e;
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   EVIDENCE HEADINGS
+========================================================= */
+
+.round3-evidence {
+    margin-bottom: 22px;
+}
+
+.round3-evidence-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 9px;
+}
+
+.round3-evidence-heading > div {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.round3-evidence-number {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #151927;
+    border: 1px solid rgba(148,163,184,.1);
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+}
+
+.round3-evidence-heading small {
+    display: block;
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.round3-evidence-heading h2 {
+    margin: 2px 0 0;
+    color: #e5e7eb;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+}
+
+.round3-evidence-tag {
+    padding: 4px 7px;
+    border-radius: 10px;
+    background: rgba(99,102,241,.1);
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .06em;
+}
+
+.outlook-tag {
+    color: #38bdf8;
+    background: rgba(14,165,233,.1);
+}
+
+.login-tag {
+    color: #34d399;
+    background: rgba(16,185,129,.1);
+}
+
+.payment-tag {
+    color: #fbbf24;
+    background: rgba(245,158,11,.1);
+}
+
+.metadata-tag {
+    color: #a78bfa;
+    background: rgba(139,92,246,.1);
+}
+
+.teams-tag {
+    color: #c084fc;
+    background: rgba(168,85,247,.1);
+}
+
+
+/* =========================================================
+   DIGITAL CASE FILE
+========================================================= */
+
+.digital-case-file {
+    padding: 20px;
+    border-radius: 12px;
+    background: #0d121c;
+    border: 1px solid rgba(148,163,184,.11);
+}
+
+.digital-file-top {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.folder-icon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(99,102,241,.12);
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.digital-file-top span {
+    display: block;
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.digital-file-top strong {
+    display: block;
+    margin-top: 3px;
+    color: #f8fafc;
+    font-size: 11px;
+}
+
+.digital-file-status {
+    margin-left: auto;
+    padding: 5px 8px;
+    border-radius: 8px;
+    background: rgba(99,102,241,.08);
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+.digital-file-divider {
+    height: 1px;
+    margin: 18px 0;
+    background: rgba(148,163,184,.08);
+}
+
+.digital-file-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.digital-file-grid span,
+.digital-file-footer span {
+    display: block;
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .08em;
+}
+
+.digital-file-grid strong {
+    display: block;
+    margin-top: 4px;
+    color: #dbe3ef;
+    font-size: 9px;
+}
+
+.digital-file-statement {
+    margin-top: 18px;
+    padding: 14px;
+    border-left: 2px solid #6366f1;
+    background: rgba(99,102,241,.035);
+}
+
+.statement-label {
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    font-weight: 700;
+    letter-spacing: .1em;
+}
+
+.digital-file-statement p {
+    margin: 7px 0 0;
+    color: #a9b4c5;
+    font-size: 9px;
+    line-height: 1.6;
+}
+
+.digital-file-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 16px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(148,163,184,.07);
+}
+
+.digital-file-footer strong {
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+
+/* =========================================================
+   OUTLOOK
+========================================================= */
+
+.round3-outlook {
+    overflow: hidden;
+    border-radius: 12px;
+    background: #f5f7fa;
+    box-shadow: 0 15px 35px rgba(0,0,0,.2);
+}
+
+.outlook-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 14px;
+    background: #0078d4;
+    color: white;
+}
+
+.outlook-app-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background: rgba(255,255,255,.18);
+    font-weight: 700;
+}
+
+.outlook-topbar > span {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.outlook-window-controls {
+    margin-left: auto;
+    opacity: .8;
+    font-size: 10px;
+}
+
+.outlook-toolbar {
+    display: flex;
+    gap: 18px;
+    padding: 9px 14px;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    color: #374151;
+    font-size: 7px;
+}
+
+.outlook-message {
+    padding: 20px;
+    background: white;
+    color: #111827;
+}
+
+.outlook-message h3 {
+    margin: 0 0 18px;
+    color: #111827;
+    font-size: 15px;
+}
+
+.outlook-sender {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.outlook-avatar {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #2563eb;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.outlook-sender strong {
+    display: block;
+    color: #111827;
+    font-size: 9px;
+}
+
+.outlook-sender span {
+    display: block;
+    margin-top: 2px;
+    color: #6b7280;
+    font-size: 7px;
+}
+
+.outlook-details {
+    margin: 14px 0 0 41px;
+    color: #6b7280;
+    font-size: 7px;
+    line-height: 1.8;
+}
+
+.outlook-details strong {
+    color: #374151;
+}
+
+.outlook-body {
+    margin-top: 18px;
+    padding-top: 17px;
+    border-top: 1px solid #e5e7eb;
+    color: #111827;
+    font-size: 9px;
+    line-height: 1.65;
+}
+
+.outlook-body p {
+    color: #111827;
+}
+
+
+/* =========================================================
+   LOGIN RECORD
+========================================================= */
+
+.login-record {
+    padding: 20px;
+    border-radius: 12px;
+    background: #0d1415;
+    border: 1px solid rgba(52,211,153,.12);
+}
+
+.login-record-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(148,163,184,.08);
+}
+
+.login-record-header span {
+    display: block;
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.login-record-header strong {
+    display: block;
+    margin-top: 4px;
+    color: #d9f5e9;
+    font-size: 12px;
+}
+
+.login-success {
+    color: #34d399;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    font-weight: 700;
+}
+
+.login-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 17px;
+    padding-top: 17px;
+}
+
+.login-grid span {
+    display: block;
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .08em;
+}
+
+.login-grid strong {
+    display: block;
+    margin-top: 4px;
+    color: #d5e5df;
+    font-size: 9px;
+}
+
+.login-grid .location-alert {
+    color: #fbbf24;
+}
+
+.mono-value {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px !important;
+}
+
+.login-log-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 17px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(148,163,184,.07);
+}
+
+.login-log-footer span {
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+.login-log-footer strong {
+    color: #607b73;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+
+/* =========================================================
+   PAYMENT RECORD
+========================================================= */
+
+.payment-record {
+    padding: 20px;
+    border-radius: 12px;
+    background: #12120e;
+    border: 1px solid rgba(245,158,11,.12);
+}
+
+.payment-record-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.payment-record-top span {
+    display: block;
+    color: #81754e;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.payment-record-top strong {
+    display: block;
+    margin-top: 4px;
+    color: #f8e7b3;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 25px;
+}
+
+.payment-check {
+    width: 31px;
+    height: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(52,211,153,.1);
+    color: #34d399;
+    font-size: 15px;
+}
+
+.payment-divider {
+    height: 1px;
+    margin: 18px 0;
+    background: rgba(148,163,184,.08);
+}
+
+.payment-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 17px;
+}
+
+.payment-details span,
+.payment-reference span {
+    display: block;
+    color: #81754e;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .08em;
+}
+
+.payment-details strong {
+    display: block;
+    margin-top: 4px;
+    color: #dcd3b8;
+    font-size: 9px;
+}
+
+.payment-reference {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 18px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(148,163,184,.07);
+}
+
+.payment-reference strong {
+    color: #8f825c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+}
+
+
+/* =========================================================
+   METADATA
+========================================================= */
+
+.metadata-document {
+    padding: 20px;
+    border-radius: 12px;
+    background: #11101a;
+    border: 1px solid rgba(167,139,250,.13);
+}
+
+.metadata-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-type-icon {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: rgba(139,92,246,.12);
+    color: #a78bfa;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    font-weight: 700;
+}
+
+.metadata-titlebar strong {
+    display: block;
+    color: #e9e4f7;
+    font-size: 10px;
+}
+
+.metadata-titlebar span {
+    display: block;
+    margin-top: 3px;
+    color: #6e6680;
+    font-size: 7px;
+}
+
+.metadata-properties {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-top: 18px;
+    border-top: 1px solid rgba(148,163,184,.07);
+    border-left: 1px solid rgba(148,163,184,.07);
+}
+
+.metadata-property {
+    padding: 12px;
+    border-right: 1px solid rgba(148,163,184,.07);
+    border-bottom: 1px solid rgba(148,163,184,.07);
+}
+
+.metadata-property span {
+    display: block;
+    color: #625a73;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .08em;
+}
+
+.metadata-property strong {
+    display: block;
+    margin-top: 4px;
+    color: #c9c2d8;
+    font-size: 8px;
+}
+
+.metadata-highlight {
+    color: #a78bfa !important;
+}
+
+.metadata-warning {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 10px;
+    border-radius: 7px;
+    background: rgba(245,158,11,.05);
+    border: 1px solid rgba(245,158,11,.08);
+}
+
+.metadata-warning > span {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(245,158,11,.1);
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.metadata-warning p {
+    margin: 0;
+    color: #8e849d;
+    font-size: 7px;
+}
+
+
+/* =========================================================
+   MICROSOFT TEAMS
+========================================================= */
+
+.teams-window {
+    overflow: hidden;
+    border-radius: 12px;
+    background: #f5f3f8;
+    box-shadow: 0 15px 35px rgba(0,0,0,.2);
+}
+
+.teams-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 14px;
+    background: #464775;
+    color: white;
+}
+
+.teams-logo {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    background: rgba(255,255,255,.16);
+    font-weight: 700;
+}
+
+.teams-topbar > span {
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.teams-controls {
+    margin-left: auto;
+    opacity: .75;
+    font-size: 10px;
+}
+
+.teams-chat-header {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 16px;
+    background: white;
+    border-bottom: 1px solid #e4e1e8;
+}
+
+.teams-chat-avatar,
+.teams-avatar {
+    width: 31px;
+    height: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #e4d8f4;
+    color: #5b3b75;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.teams-chat-header strong {
+    display: block;
+    color: #29252f;
+    font-size: 9px;
+}
+
+.teams-chat-header span {
+    display: block;
+    margin-top: 2px;
+    color: #817b89;
+    font-size: 6px;
+}
+
+.teams-chat-body {
+    min-height: 210px;
+    padding: 18px 16px;
+    background: #f7f5f9;
+}
+
+.teams-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 17px;
+}
+
+.teams-message.michael-message {
+    margin-top: 4px;
+}
+
+.teams-avatar {
+    width: 27px;
+    height: 27px;
+    flex-shrink: 0;
+}
+
+.teams-avatar.michael {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.teams-message-name {
+    margin-bottom: 4px;
+    color: #332e38;
+    font-size: 7px;
+    font-weight: 700;
+}
+
+.teams-message-name span {
+    margin-left: 5px;
+    color: #918b98;
+    font-weight: 400;
+}
+
+.teams-bubble {
+    max-width: 430px;
+    padding: 9px 11px;
+    border-radius: 3px 9px 9px 9px;
+    background: white;
+    color: #37313c;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+.michael-message .teams-bubble {
+    background: #ebe8f4;
+}
+
+.teams-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 12px 12px;
+    padding: 9px 11px;
+    border: 1px solid #ddd8e2;
+    border-radius: 5px;
+    background: white;
+    color: #aaa3b0;
+    font-size: 7px;
+}
+
+.teams-input strong {
+    color: #77718a;
+}
+
+
+/* =========================================================
+   INVESTIGATION
+========================================================= */
+
+.round3-investigation {
+    margin-top: 30px;
+}
+
+.round3-investigation-heading {
+    margin-bottom: 15px;
+}
+
+.round3-investigation-heading > span {
+    color: #6366f1;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    letter-spacing: .12em;
+}
+
+.round3-investigation-heading h2 {
+    margin: 4px 0 5px;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 23px;
+}
+
+.round3-investigation-heading p {
+    margin: 0;
+    color: #68758a;
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+.round3-question {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 17px;
+    border-radius: 11px;
+    background: #0d121c;
+    border: 1px solid rgba(148,163,184,.09);
+}
+
+.round3-question-number {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: rgba(99,102,241,.1);
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+}
+
+.round3-question-content h3 {
+    margin: 2px 0 13px;
+    color: #e5e7eb;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 15px;
+}
+
+.round3-question-content label {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 8px;
+    padding: 9px;
+    border-radius: 7px;
+    color: #8491a5;
+    background: rgba(255,255,255,.015);
+    font-size: 9px;
+    line-height: 1.35;
+    cursor: pointer;
+}
+
+.round3-question-content label:hover {
+    background: rgba(99,102,241,.06);
+    color: #cbd5e1;
+}
+
+.round3-question-content input {
+    margin-top: 1px;
+    accent-color: #6366f1;
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.round3-submit {
+    width: 100%;
+    height: 46px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 10px;
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+    color: white;
+    cursor: pointer;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .round3-page {
+        padding: 20px 12px 40px;
+    }
+
+    .round3-header {
+        grid-template-columns: 32px 1fr auto;
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+
+    .round3-header h1 {
+        font-size: 23px;
+    }
+
+    .round3-points strong {
+        font-size: 18px;
+    }
+
+    .round3-intro h2 {
+        font-size: 21px;
+    }
+
+    .round3-evidence-heading h2 {
+        font-size: 16px;
+    }
+
+    .digital-case-file,
+    .login-record,
+    .payment-record,
+    .metadata-document {
+        padding: 15px;
+    }
+
+    .digital-file-grid {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
+
+    .login-grid,
+    .payment-details {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
+
+    .metadata-properties {
+        grid-template-columns: 1fr;
+    }
+
+    .round3-question {
+        grid-template-columns: 28px 1fr;
+        padding: 13px;
+    }
+
+    .round3-question-content h3 {
+        font-size: 14px;
+    }
+
+    .outlook-message {
+        padding: 15px;
+    }
+
+    .outlook-details {
+        margin-left: 0;
+    }
+
+    .teams-chat-body {
+        min-height: 190px;
+    }
+
+    .teams-bubble {
+        max-width: 250px;
+    }
+
+    .round3-evidence-heading {
+        align-items: flex-start;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .round3-page {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+    .round3-header h1 {
+        font-size: 21px;
+    }
+
+    .round3-points strong {
+        font-size: 16px;
+    }
+
+    .digital-file-top {
+        align-items: flex-start;
+    }
+
+    .digital-file-status {
+        display: none;
+    }
+
+    .teams-bubble {
+        max-width: 210px;
+    }
+
+}
+
+/* =========================================================
+   ROUND 4 — THE INTERVIEW
+========================================================= */
+
+.round4-page {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 28px 22px 60px;
+    box-sizing: border-box;
+    color: #e5e7eb;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.round4-header {
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.round4-back {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #171a25;
+    border: 1px solid rgba(148,163,184,.1);
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+.round4-label {
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    letter-spacing: .14em;
+}
+
+.round4-header h1 {
+    margin: 3px 0 0;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 27px;
+    line-height: 1;
+}
+
+.round4-points {
+    text-align: right;
+}
+
+.round4-points span {
+    display: block;
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    letter-spacing: .1em;
+}
+
+.round4-points strong {
+    color: #818cf8;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 22px;
+}
+
+.round4-points small {
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.round4-intro {
+    margin-bottom: 22px;
+}
+
+.round4-status-row {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 9px;
+}
+
+.round4-badge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+.round4-badge.interview {
+    background: rgba(245,158,11,.1);
+    color: #fbbf24;
+}
+
+.round4-badge.active {
+    background: rgba(99,102,241,.12);
+    color: #818cf8;
+}
+
+.round4-intro h2 {
+    margin: 0 0 7px;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 23px;
+}
+
+.round4-intro p {
+    max-width: 600px;
+    margin: 0;
+    color: #7d899e;
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   EVIDENCE HEADINGS
+========================================================= */
+
+.round4-evidence {
+    margin-bottom: 22px;
+}
+
+.round4-evidence-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 9px;
+}
+
+.round4-evidence-heading > div {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.round4-evidence-number {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #151927;
+    border: 1px solid rgba(148,163,184,.1);
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+}
+
+.round4-evidence-heading small {
+    display: block;
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.round4-evidence-heading h2 {
+    margin: 2px 0 0;
+    color: #e5e7eb;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+}
+
+.round4-evidence-tag {
+    padding: 4px 7px;
+    border-radius: 10px;
+    background: rgba(245,158,11,.09);
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .06em;
+}
+
+.round4-evidence-tag.transcript {
+    color: #c084fc;
+    background: rgba(168,85,247,.1);
+}
+
+.round4-evidence-tag.evidence {
+    color: #34d399;
+    background: rgba(16,185,129,.1);
+}
+
+
+/* =========================================================
+   INTERVIEW FILE
+========================================================= */
+
+.interview-file {
+    padding: 20px;
+    border-radius: 12px;
+    background: #0d121c;
+    border: 1px solid rgba(148,163,184,.11);
+}
+
+.interview-file-top {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.interview-folder {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(245,158,11,.1);
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.interview-file-top span {
+    display: block;
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.interview-file-top strong {
+    display: block;
+    margin-top: 3px;
+    color: #f8fafc;
+    font-size: 11px;
+}
+
+.interview-file-status {
+    margin-left: auto;
+    padding: 5px 8px;
+    border-radius: 8px;
+    background: rgba(245,158,11,.08);
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+.interview-file-divider {
+    height: 1px;
+    margin: 18px 0;
+    background: rgba(148,163,184,.08);
+}
+
+.interview-file-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.interview-file-grid span {
+    display: block;
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .08em;
+}
+
+.interview-file-grid strong {
+    display: block;
+    margin-top: 4px;
+    color: #dbe3ef;
+    font-size: 9px;
+}
+
+.interview-highlight {
+    color: #fbbf24 !important;
+}
+
+.interview-purpose {
+    margin-top: 18px;
+    padding: 14px;
+    border-left: 2px solid #f59e0b;
+    background: rgba(245,158,11,.035);
+}
+
+.interview-purpose div {
+    color: #b18b3b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    font-weight: 700;
+    letter-spacing: .1em;
+}
+
+.interview-purpose p {
+    margin: 7px 0 0;
+    color: #b9b1a0;
+    font-size: 9px;
+    line-height: 1.6;
+}
+
+.interview-file-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 16px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(148,163,184,.07);
+}
+
+.interview-file-footer span {
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+.interview-file-footer strong {
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+
+/* =========================================================
+   INTERVIEW TRANSCRIPT
+========================================================= */
+
+.interview-transcript {
+    padding: 20px;
+    border-radius: 12px;
+    background: #111019;
+    border: 1px solid rgba(168,85,247,.12);
+}
+
+.transcript-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.transcript-header span {
+    display: block;
+    color: #6c6079;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.transcript-header strong {
+    display: block;
+    margin-top: 4px;
+    color: #eee7f4;
+    font-size: 11px;
+}
+
+.transcript-meta {
+    text-align: right;
+}
+
+.transcript-meta span {
+    margin-bottom: 4px;
+}
+
+.transcript-divider {
+    height: 1px;
+    margin: 16px 0;
+    background: rgba(168,85,247,.1);
+}
+
+.transcript-entry {
+    display: grid;
+    grid-template-columns: 62px 100px 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.transcript-time {
+    color: #5d6475;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    padding-top: 2px;
+}
+
+.transcript-speaker {
+    padding-top: 1px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+.transcript-speaker.investigator {
+    color: #818cf8;
+}
+
+.transcript-speaker.subject {
+    color: #fbbf24;
+}
+
+.transcript-text {
+    color: #aeb7c5;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.transcript-text.statement {
+    padding: 10px 12px;
+    border-radius: 7px;
+    background: rgba(245,158,11,.045);
+    border: 1px solid rgba(245,158,11,.07);
+    color: #ddd5c4;
+    font-style: italic;
+}
+
+.transcript-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 18px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(168,85,247,.08);
+}
+
+.transcript-footer span {
+    color: #62576e;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+.transcript-footer strong {
+    color: #71657e;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+
+/* =========================================================
+   PREVIOUSLY DISCOVERED EVIDENCE
+========================================================= */
+
+.evidence-review {
+    padding: 20px;
+    border-radius: 12px;
+    background: #0d1414;
+    border: 1px solid rgba(52,211,153,.11);
+}
+
+.evidence-review-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.evidence-review-header span {
+    display: block;
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.evidence-review-header strong {
+    display: block;
+    margin-top: 4px;
+    color: #dcebe5;
+    font-size: 11px;
+}
+
+.evidence-review-case {
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+}
+
+.evidence-review-summary {
+    margin-top: 16px;
+    padding: 13px;
+    border-radius: 8px;
+    background: rgba(52,211,153,.035);
+    border: 1px solid rgba(52,211,153,.07);
+}
+
+.evidence-review-summary span {
+    display: block;
+    color: #4d8b78;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    font-weight: 700;
+    letter-spacing: .1em;
+}
+
+.evidence-review-summary strong {
+    display: block;
+    margin-top: 5px;
+    color: #c9ded6;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.review-item {
+    display: grid;
+    grid-template-columns: 29px 1fr auto;
+    gap: 11px;
+    align-items: start;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(148,163,184,.06);
+}
+
+.review-icon {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: rgba(52,211,153,.07);
+    color: #34d399;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    font-weight: 700;
+}
+
+.review-content {
+    min-width: 0;
+}
+
+.review-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.review-top strong {
+    color: #d4e2dd;
+    font-size: 8px;
+}
+
+.review-top span {
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+.review-content p {
+    margin: 4px 0 0;
+    color: #71857e;
+    font-size: 8px;
+    line-height: 1.5;
+}
+
+.review-status {
+    padding-top: 3px;
+    color: #34d399;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    font-weight: 700;
+}
+
+.evidence-review-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+}
+
+.evidence-review-footer span {
+    color: #4f7067;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+.evidence-review-footer strong {
+    color: #34d399;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   INVESTIGATION
+========================================================= */
+
+.round4-investigation {
+    margin-top: 30px;
+}
+
+.round4-investigation-heading {
+    margin-bottom: 15px;
+}
+
+.round4-investigation-heading > span {
+    color: #f59e0b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    letter-spacing: .12em;
+}
+
+.round4-investigation-heading h2 {
+    margin: 4px 0 5px;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 23px;
+}
+
+.round4-investigation-heading p {
+    margin: 0;
+    color: #68758a;
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+.round4-question {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 17px;
+    border-radius: 11px;
+    background: #0d121c;
+    border: 1px solid rgba(148,163,184,.09);
+}
+
+.round4-question-number {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: rgba(99,102,241,.1);
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+}
+
+.round4-question-content h3 {
+    margin: 2px 0 13px;
+    color: #e5e7eb;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 15px;
+}
+
+.round4-question-content label {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 8px;
+    padding: 9px;
+    border-radius: 7px;
+    color: #8491a5;
+    background: rgba(255,255,255,.015);
+    font-size: 9px;
+    line-height: 1.35;
+    cursor: pointer;
+}
+
+.round4-question-content label:hover {
+    background: rgba(99,102,241,.06);
+    color: #cbd5e1;
+}
+
+.round4-question-content input {
+    margin-top: 1px;
+    accent-color: #6366f1;
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.round4-submit {
+    width: 100%;
+    height: 46px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 10px;
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+    color: white;
+    cursor: pointer;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .round4-page {
+        padding: 20px 12px 40px;
+    }
+
+    .round4-header {
+        grid-template-columns: 32px 1fr auto;
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+
+    .round4-header h1 {
+        font-size: 23px;
+    }
+
+    .round4-points strong {
+        font-size: 18px;
+    }
+
+    .round4-intro h2 {
+        font-size: 21px;
+    }
+
+    .round4-evidence-heading h2 {
+        font-size: 16px;
+    }
+
+    .interview-file,
+    .interview-transcript,
+    .evidence-review {
+        padding: 15px;
+    }
+
+    .interview-file-grid {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
+
+    .transcript-entry {
+        grid-template-columns: 55px 1fr;
+        gap: 8px;
+    }
+
+    .transcript-time {
+        grid-column: 1;
+    }
+
+    .transcript-speaker {
+        grid-column: 2;
+    }
+
+    .transcript-text {
+        grid-column: 2;
+    }
+
+    .review-item {
+        grid-template-columns: 28px 1fr;
+    }
+
+    .review-status {
+        grid-column: 2;
+        padding-top: 0;
+    }
+
+    .round4-question {
+        grid-template-columns: 28px 1fr;
+        padding: 13px;
+    }
+
+    .round4-question-content h3 {
+        font-size: 14px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .round4-page {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+    .round4-header h1 {
+        font-size: 21px;
+    }
+
+    .round4-points strong {
+        font-size: 16px;
+    }
+
+    .interview-file-status {
+        display: none;
+    }
+
+    .transcript-meta {
+        display: none;
+    }
+
+    .review-top {
+        flex-direction: column;
+        gap: 3px;
+    }
+
+}
+
+/* =========================================================
+   ROUND 5 — FINAL INVESTIGATION
+========================================================= */
+
+.round5-page {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 28px 22px 60px;
+    box-sizing: border-box;
+    color: #e5e7eb;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.round5-header {
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.round5-back {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #171a25;
+    border: 1px solid rgba(148,163,184,.1);
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+.round5-label {
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    letter-spacing: .14em;
+}
+
+.round5-header h1 {
+    margin: 3px 0 0;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 27px;
+    line-height: 1;
+}
+
+.round5-points {
+    text-align: right;
+}
+
+.round5-points span {
+    display: block;
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    letter-spacing: .1em;
+}
+
+.round5-points strong {
+    color: #fbbf24;
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.round5-intro {
+    margin-bottom: 22px;
+}
+
+.round5-status-row {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 9px;
+}
+
+.round5-badge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+.round5-badge.final {
+    background: rgba(245,158,11,.1);
+    color: #fbbf24;
+}
+
+.round5-badge.active {
+    background: rgba(99,102,241,.12);
+    color: #818cf8;
+}
+
+.round5-intro h2 {
+    margin: 0 0 7px;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 23px;
+}
+
+.round5-intro p {
+    max-width: 600px;
+    margin: 0;
+    color: #7d899e;
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   EVIDENCE HEADINGS
+========================================================= */
+
+.round5-evidence {
+    margin-bottom: 22px;
+}
+
+.round5-evidence-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 9px;
+}
+
+.round5-evidence-heading > div {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.round5-evidence-number {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #151927;
+    border: 1px solid rgba(148,163,184,.1);
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+}
+
+.round5-evidence-heading small {
+    display: block;
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.round5-evidence-heading h2 {
+    margin: 2px 0 0;
+    color: #e5e7eb;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+}
+
+.round5-evidence-tag {
+    padding: 4px 7px;
+    border-radius: 10px;
+    background: rgba(245,158,11,.09);
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .06em;
+}
+
+.round5-evidence-tag.verified {
+    color: #34d399;
+    background: rgba(16,185,129,.1);
+}
+
+
+/* =========================================================
+   FINAL CASE FILE
+========================================================= */
+
+.final-case-file {
+    padding: 20px;
+    border-radius: 12px;
+    background: #0d121c;
+    border: 1px solid rgba(245,158,11,.13);
+}
+
+.final-file-top {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.final-folder-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(245,158,11,.1);
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+}
+
+.final-file-top span {
+    display: block;
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.final-file-top strong {
+    display: block;
+    margin-top: 3px;
+    color: #f8fafc;
+    font-size: 11px;
+}
+
+.final-file-status {
+    margin-left: auto;
+    padding: 5px 8px;
+    border-radius: 8px;
+    background: rgba(245,158,11,.08);
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+.final-file-divider {
+    height: 1px;
+    margin: 18px 0;
+    background: rgba(148,163,184,.08);
+}
+
+.final-file-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    background: rgba(245,158,11,.045);
+    border: 1px solid rgba(245,158,11,.08);
+}
+
+.final-banner-icon {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(245,158,11,.12);
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.final-file-banner span {
+    display: block;
+    color: #927b48;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.final-file-banner strong {
+    display: block;
+    margin-top: 3px;
+    color: #d9cda9;
+    font-size: 8px;
+}
+
+.final-file-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.final-file-grid span {
+    display: block;
+    color: #53617a;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .08em;
+}
+
+.final-file-grid strong {
+    display: block;
+    margin-top: 4px;
+    color: #dbe3ef;
+    font-size: 9px;
+}
+
+.final-highlight {
+    color: #fbbf24 !important;
+}
+
+.final-file-objective {
+    margin-top: 18px;
+    padding: 14px;
+    border-left: 2px solid #f59e0b;
+    background: rgba(245,158,11,.035);
+}
+
+.final-file-objective div {
+    color: #b18b3b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    font-weight: 700;
+    letter-spacing: .1em;
+}
+
+.final-file-objective p {
+    margin: 7px 0 0;
+    color: #b9b1a0;
+    font-size: 9px;
+    line-height: 1.6;
+}
+
+.final-file-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 16px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(148,163,184,.07);
+}
+
+.final-file-footer span,
+.final-file-footer strong {
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+
+/* =========================================================
+   FINAL EVIDENCE SUMMARY
+========================================================= */
+
+.final-evidence-summary {
+    padding: 20px;
+    border-radius: 12px;
+    background: #0d1414;
+    border: 1px solid rgba(52,211,153,.11);
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.summary-header span {
+    display: block;
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.summary-header strong {
+    display: block;
+    margin-top: 4px;
+    color: #dcebe5;
+    font-size: 11px;
+}
+
+.summary-case-number {
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+}
+
+.summary-finding {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 13px;
+    border-radius: 8px;
+    background: rgba(52,211,153,.035);
+    border: 1px solid rgba(52,211,153,.07);
+}
+
+.finding-icon {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(52,211,153,.1);
+    color: #34d399;
+    font-size: 12px;
+}
+
+.summary-finding span {
+    display: block;
+    color: #4d8b78;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.summary-finding strong {
+    display: block;
+    margin-top: 4px;
+    color: #c9ded6;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.final-summary-item {
+    display: grid;
+    grid-template-columns: 29px 1fr auto;
+    gap: 11px;
+    align-items: start;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(148,163,184,.06);
+}
+
+.summary-number {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: rgba(52,211,153,.07);
+    color: #34d399;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    font-weight: 700;
+}
+
+.summary-content {
+    min-width: 0;
+}
+
+.summary-item-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.summary-item-top strong {
+    color: #d4e2dd;
+    font-size: 8px;
+}
+
+.summary-item-top span {
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+.summary-content p {
+    margin: 4px 0 0;
+    color: #71857e;
+    font-size: 8px;
+    line-height: 1.5;
+}
+
+.summary-status {
+    padding-top: 3px;
+    color: #34d399;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    font-weight: 700;
+}
+
+.summary-status.conflict {
+    color: #f87171;
+}
+
+.summary-timeline {
+    margin-top: 17px;
+    padding: 14px;
+    border-radius: 8px;
+    background: rgba(99,102,241,.035);
+    border: 1px solid rgba(99,102,241,.08);
+}
+
+.timeline-title {
+    margin-bottom: 13px;
+    color: #7176aa;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+    letter-spacing: .1em;
+}
+
+.timeline-line {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.timeline-line > div {
+    position: relative;
+    padding-left: 8px;
+    border-left: 2px solid #6366f1;
+}
+
+.timeline-line strong {
+    display: block;
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+}
+
+.timeline-line span {
+    display: block;
+    margin-top: 3px;
+    color: #7c8497;
+    font-size: 7px;
+}
+
+.summary-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 16px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(148,163,184,.07);
+}
+
+.summary-footer span,
+.summary-footer strong {
+    color: #55736c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 5px;
+}
+
+
+/* =========================================================
+   INVESTIGATION
+========================================================= */
+
+.round5-investigation {
+    margin-top: 30px;
+}
+
+.round5-investigation-heading {
+    margin-bottom: 15px;
+}
+
+.round5-investigation-heading > span {
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    letter-spacing: .12em;
+}
+
+.round5-investigation-heading h2 {
+    margin: 4px 0 5px;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 23px;
+}
+
+.round5-investigation-heading p {
+    margin: 0;
+    color: #68758a;
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+.round5-question {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 17px;
+    border-radius: 11px;
+    background: #0d121c;
+    border: 1px solid rgba(148,163,184,.09);
+}
+
+.round5-question-number {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: rgba(99,102,241,.1);
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+}
+
+.round5-question-content h3 {
+    margin: 2px 0 13px;
+    color: #e5e7eb;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 15px;
+}
+
+.round5-question-content label {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-bottom: 8px;
+    padding: 9px;
+    border-radius: 7px;
+    color: #8491a5;
+    background: rgba(255,255,255,.015);
+    font-size: 9px;
+    line-height: 1.35;
+    cursor: pointer;
+}
+
+.round5-question-content label:hover {
+    background: rgba(99,102,241,.06);
+    color: #cbd5e1;
+}
+
+.round5-question-content input {
+    margin-top: 1px;
+    accent-color: #6366f1;
+}
+
+
+/* =========================================================
+   FINAL VERDICT
+========================================================= */
+
+.final-verdict-question {
+    border-color: rgba(245,158,11,.2);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(245,158,11,.035),
+            #0d121c
+        );
+}
+
+.verdict-number {
+    background: rgba(245,158,11,.1);
+    color: #fbbf24;
+}
+
+.verdict-label {
+    margin-bottom: 5px;
+    color: #fbbf24;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: .1em;
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.round5-submit {
+    width: 100%;
+    height: 48px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 10px;
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+    color: white;
+    cursor: pointer;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .round5-page {
+        padding: 20px 12px 40px;
+    }
+
+    .round5-header {
+        grid-template-columns: 32px 1fr auto;
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+
+    .round5-header h1 {
+        font-size: 23px;
+    }
+
+    .round5-intro h2 {
+        font-size: 21px;
+    }
+
+    .round5-evidence-heading h2 {
+        font-size: 16px;
+    }
+
+    .final-case-file,
+    .final-evidence-summary {
+        padding: 15px;
+    }
+
+    .final-file-grid {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
+
+    .final-summary-item {
+        grid-template-columns: 28px 1fr;
+    }
+
+    .summary-status {
+        grid-column: 2;
+        padding-top: 0;
+    }
+
+    .timeline-line {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .round5-question {
+        grid-template-columns: 28px 1fr;
+        padding: 13px;
+    }
+
+    .round5-question-content h3 {
+        font-size: 14px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .round5-page {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+    .round5-header h1 {
+        font-size: 21px;
+    }
+
+    .final-file-status {
+        display: none;
+    }
+
+    .summary-case-number {
+        display: none;
+    }
+
+    .summary-item-top {
+        flex-direction: column;
+        gap: 3px;
+    }
+
+}
+
+/* =========================================================
+   SUBMISSION / WAITING PAGE
+   MATCHES ROUNDS 1–5
+========================================================= */
+
+.submission-page {
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   MAIN SUBMISSION CARD
+========================================================= */
+
+.submission-card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 26px;
+    border-radius: 14px;
+
+    background: #0d121c;
+
+    border: 1px solid rgba(148, 163, 184, 0.10);
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.18);
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   SUBMISSION ICON
+========================================================= */
+
+.submission-icon {
+    width: 48px;
+    height: 48px;
+
+    margin: 0 auto 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(99, 102, 241, 0.10);
+
+    border: 1px solid rgba(99, 102, 241, 0.18);
+
+    font-size: 19px;
+}
+
+
+/* =========================================================
+   MAIN TITLE
+========================================================= */
+
+.submission-card h1 {
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    line-height: 1.15;
+}
+
+
+/* =========================================================
+   TEAM NAME
+========================================================= */
+
+.submission-card h2 {
+    margin: 7px 0 0;
+
+    color: #818cf8;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 17px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.submission-card hr {
+    width: 100%;
+
+    margin: 20px 0;
+
+    border: 0;
+
+    border-top: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+
+/* =========================================================
+   SUCCESS MESSAGE
+========================================================= */
+
+.submission-success {
+    display: inline-block;
+
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    background: rgba(52, 211, 153, 0.08);
+
+    border: 1px solid rgba(52, 211, 153, 0.10);
+
+    color: #34d399;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.05em;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.submission-card > p {
+    max-width: 500px;
+
+    margin: 14px auto 0;
+
+    color: #7d899e;
+
+    font-size: 9px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   WAITING DIVIDER
+========================================================= */
+
+.waiting-divider {
+    width: 100%;
+
+    height: 1px;
+
+    margin: 22px 0;
+
+    background: rgba(148, 163, 184, 0.07);
+}
+
+
+/* =========================================================
+   WAITING SECTION
+========================================================= */
+
+.submission-waiting {
+    padding: 17px;
+
+    border-radius: 10px;
+
+    background: rgba(99, 102, 241, 0.035);
+
+    border: 1px solid rgba(99, 102, 241, 0.08);
+}
+
+
+/* =========================================================
+   LOADER
+========================================================= */
+
+.waiting-loader {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-bottom: 11px;
+}
+
+.waiting-loader span {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #6366f1;
+
+    animation: submissionWaitingPulse 1.4s infinite ease-in-out;
+}
+
+.waiting-loader span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.waiting-loader span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+
+@keyframes submissionWaitingPulse {
+
+    0%,
+    80%,
+    100% {
+        opacity: 0.25;
+        transform: scale(0.8);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   WAITING TITLE
+========================================================= */
+
+.submission-waiting h3 {
+    margin: 0;
+
+    color: #818cf8;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.07em;
+}
+
+
+/* =========================================================
+   WAITING TEXT
+========================================================= */
+
+.submission-waiting p {
+    margin: 7px 0 0;
+
+    color: #68758a;
+
+    font-size: 8px;
+
+    line-height: 1.5;
+}
+
+.submission-waiting .waiting-status {
+    margin-top: 5px;
+
+    color: #94a3b8;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   SCORE RESULT
+========================================================= */
+
+.score-result-card {
+    text-align: center;
+}
+
+
+/* =========================================================
+   SCORE LABEL
+========================================================= */
+
+.score-result-card > h2:nth-of-type(2) {
+    margin-top: 21px;
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 7px;
+
+    letter-spacing: 0.10em;
+}
+
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+.final-score {
+    margin: 8px 0 7px;
+
+    color: #818cf8;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 34px;
+
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   NEXT ROUND BUTTON
+========================================================= */
+
+.score-result-card .submit-button {
+    width: 100%;
+
+    min-height: 44px;
+
+    margin-top: 18px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+
+    color: #ffffff;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.07em;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .submission-page {
+        padding: 20px 12px 40px;
+    }
+
+    .submission-card {
+        padding: 20px 16px;
+    }
+
+    .submission-card h1 {
+        font-size: 22px;
+    }
+
+    .submission-card h2 {
+        font-size: 16px;
+    }
+
+    .submission-success {
+        font-size: 6px;
+    }
+
+    .final-score {
+        font-size: 30px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .submission-page {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+    .submission-card {
+        padding: 18px 13px;
+    }
+
+    .submission-card h1 {
+        font-size: 20px;
+    }
+
+    .submission-card h2 {
+        font-size: 15px;
+    }
+
+    .final-score {
+        font-size: 28px;
+    }
+
+}
+
+/* =========================================================
+   FINAL RESULTS / GLOBAL RANKINGS
+========================================================= */
+
+.final-results-page {
+
+    width: 100%;
+
+    max-width: 620px;
+
+    margin: 0 auto;
+
+    padding: 25px 18px 50px;
+
+    box-sizing: border-box;
+
+    color: #e5e7eb;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.final-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 28px;
+
+}
+
+.final-back {
+
+    width: 30px;
+
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #171b25;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+
+}
+
+.final-kicker {
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .12em;
+
+    margin-bottom: 3px;
+
+}
+
+.final-header h1 {
+
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   PODIUM
+========================================================= */
+
+.leaderboard-podium {
+
+    height: 250px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    margin-bottom: 28px;
+
+}
+
+
+.podium-player {
+
+    width: 31%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    position: relative;
+
+}
+
+
+/* =========================================================
+   PLAYER AVATARS
+========================================================= */
+
+.player-avatar {
+
+    width: 42px;
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    margin-bottom: 7px;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    border: 2px solid;
+
+}
+
+.gold-avatar {
+
+    border-color: #facc15;
+
+    background: #17130a;
+
+}
+
+.silver-avatar {
+
+    border-color: #cbd5e1;
+
+    background: #15181d;
+
+}
+
+.bronze-avatar {
+
+    border-color: #d88927;
+
+    background: #1b140d;
+
+}
+
+
+/* =========================================================
+   TEAM NAME
+========================================================= */
+
+.player-name {
+
+    width: 100%;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    text-align: center;
+
+    color: #cbd5e1;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+    margin-bottom: 6px;
+
+}
+
+
+/* =========================================================
+   RANK NUMBER
+========================================================= */
+
+.podium-rank {
+
+    width: 23px;
+
+    height: 23px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    margin-bottom: -1px;
+
+    z-index: 2;
+
+    background: #cbd5e1;
+
+    color: #0b0d12;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+}
+
+.gold-rank {
+
+    background: #facc15;
+
+}
+
+.third-place .podium-rank {
+
+    background: #d88927;
+
+}
+
+
+/* =========================================================
+   PODIUM BLOCKS
+========================================================= */
+
+.podium-block {
+
+    width: 100%;
+
+    border-radius: 12px 12px 0 0;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-start;
+
+    padding-top: 12px;
+
+    box-sizing: border-box;
+
+    border: 1px solid;
+
+    border-bottom: 0;
+
+}
+
+
+.second-place .podium-block {
+
+    height: 82px;
+
+}
+
+.first-place .podium-block {
+
+    height: 112px;
+
+}
+
+.third-place .podium-block {
+
+    height: 65px;
+
+}
+
+
+.silver-block {
+
+    background: linear-gradient(
+        180deg,
+        #292929,
+        #18191d
+    );
+
+    border-color: #555;
+
+}
+
+
+.gold-block {
+
+    background: linear-gradient(
+        180deg,
+        #332d00,
+        #1c1900
+    );
+
+    border-color: #665900;
+
+}
+
+
+.bronze-block {
+
+    background: linear-gradient(
+        180deg,
+        #33200c,
+        #1c140c
+    );
+
+    border-color: #5c3814;
+
+}
+
+
+.podium-trophy {
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   RANKINGS
+========================================================= */
+
+.rankings-section {
+
+    width: 100%;
+
+}
+
+
+.rankings-heading {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 0 8px 8px;
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .10em;
+
+}
+
+
+.ranking-row {
+
+    min-height: 54px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 7px 10px;
+
+    margin-bottom: 8px;
+
+    box-sizing: border-box;
+
+    border-radius: 12px;
+
+    background: #0d121c;
+
+    border: 1px solid rgba(148,163,184,.09);
+
+}
+
+
+.ranking-number {
+
+    width: 20px;
+
+    flex-shrink: 0;
+
+    color: #64748b;
+
+    text-align: center;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 7px;
+
+}
+
+
+.ranking-row:nth-child(2) .ranking-number {
+
+    color: #facc15;
+
+}
+
+.ranking-row:nth-child(3) .ranking-number {
+
+    color: #cbd5e1;
+
+}
+
+.ranking-row:nth-child(4) .ranking-number {
+
+    color: #d88927;
+
+}
+
+
+/* =========================================================
+   RANKING AVATAR
+========================================================= */
+
+.ranking-avatar {
+
+    width: 32px;
+
+    height: 32px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #171c27;
+
+    border: 1px solid #30394a;
+
+    color: #a5b4fc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   TEAM INFORMATION
+========================================================= */
+
+.ranking-team {
+
+    min-width: 0;
+
+    flex: 1;
+
+}
+
+
+.ranking-team strong {
+
+    display: block;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #e5e7eb;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+.ranking-team span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: #5f6d82;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .04em;
+
+}
+
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+.ranking-score {
+
+    text-align: right;
+
+    flex-shrink: 0;
+
+}
+
+
+.ranking-score strong {
+
+    display: block;
+
+    color: #e5e7eb;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 14px;
+
+    line-height: 1;
+
+}
+
+
+.ranking-score span {
+
+    display: block;
+
+    margin-top: 3px;
+
+    color: #59667a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+}
+
+
+/* =========================================================
+   INVESTIGATION COMPLETE
+========================================================= */
+
+.investigation-complete {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    margin-top: 20px;
+
+    padding: 13px;
+
+    border-radius: 11px;
+
+    background: rgba(52,211,153,.035);
+
+    border: 1px solid rgba(52,211,153,.08);
+
+}
+
+
+.complete-icon {
+
+    width: 30px;
+
+    height: 30px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(52,211,153,.09);
+
+    color: #34d399;
+
+    font-size: 12px;
+
+}
+
+
+.complete-title {
+
+    color: #34d399;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+    letter-spacing: .08em;
+
+}
+
+
+.investigation-complete p {
+
+    margin: 4px 0 0;
+
+    color: #68758a;
+
+    font-size: 7px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   NO RESULTS
+========================================================= */
+
+.no-results {
+
+    padding: 35px 20px;
+
+    border-radius: 13px;
+
+    background: #0d121c;
+
+    border: 1px solid rgba(148,163,184,.09);
+
+    text-align: center;
+
+}
+
+
+.no-results h2 {
+
+    margin: 10px 0 5px;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 20px;
+
+}
+
+
+.no-results p {
+
+    margin: 0;
+
+    color: #718096;
+
+    font-size: 9px;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .final-results-page {
+
+        padding: 20px 10px 35px;
+
+    }
+
+    .final-header {
+
+        margin-bottom: 20px;
+
+    }
+
+    .final-header h1 {
+
+        font-size: 20px;
+
+    }
+
+    .leaderboard-podium {
+
+        height: 220px;
+
+        gap: 6px;
+
+        margin-bottom: 22px;
+
+    }
+
+    .player-avatar {
+
+        width: 38px;
+
+        height: 38px;
+
+        font-size: 13px;
+
+    }
+
+    .player-name {
+
+        font-size: 7px;
+
+    }
+
+    .second-place .podium-block {
+
+        height: 72px;
+
+    }
+
+    .first-place .podium-block {
+
+        height: 98px;
+
+    }
+
+    .third-place .podium-block {
+
+        height: 57px;
+
+    }
+
+    .ranking-row {
+
+        min-height: 51px;
+
+        padding: 6px 8px;
+
+    }
+
+    .ranking-team strong {
+
+        font-size: 10px;
+
+    }
+
+    .ranking-score strong {
+
+        font-size: 13px;
+
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .final-results-page {
+
+        padding-left: 7px;
+
+        padding-right: 7px;
+
+    }
+
+    .leaderboard-podium {
+
+        height: 205px;
+
+    }
+
+    .ranking-row {
+
+        gap: 6px;
+
+    }
+
+    .ranking-avatar {
+
+        width: 29px;
+
+        height: 29px;
+
+    }
+
+}
+
+/* =========================================================
+   HOST CONTROL CENTER
+========================================================= */
+
+.host-page {
+
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+
+    padding: 30px 20px 60px;
+
+    box-sizing: border-box;
+
+    color: #e5e7eb;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.host-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.host-kicker {
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .13em;
+
+    margin-bottom: 5px;
+}
+
+.host-header h1 {
+
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 28px;
+
+    line-height: 1;
+}
+
+.host-header p {
+
+    margin: 7px 0 0;
+
+    color: #718096;
+
+    font-size: 9px;
+}
+
+.host-status {
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    background: rgba(99,102,241,.08);
+
+    border: 1px solid rgba(99,102,241,.12);
+
+    color: #818cf8;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   OVERVIEW
+========================================================= */
+
+.host-overview {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin-bottom: 28px;
+}
+
+.host-overview > div {
+
+    padding: 15px;
+
+    border-radius: 11px;
+
+    background: #0d121c;
+
+    border: 1px solid rgba(148,163,184,.09);
+}
+
+.host-overview span {
+
+    display: block;
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .08em;
+}
+
+.host-overview strong {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 19px;
+}
+
+.host-overview .overview-status {
+
+    color: #818cf8;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.host-section-header {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+}
+
+.host-section-header span {
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    letter-spacing: .10em;
+}
+
+.host-section-header h2 {
+
+    margin: 4px 0 0;
+
+    color: #e5e7eb;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 19px;
+}
+
+.round-count {
+
+    padding-bottom: 3px;
+
+    color: #64748b !important;
+}
+
+
+/* =========================================================
+   ROUND CARDS
+========================================================= */
+
+.host-rounds {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.host-round-card {
+
+    padding: 16px;
+
+    border-radius: 13px;
+
+    background: #0d121c;
+
+    border: 1px solid rgba(148,163,184,.09);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ROUND TOP
+========================================================= */
+
+.host-round-top {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.host-round-number {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+}
+
+.host-round-number > span {
+
+    width: 34px;
+
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: rgba(99,102,241,.08);
+
+    border: 1px solid rgba(99,102,241,.10);
+
+    font-size: 14px;
+}
+
+.host-round-number small {
+
+    display: block;
+
+    color: #59667a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    letter-spacing: .08em;
+}
+
+.host-round-number h3 {
+
+    margin: 3px 0 0;
+
+    color: #e5e7eb;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 16px;
+
+    line-height: 1.1;
+}
+
+
+/* =========================================================
+   ROUND POINTS
+========================================================= */
+
+.round-points {
+
+    text-align: right;
+
+    flex-shrink: 0;
+}
+
+.round-points strong {
+
+    display: block;
+
+    color: #818cf8;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 17px;
+
+    line-height: 1;
+}
+
+.round-points span {
+
+    display: block;
+
+    margin-top: 3px;
+
+    color: #53617a;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+}
+
+
+/* =========================================================
+   ROUND STATUS
+========================================================= */
+
+.host-round-status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 14px;
+
+    padding-top: 12px;
+
+    border-top: 1px solid rgba(148,163,184,.06);
+}
+
+.host-status-badge {
+
+    flex-shrink: 0;
+
+    padding: 5px 8px;
+
+    border-radius: 7px;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 5px;
+
+    font-weight: 700;
+
+    letter-spacing: .04em;
+}
+
+.host-round-status > span {
+
+    color: #64748b;
+
+    font-size: 7px;
+
+    line-height: 1.4;
+}
+
+
+/* ACTIVE */
+
+.active-status {
+
+    background: rgba(52,211,153,.08);
+
+    color: #34d399;
+}
+
+
+/* CLOSED */
+
+.closed-status {
+
+    background: rgba(239,68,68,.07);
+
+    color: #f87171;
+}
+
+
+/* READY */
+
+.ready-status {
+
+    background: rgba(250,204,21,.07);
+
+    color: #facc15;
+}
+
+
+/* LOCKED */
+
+.locked-status {
+
+    background: rgba(100,116,139,.08);
+
+    color: #64748b;
+}
+
+
+/* =========================================================
+   ROUND ACTION
+========================================================= */
+
+.host-round-action {
+
+    margin-top: 13px;
+}
+
+.host-round-action form {
+
+    margin: 0;
+}
+
+.host-action {
+
+    width: 100%;
+
+    min-height: 40px;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+
+    letter-spacing: .06em;
+
+    transition:
+        transform .15s ease,
+        opacity .15s ease;
+}
+
+.host-action:hover {
+
+    transform: translateY(-1px);
+}
+
+.primary-action {
+
+    background:
+        linear-gradient(
+            100deg,
+            #5146e5,
+            #7c3aed
+        );
+
+    color: white;
+}
+
+.danger-action {
+
+    background: rgba(239,68,68,.08);
+
+    border: 1px solid rgba(239,68,68,.15);
+
+    color: #f87171;
+}
+
+.secondary-action {
+
+    background: #171d29;
+
+    border: 1px solid rgba(148,163,184,.10);
+
+    color: #a5b4fc;
+}
+
+.locked-action {
+
+    background: #0a0e15;
+
+    color: #4b5568;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   GAME CONTROLS
+========================================================= */
+
+.host-controls {
+
+    margin-top: 30px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid rgba(148,163,184,.07);
+}
+
+.controls-header {
+
+    margin-bottom: 12px;
+}
+
+.reset-card {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 15px;
+
+    border-radius: 11px;
+
+    background: #0b0f17;
+
+    border: 1px solid rgba(239,68,68,.08);
+}
+
+.reset-card strong {
+
+    display: block;
+
+    color: #cbd5e1;
+
+    font-family: "Rajdhani", sans-serif;
+
+    font-size: 12px;
+}
+
+.reset-card p {
+
+    max-width: 430px;
+
+    margin: 4px 0 0;
+
+    color: #5f6d82;
+
+    font-size: 7px;
+
+    line-height: 1.5;
+}
+
+.reset-button {
+
+    min-height: 36px;
+
+    padding: 0 13px;
+
+    flex-shrink: 0;
+
+    border: 1px solid rgba(239,68,68,.15);
+
+    border-radius: 8px;
+
+    background: rgba(239,68,68,.06);
+
+    color: #f87171;
+
+    cursor: pointer;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 6px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .host-page {
+
+        padding: 20px 11px 40px;
+    }
+
+    .host-header h1 {
+
+        font-size: 23px;
+    }
+
+    .host-header p {
+
+        font-size: 8px;
+    }
+
+    .host-status {
+
+        font-size: 5px;
+
+        padding: 5px 7px;
+    }
+
+    .host-overview {
+
+        gap: 7px;
+    }
+
+    .host-overview > div {
+
+        padding: 12px;
+    }
+
+    .host-overview strong {
+
+        font-size: 17px;
+    }
+
+    .host-round-card {
+
+        padding: 13px;
+    }
+
+    .host-round-number > span {
+
+        width: 31px;
+
+        height: 31px;
+    }
+
+    .host-round-number h3 {
+
+        font-size: 14px;
+    }
+
+    .host-round-status {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 6px;
+    }
+
+    .reset-card {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .reset-button {
+
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .host-page {
+
+        padding-left: 8px;
+
+        padding-right: 8px;
+    }
+
+    .host-header {
+
+        gap: 8px;
+    }
+
+    .host-header h1 {
+
+        font-size: 21px;
+    }
+
+    .host-round-number h3 {
+
+        font-size: 13px;
+    }
+
+    .round-points strong {
+
+        font-size: 15px;
+    }
+
+}
+
+/* =========================================================
+   HOST ROUND RESULTS PAGE
+   MATCHES FRAUD INVESTIGATION GAME
+========================================================= */
+
+.results-page {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+    box-sizing: border-box;
+    color: #e5e7eb;
+}
+
+
+/* =========================================================
+   MAIN RESULTS HEADER
+========================================================= */
+
+.results-page > h1 {
+    margin: 0;
+    text-align: center;
+
+    color: #f8fafc;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.results-page > h2 {
+    margin: 7px 0 0;
+    text-align: center;
+
+    color: #818cf8;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.results-page > .round-points {
+    margin: 9px 0 0;
+    text-align: center;
+}
+
+.results-page > .round-points strong {
+    display: inline-block;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+
+    color: #a5b4fc;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 6px;
+    letter-spacing: 0.08em;
+}
+
+.results-page > hr {
+    margin: 22px 0;
+
+    border: 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+
+/* =========================================================
+   TEAM SCORES CARD
+========================================================= */
+
+.results-page .results-card {
+    padding: 18px;
+
+    border-radius: 13px;
+
+    background: #0d121c;
+    border: 1px solid rgba(148, 163, 184, 0.09);
+
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.results-page .results-card > h2 {
+    margin: 0 0 14px;
+
+    color: #e5e7eb;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   INDIVIDUAL TEAM RESULT
+========================================================= */
+
+.results-page .team-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    min-height: 52px;
+
+    margin-bottom: 8px;
+    padding: 10px 13px;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+    background: #111722;
+    border: 1px solid rgba(148, 163, 184, 0.07);
+}
+
+.results-page .team-result:last-child {
+    margin-bottom: 0;
+}
+
+.results-page .team-result h3 {
+    margin: 0;
+
+    color: #e5e7eb;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.results-page .team-result .score {
+    margin: 0;
+
+    flex-shrink: 0;
+
+    color: #818cf8;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   ANSWER SECTION
+========================================================= */
+
+.results-page .answer-section {
+    margin-top: 16px;
+    padding: 18px;
+
+    border-radius: 13px;
+
+    background: #0d121c;
+    border: 1px solid rgba(148, 163, 184, 0.09);
+}
+
+.results-page .answer-section > h2 {
+    margin: 0 0 13px;
+
+    color: #e5e7eb;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   REVEAL ANSWERS BOX
+========================================================= */
+
+.results-page details {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+    background: #111722;
+    border: 1px solid rgba(99, 102, 241, 0.10);
+
+    overflow: hidden;
+}
+
+.results-page details summary {
+    padding: 12px 14px;
+
+    cursor: pointer;
+
+    color: #a5b4fc;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+
+    list-style-position: inside;
+
+    background: rgba(99, 102, 241, 0.035);
+}
+
+.results-page details[open] summary {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.07);
+}
+
+
+/* =========================================================
+   ANSWERS INSIDE REVEAL BOX
+========================================================= */
+
+.results-page details h3 {
+    margin: 15px 15px 6px;
+
+    color: #cbd5e1;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.results-page details p {
+    margin: 0 15px 15px;
+    padding: 9px 11px;
+
+    border-radius: 7px;
+
+    background: rgba(52, 211, 153, 0.045);
+    border: 1px solid rgba(52, 211, 153, 0.07);
+
+    color: #86efac;
+
+    font-size: 8px;
+    line-height: 1.55;
+}
+
+.results-page details hr {
+    margin: 4px 15px;
+
+    border: 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.06);
+}
+
+
+/* =========================================================
+   FINAL ROUND ANSWERS
+========================================================= */
+
+.results-page .final-answer-section {
+    border-color: rgba(250, 204, 21, 0.10);
+}
+
+
+/* =========================================================
+   NEXT ROUND CARD
+========================================================= */
+
+.results-page .next-round-card {
+    margin-top: 18px;
+    padding: 18px;
+
+    border-radius: 13px;
+
+    text-align: center;
+
+    background: rgba(99, 102, 241, 0.035);
+    border: 1px solid rgba(99, 102, 241, 0.10);
+}
+
+.results-page .next-round-card h2 {
+    margin: 0;
+
+    color: #a5b4fc;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+}
+
+.results-page .next-round-card p {
+    max-width: 500px;
+
+    margin: 7px auto 14px;
+
+    color: #718096;
+
+    font-size: 8px;
+    line-height: 1.55;
+}
+
+.results-page .next-round-card form {
+    margin: 0;
+}
+
+
+/* =========================================================
+   UNLOCK BUTTON
+========================================================= */
+
+.results-page .unlock-button {
+    width: 100%;
+    min-height: 42px;
+
+    padding: 10px 15px;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: linear-gradient(
+        100deg,
+        #5146e5,
+        #7c3aed
+    );
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.results-page .unlock-button:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+}
+
+
+/* =========================================================
+   GAME COMPLETE CARD
+========================================================= */
+
+.results-page .game-complete-card {
+    margin-top: 18px;
+    padding: 20px;
+
+    border-radius: 13px;
+
+    text-align: center;
+
+    background: rgba(250, 204, 21, 0.025);
+    border: 1px solid rgba(250, 204, 21, 0.10);
+}
+
+.results-page .game-complete-card h2 {
+    margin: 0;
+
+    color: #facc15;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 20px;
+}
+
+.results-page .game-complete-card p {
+    margin: 7px 0 15px;
+
+    color: #718096;
+
+    font-size: 8px;
+    line-height: 1.5;
+}
+
+.results-page .game-complete-card form {
+    margin: 0;
+}
+
+
+/* =========================================================
+   FINAL LEADERBOARD BUTTON
+========================================================= */
+
+.results-page .game-complete-card .submit-button {
+    width: 100%;
+    min-height: 42px;
+
+    padding: 10px 15px;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: linear-gradient(
+        100deg,
+        #5146e5,
+        #7c3aed
+    );
+
+    color: white;
+
+    cursor: pointer;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+
+/* =========================================================
+   EMPTY RESULTS
+========================================================= */
+
+.results-page .results-card > p {
+    margin: 0;
+    padding: 18px;
+
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .results-page {
+        padding: 22px 11px 40px;
+    }
+
+    .results-page > h1 {
+        font-size: 23px;
+    }
+
+    .results-page > h2 {
+        font-size: 16px;
+    }
+
+    .results-page .results-card,
+    .results-page .answer-section,
+    .results-page .next-round-card,
+    .results-page .game-complete-card {
+        padding: 14px;
+    }
+
+    .results-page .team-result {
+        min-height: 48px;
+        padding: 9px 10px;
+    }
+
+    .results-page .team-result h3 {
+        font-size: 13px;
+    }
+
+    .results-page .team-result .score {
+        font-size: 16px;
+    }
+
+    .results-page details h3 {
+        font-size: 12px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .results-page {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .results-page > h1 {
+        font-size: 21px;
+    }
+
+    .results-page .team-result {
+        gap: 8px;
+    }
+
+}
+
+/* =========================================================
+   ROUND TIMER
+========================================================= */
+
+.round-timer {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 170px !important;
+    min-width: 170px !important;
+    max-width: 170px !important;
+
+    margin: 14px auto 20px !important;
+    padding: 14px 18px !important;
+
+    box-sizing: border-box !important;
+
+    background: #0d121c !important;
+
+    border: 1px solid rgba(129, 140, 248, 0.18) !important;
+    border-radius: 14px !important;
+
+    text-align: center !important;
+}
+
+.round-timer-label {
+    display: block !important;
+
+    margin: 0 0 5px !important;
+
+    color: #718096 !important;
+
+    font-family: "JetBrains Mono", monospace !important;
+    font-size: 8px !important;
+    font-weight: 700 !important;
+
+    letter-spacing: 0.12em !important;
+}
+
+.round-timer-clock {
+    display: block !important;
+
+    margin: 0 !important;
+
+    color: #a5b4fc !important;
+
+    font-family: "Rajdhani", sans-serif !important;
+    font-size: 34px !important;
+    font-weight: 700 !important;
+
+    line-height: 1 !important;
+    white-space: nowrap !important;
+}
+
+/* =========================================================
+   SUBMITTED ANSWERS — WAITING PAGE
+========================================================= */
+
+.submitted-answers-card {
+    width: 100%;
+    box-sizing: border-box;
+
+    margin: 20px 0;
+
+    padding: 24px;
+
+    background: #0d121c;
+
+    border: 1px solid rgba(129, 140, 248, 0.18);
+
+    border-radius: 16px;
+}
+
+.submitted-answer {
+    padding: 16px 0;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.submitted-answer:last-child {
+    border-bottom: none;
+}
+
+.submitted-question {
+    margin-bottom: 7px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+
+    color: #718096;
+}
+
+.submitted-answer-value {
+    font-size: 16px;
+    font-weight: 600;
+
+    text-transform: none;
+
+    color: #f8fafc;
+}
+
+.no-answers {
+    margin: 15px 0 0;
+
+    text-align: center;
+
+    color: #94a3b8;
+
+    line-height: 1.6;
+}
+
+.final-results-section {
+    width: 100%;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.final-results-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px 30px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+
+    background: #2563eb;
+    color: white;
+
+    transition: 0.2s ease;
+}
+
+.final-results-button:hover {
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   INTERMISSION TIMER
+========================================================= */
+
+.intermission-timer-card {
+    margin: 30px auto;
+    padding: 30px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 16px;
+}
+
+.intermission-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.intermission-clock {
+    margin: 10px 0;
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.intermission-timer-card p {
+    margin: 10px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.countdown-card {
+    width: 100%;
+    max-width: 520px;
+    margin: 40px auto;
+    padding: 45px 30px;
+    text-align: center;
+    background: rgba(10, 15, 28, 0.96);
+    border: 1px solid rgba(60, 150, 255, 0.35);
+    border-radius: 16px;
+    box-shadow: 0 0 40px rgba(30, 100, 255, 0.12);
+}
+
+.countdown-label {
+    font-size: 13px;
+    letter-spacing: 4px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.countdown-clock {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 72px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    margin: 10px 0 20px;
+}
+
+.countdown-message {
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
