@@ -361,10 +361,23 @@ Waiting Room
             </div>
         </div>
 
-        <!-- This timer is always present so the page can switch
-             from lobby to countdown without needing a reload. -->
-        <div class="waiting-card" id="countdown-card"
-             style="display:none;">
+        <div class="waiting-status-card" id="waiting-status-card">
+            <div class="waiting-spinner">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div>
+                <strong id="waiting-status-text">Waiting for host...</strong>
+                <p>Keep this screen open.</p>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!-- Countdown is always in the DOM so the polling script can switch
+             from WAITING FOR HOST to the 1:30 countdown without a page reload. -->
+        <div class="waiting-card" id="countdown-card" style="display:none;">
             <div class="waiting-card-label" id="countdown-label">STARTING IN</div>
 
             <div id="countdown-clock"
@@ -379,20 +392,6 @@ Waiting Room
                 KEEP THIS SCREEN OPEN
             </div>
         </div>
-
-        <div class="waiting-status-card" id="waiting-status-card">
-            <div class="waiting-spinner">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div>
-                <strong id="waiting-status-text">Waiting for host...</strong>
-                <p>Keep this screen open.</p>
-            </div>
-        </div>
-
-        {% endif %}
 
         <div class="waiting-footer">
             INVESTIGATION SYSTEM • STANDING BY
