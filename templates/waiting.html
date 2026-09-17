@@ -345,9 +345,9 @@ Waiting Room
 
         <div class="waiting-label">INVESTIGATION LOBBY</div>
 
-        <h1>WAITING FOR HOST</h1>
+        <h1 id="waiting-title">WAITING FOR HOST</h1>
 
-        <p class="waiting-description">
+        <p class="waiting-description" id="waiting-description">
             Your team is ready. The investigation will begin
             when the host starts the game.
         </p>
@@ -361,36 +361,16 @@ Waiting Room
             </div>
         </div>
 
-        <div class="waiting-status-card">
-            <div class="waiting-spinner">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div>
-                <strong>Waiting for host...</strong>
-                <p>Keep this screen open.</p>
-            </div>
-        </div>
+        <!-- This timer is always present so the page can switch
+             from lobby to countdown without needing a reload. -->
+        <div class="waiting-card" id="countdown-card"
+             style="display:none;">
+            <div class="waiting-card-label" id="countdown-label">STARTING IN</div>
 
-        {% endif %}
-
-        {% if game_status == "countdown" %}
-        <div class="waiting-card">
-            <div class="waiting-card-label">
-                {% if from_round %}
-                    NEXT ROUND STARTING IN
-                {% else %}
-                    STARTING IN
-                {% endif %}
-            </div>
-
-            <div
-                id="countdown-clock"
-                class="countdown-clock"
-                data-started-at="{{ game_started_at }}"
-                data-countdown-seconds="90"
-                style="font-size:72px;font-weight:800;line-height:1;text-align:center;margin:25px 0;letter-spacing:4px;font-family:'JetBrains Mono',monospace;">
+            <div id="countdown-clock"
+                 class="countdown-clock"
+                 data-countdown-seconds="90"
+                 style="font-size:72px;font-weight:800;line-height:1;text-align:center;margin:25px 0;letter-spacing:4px;font-family:'JetBrains Mono',monospace;">
                 01:30
             </div>
 
@@ -399,6 +379,19 @@ Waiting Room
                 KEEP THIS SCREEN OPEN
             </div>
         </div>
+
+        <div class="waiting-status-card" id="waiting-status-card">
+            <div class="waiting-spinner">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div>
+                <strong id="waiting-status-text">Waiting for host...</strong>
+                <p>Keep this screen open.</p>
+            </div>
+        </div>
+
         {% endif %}
 
         <div class="waiting-footer">
@@ -411,9 +404,15 @@ Waiting Room
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    const countdown = document.getElementById("countdown-clock");
-    const intermission = document.getElementById("intermission-timer");
     const page = document.querySelector(".waiting-page");
+    const countdownCard = document.getElementById("countdown-card");
+    const countdown = document.getElementById("countdown-clock");
+    const countdownLabel = document.getElementById("countdown-label");
+    const waitingStatusCard = document.getElementById("waiting-status-card");
+    const waitingStatusText = document.getElementById("waiting-status-text");
+    const waitingTitle = document.getElementById("waiting-title");
+    const waitingDescription = document.getElementById("waiting-description");
+    const intermission = document.getElementById("intermission-timer");
 
     const fromRoundValue = page ? page.dataset.fromRound : "";
     const fromRound = fromRoundValue === "" ? null : Number(fromRoundValue);
@@ -421,9 +420,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const teamName = page ? page.dataset.teamName : "";
     const statusUrl = "/player/waiting-status/" + encodeURIComponent(teamName);
 
-    let countdownInterval = null;
-    let intermissionInterval = null;
     let statusInterval = null;
+
+    function formatTime(totalSeconds) {
+        totalSeconds = Math.max(0, Number(totalSeconds) || 0);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        return String(minutes).padStart(2, "0") + ":" +
+               String(seconds).padStart(2, "0");
+    }
 
     function goToActiveRound(currentRound) {
         if (!currentRound || currentRound < 1 || currentRound > 5) {
@@ -439,6 +445,68 @@ document.addEventListener("DOMContentLoaded", function () {
         return false;
     }
 
+    function showCountdown(remainingSeconds, isNextRound) {
+        if (!countdownCard || !countdown) return;
+
+        countdownCard.style.display = "block";
+
+        if (countdownLabel) {
+            countdownLabel.textContent =
+                isNextRound ? "NEXT ROUND STARTING IN" : "STARTING IN";
+        }
+
+        countdown.textContent = formatTime(remainingSeconds);
+
+        if (waitingStatusCard) {
+            waitingStatusCard.style.display = "none";
+        }
+
+        if (waitingTitle) {
+            waitingTitle.textContent =
+                isNextRound ? "GET READY" : "GAME STARTING";
+        }
+
+        if (waitingDescription) {
+            waitingDescription.textContent =
+                isNextRound
+                    ? "The next round will begin automatically."
+                    : "Round 1 will begin automatically.";
+        }
+    }
+
+    function showLobby() {
+        if (countdownCard) {
+            countdownCard.style.display = "none";
+        }
+
+        if (waitingStatusCard) {
+            waitingStatusCard.style.display = "flex";
+        }
+
+        if (waitingTitle) {
+            waitingTitle.textContent = "WAITING FOR HOST";
+        }
+
+        if (waitingDescription) {
+            waitingDescription.textContent =
+                "Your team is ready. The investigation will begin when the host starts the game.";
+        }
+
+        if (waitingStatusText) {
+            waitingStatusText.textContent = "Waiting for host...";
+        }
+    }
+
+    function showIntermission() {
+        if (countdownCard) {
+            countdownCard.style.display = "none";
+        }
+
+        if (waitingStatusCard) {
+            waitingStatusCard.style.display = "none";
+        }
+    }
+
     function checkGameStatus() {
         fetch(statusUrl, { cache: "no-store" })
             .then(function (response) {
@@ -448,75 +516,42 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(function (data) {
-                goToActiveRound(data.current_round);
+
+                const status = data.game_status;
+                const remaining = Number(data.remaining_seconds) || 0;
+                const currentRound = Number(data.current_round) || 0;
+
+                if (status === "countdown") {
+                    showCountdown(remaining, fromRound !== null);
+                    return;
+                }
+
+                if (status === "intermission") {
+                    showIntermission();
+                    return;
+                }
+
+                if (status === "active") {
+                    if (goToActiveRound(currentRound)) {
+                        return;
+                    }
+                }
+
+                if (status === "lobby") {
+                    showLobby();
+                }
             })
-            .catch(function () {});
+            .catch(function () {
+                // Keep the page visible if a single status request fails.
+            });
     }
 
-    if (countdown) {
-        const startedAt = countdown.dataset.startedAt;
-
-        function updateCountdown() {
-            if (!startedAt) return;
-
-            const startTime = new Date(
-                startedAt.replace(" ", "T") + "Z"
-            ).getTime();
-
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const countdownSeconds = 90;
-            let remaining = countdownSeconds - elapsed;
-            if (remaining < 0) remaining = 0;
-
-            const minutes = Math.floor(remaining / 60);
-            const seconds = remaining % 60;
-
-            countdown.textContent =
-                String(minutes).padStart(2, "0") + ":" +
-                String(seconds).padStart(2, "0");
-
-            if (remaining <= 0) {
-                clearInterval(countdownInterval);
-                checkGameStatus();
-            }
-        }
-
-        updateCountdown();
-        countdownInterval = setInterval(updateCountdown, 1000);
-    }
-
-    if (intermission) {
-        const until = intermission.dataset.until;
-
-        function updateIntermission() {
-            if (!until) return;
-
-            const endTime = new Date(
-                until.replace(" ", "T") + "Z"
-            ).getTime();
-
-            let remaining = Math.ceil((endTime - Date.now()) / 1000);
-            if (remaining < 0) remaining = 0;
-
-            const minutes = Math.floor(remaining / 60);
-            const seconds = remaining % 60;
-
-            intermission.textContent =
-                String(minutes).padStart(2, "0") + ":" +
-                String(seconds).padStart(2, "0");
-
-            if (remaining <= 0) {
-                clearInterval(intermissionInterval);
-                checkGameStatus();
-            }
-        }
-
-        updateIntermission();
-        intermissionInterval = setInterval(updateIntermission, 1000);
-    }
-
-    // Keep checking the server so the player automatically enters
-    // the next round as soon as the countdown/intermission ends.
+    /*
+     * IMPORTANT:
+     * The timer is driven by the server's remaining_seconds value.
+     * This means laptop and phone use the same game clock instead
+     * of relying on each device's local page timer.
+     */
     checkGameStatus();
     statusInterval = setInterval(checkGameStatus, 1000);
 
