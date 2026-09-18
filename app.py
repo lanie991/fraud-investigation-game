@@ -18,7 +18,7 @@ app = Flask(
 DATABASE = "fraud_game.db"
 
 PRE_GAME_SECONDS = 90
-ROUND_SECONDS = 300
+ROUND_DURATION_SECONDS = 300
 INTERMISSION_SECONDS = 600
 
 def get_db():
@@ -31,49 +31,52 @@ def initialize_database():
     connection = get_db()
 
     connection.execute("""
-        CREATE TABLE IF NOT EXISTS game_state (
-            id INTEGER PRIMARY KEY,
-            current_round INTEGER DEFAULT 0,
-            game_status TEXT DEFAULT 'lobby'
-        )
-    """)
-
-    # Add game start timer to existing databases
-    try:
-            connection.execute(
-                "ALTER TABLE teams ADD COLUMN avatar TEXT DEFAULT '🕵🏽'"
-            )
-    except sqlite3.OperationalError:
-            pass
-
-    # Add intermission timer to existing databases
-    try:
-        connection.execute(
-            "ALTER TABLE game_state ADD COLUMN intermission_until TEXT"
-        )
-    except sqlite3.OperationalError:
-        pass
-
-    try:
-        connection.execute(
-            "ALTER TABLE game_state ADD COLUMN game_started_at TEXT"
-        )
-    except sqlite3.OperationalError:
-        pass
-
-    connection.execute("""
         CREATE TABLE IF NOT EXISTS teams (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             team_name TEXT NOT NULL,
-            join_code TEXT UNIQUE NOT NULL,
+            join_code TEXT NOT NULL,
             total_score INTEGER DEFAULT 0,
             avatar TEXT DEFAULT '🕵🏽'
         )
     """)
+
     try:
         connection.execute(
-        "ALTER TABLE teams ADD COLUMN avatar TEXT DEFAULT '🕵🏽'"
-    )
+            "ALTER TABLE teams ADD COLUMN avatar TEXT DEFAULT '🕵🏽'"
+        )
+    except sqlite3.OperationalError:
+        pass
+
+    # Per-team round progression -- each team runs its own independent
+    # round, timer and intermission instead of sharing one global
+    # clock with every other team. This means a team that joins while
+    # others are already on Round 3 still starts fresh at Round 1, and
+    # nothing advances for anyone until a team actually exists.
+    try:
+        connection.execute(
+            "ALTER TABLE teams ADD COLUMN current_round INTEGER DEFAULT 0"
+        )
+    except sqlite3.OperationalError:
+        pass
+
+    try:
+        connection.execute(
+            "ALTER TABLE teams ADD COLUMN team_status TEXT DEFAULT 'lobby'"
+        )
+    except sqlite3.OperationalError:
+        pass
+
+    try:
+        connection.execute(
+            "ALTER TABLE teams ADD COLUMN phase_started_at TEXT"
+        )
+    except sqlite3.OperationalError:
+        pass
+
+    try:
+        connection.execute(
+            "ALTER TABLE teams ADD COLUMN intermission_until TEXT"
+        )
     except sqlite3.OperationalError:
         pass
 
@@ -106,16 +109,6 @@ def initialize_database():
             FOREIGN KEY (round_id) REFERENCES rounds(id)
         )
     """)
-
-    existing_game = connection.execute(
-        "SELECT id FROM game_state WHERE id = 1"
-    ).fetchone()
-
-    if existing_game is None:
-        connection.execute("""
-            INSERT INTO game_state (id, current_round, game_status)
-            VALUES (1, 0, 'lobby')
-        """)
 
     existing_rounds = connection.execute(
         "SELECT COUNT(*) AS count FROM rounds"
@@ -156,79 +149,68 @@ def host():
 
     connection = get_db()
 
-    # Automatically move the game forward
-    advance_game_if_needed(connection)
+    teams = connection.execute(
+        "SELECT * FROM teams ORDER BY team_name"
+    ).fetchall()
 
-    game = connection.execute(
-        "SELECT * FROM game_state WHERE id = 1"
-    ).fetchone()
+    for team in teams:
+        advance_team_if_needed(connection, team["id"])
 
-    rounds = connection.execute(
-        "SELECT * FROM rounds ORDER BY round_number"
+    teams = connection.execute(
+        "SELECT * FROM teams ORDER BY team_name"
     ).fetchall()
 
     connection.close()
 
     return render_template(
         "host.html",
-        game=game,
-        rounds=rounds
+        teams=teams
     )
 
 # =========================================================
-# AUTOMATIC GAME PROGRESSION
+# AUTOMATIC GAME PROGRESSION (PER TEAM)
 # =========================================================
 
-ROUND_DURATION_SECONDS = 300
-INTERMISSION_SECONDS = 600
 
-
-def advance_game_if_needed(connection):
-    """Advance the game automatically using the requested timers."""
-    game = connection.execute(
-        "SELECT * FROM game_state WHERE id = 1"
+def advance_team_if_needed(connection, team_id):
+    """Advance a single team's own round and timer automatically."""
+    team = connection.execute(
+        "SELECT * FROM teams WHERE id = ?",
+        (team_id,)
     ).fetchone()
-    if game is None:
+    if team is None:
         return
 
     # 1:30 countdown before Round 1 and between Rounds 1/2, 3/4, 4/5.
-    if game["game_status"] == "countdown":
-        if not game["game_started_at"]:
+    if team["team_status"] == "countdown":
+        if not team["phase_started_at"]:
             return
         elapsed = connection.execute(
             "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
-            (game["game_started_at"],)
+            (team["phase_started_at"],)
         ).fetchone()
         if elapsed["seconds"] < PRE_GAME_SECONDS:
             return
 
-        next_round = game["current_round"] + 1
+        next_round = team["current_round"] + 1
         if next_round > 5:
             return
 
         connection.execute(
             """
-            UPDATE rounds
-            SET status = 'active', started_at = datetime('now')
-            WHERE round_number = ?
+            UPDATE teams
+            SET current_round = ?, team_status = 'active',
+                phase_started_at = datetime('now'), intermission_until = NULL
+            WHERE id = ?
             """,
-            (next_round,)
-        )
-        connection.execute(
-            """
-            UPDATE game_state
-            SET current_round = ?, game_status = 'active',
-                game_started_at = NULL, intermission_until = NULL
-            WHERE id = 1
-            """,
-            (next_round,)
+            (next_round, team_id)
         )
         connection.commit()
         return
 
     # 10:00 intermission after Round 2.
-    if game["game_status"] == "intermission":
-        until = game["intermission_until"]
+    if team["team_status"] == "intermission":
+        until = team["intermission_until"]
         if not until:
             return
         ready = connection.execute(
@@ -237,63 +219,48 @@ def advance_game_if_needed(connection):
         if not ready["ready"]:
             return
 
-        next_round = game["current_round"] + 1
+        next_round = team["current_round"] + 1
         if next_round > 5:
             return
         connection.execute(
             """
-            UPDATE rounds
-            SET status = 'active', started_at = datetime('now')
-            WHERE round_number = ?
+            UPDATE teams
+            SET current_round = ?, team_status = 'active',
+                phase_started_at = datetime('now'), intermission_until = NULL
+            WHERE id = ?
             """,
-            (next_round,)
-        )
-        connection.execute(
-            """
-            UPDATE game_state
-            SET current_round = ?, game_status = 'active',
-                game_started_at = NULL, intermission_until = NULL
-            WHERE id = 1
-            """,
-            (next_round,)
+            (next_round, team_id)
         )
         connection.commit()
         return
 
     # 5:00 question round.
-    if game["game_status"] != "active":
+    if team["team_status"] != "active":
         return
 
-    current_round = game["current_round"]
-    round_data = connection.execute(
-        "SELECT * FROM rounds WHERE round_number = ?",
-        (current_round,)
-    ).fetchone()
-    if round_data is None or not round_data["started_at"]:
+    if not team["phase_started_at"]:
         return
 
     elapsed = connection.execute(
         "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
-        (round_data["started_at"],)
+        (team["phase_started_at"],)
     ).fetchone()
     if elapsed["seconds"] < ROUND_DURATION_SECONDS:
         return
 
-    connection.execute(
-        "UPDATE rounds SET status = 'closed' WHERE round_number = ?",
-        (current_round,)
-    )
+    current_round = team["current_round"]
 
     # Round 2 -> 10 minute intermission.
     if current_round == 2:
         connection.execute(
             """
-            UPDATE game_state
-            SET game_status = 'intermission',
-                game_started_at = datetime('now'),
+            UPDATE teams
+            SET team_status = 'intermission',
+                phase_started_at = NULL,
                 intermission_until = datetime('now', '+10 minutes')
-            WHERE id = 1
-            """
+            WHERE id = ?
+            """,
+            (team_id,)
         )
         connection.commit()
         return
@@ -301,7 +268,12 @@ def advance_game_if_needed(connection):
     # Round 5 -> final results.
     if current_round == 5:
         connection.execute(
-            "UPDATE game_state SET game_status = 'finished' WHERE id = 1"
+            """
+            UPDATE teams
+            SET team_status = 'finished', phase_started_at = NULL
+            WHERE id = ?
+            """,
+            (team_id,)
         )
         connection.commit()
         return
@@ -309,49 +281,15 @@ def advance_game_if_needed(connection):
     # Round 1, 3, 4 -> 1:30 countdown before next round.
     connection.execute(
         """
-        UPDATE game_state
-        SET game_status = 'countdown',
-            game_started_at = datetime('now'),
+        UPDATE teams
+        SET team_status = 'countdown',
+            phase_started_at = datetime('now'),
             intermission_until = NULL
-        WHERE id = 1
-        """
+        WHERE id = ?
+        """,
+        (team_id,)
     )
     connection.commit()
-
-
-# Compatibility name used by the waiting route.
-def advance_game(connection):
-    return advance_game_if_needed(connection)
-
-# =========================================================
-# START GAME
-# =========================================================
-
-@app.route("/host/start-game", methods=["POST"])
-def start_game():
-
-    connection = get_db()
-
-    # Lock all rounds
-    connection.execute(
-        "UPDATE rounds SET status = 'locked'"
-    )
-
-    # Start the 1:30 pre-game countdown
-    connection.execute(
-        """
-        UPDATE game_state
-        SET current_round = 0,
-            game_status = 'countdown',
-            game_started_at = datetime('now')
-        WHERE id = 1
-        """
-    )
-
-    connection.commit()
-    connection.close()
-
-    return redirect("/host")
 
 # =========================================================
 # RESET GAME / START FRESH GAME
@@ -362,53 +300,14 @@ def reset_game():
 
     connection = get_db()
 
-    # Remove all previous game submissions
+    # Removing every team and submission is the entire reset, since
+    # each team's round progression now lives on its own row.
     connection.execute(
         "DELETE FROM submissions"
     )
 
-    # Remove all previous teams
-    # This makes the next game a completely fresh game
     connection.execute(
         "DELETE FROM teams"
-    )
-
-    # Reset game state
-    connection.execute(
-        """
-        UPDATE game_state
-        SET current_round = 0,
-            game_status = 'lobby'
-        WHERE id = 1
-        """
-    )
-
-    # Lock all rounds again
-    connection.execute(
-        """
-        UPDATE rounds
-        SET status = 'locked'
-        """
-    )
-
-    connection.commit()
-    connection.close()
-
-    return redirect("/host")
-
-# ROUTE TO UNLOCK NEXT ROUND
-@app.route("/host/unlock-round/<int:round_number>", methods=["POST"])
-def unlock_round(round_number):
-
-    connection = get_db()
-
-    connection.execute(
-        """
-        UPDATE rounds
-        SET status = 'ready'
-        WHERE round_number = ?
-        """,
-        (round_number,)
     )
 
     connection.commit()
@@ -430,29 +329,17 @@ def join():
 
         avatar = request.form.get("avatar", "detective_black").strip()
 
-        # The current database schema does not contain game_code.
-        # Keep the join working without querying a nonexistent column.
+        # Every team starts its own independent 1:30 pre-game
+        # countdown the moment it joins, regardless of what round any
+        # other team is currently on.
         connection.execute(
-    """
-    INSERT INTO teams (team_name, join_code, avatar)
-    VALUES (?, ?, ?)
-    """,
-    (team_name, game_code, avatar)
-)
-        game = connection.execute(
-            "SELECT * FROM game_state WHERE id = 1"
-        ).fetchone()
-
-        if game["game_status"] == "lobby" and game["current_round"] == 0:
-            connection.execute(
-                """
-                UPDATE game_state
-                SET game_status = 'countdown',
-                    game_started_at = datetime('now'),
-                    intermission_until = NULL
-                WHERE id = 1
-                """
-            )
+            """
+            INSERT INTO teams
+            (team_name, join_code, avatar, current_round, team_status, phase_started_at)
+            VALUES (?, ?, ?, 0, 'countdown', datetime('now'))
+            """,
+            (team_name, game_code, avatar)
+        )
 
         connection.commit()
         connection.close()
@@ -467,45 +354,56 @@ def join():
 def player_waiting_status(team_name):
     connection = get_db()
 
-    # This endpoint is what keeps the player waiting page alive and
-    # advances the game without requiring the host to click anything.
-    advance_game_if_needed(connection)
+    team = connection.execute(
+        "SELECT * FROM teams WHERE team_name = ?",
+        (team_name,)
+    ).fetchone()
 
-    game = connection.execute(
-        "SELECT * FROM game_state WHERE id = 1"
+    if team is None:
+        connection.close()
+        return {
+            "game_status": "lobby",
+            "current_round": 0,
+            "remaining_seconds": 0,
+            "team_name": team_name
+        }
+
+    # This endpoint is what keeps the player waiting page alive and
+    # advances this team's own game without requiring the host to
+    # click anything.
+    advance_team_if_needed(connection, team["id"])
+
+    team = connection.execute(
+        "SELECT * FROM teams WHERE id = ?",
+        (team["id"],)
     ).fetchone()
 
     remaining = 0
 
-    if game["game_status"] == "countdown" and game["game_started_at"]:
+    if team["team_status"] == "countdown" and team["phase_started_at"]:
         row = connection.execute(
             "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
-            (game["game_started_at"],)
+            (team["phase_started_at"],)
         ).fetchone()
         remaining = max(0, int(PRE_GAME_SECONDS - row["seconds"]))
 
-    elif game["game_status"] == "intermission" and game["intermission_until"]:
+    elif team["team_status"] == "intermission" and team["intermission_until"]:
         row = connection.execute(
             "SELECT (julianday(?) - julianday('now')) * 86400 AS seconds",
-            (game["intermission_until"],)
+            (team["intermission_until"],)
         ).fetchone()
         remaining = max(0, int(row["seconds"]))
 
-    elif game["game_status"] == "active" and game["current_round"] > 0:
-        round_data = connection.execute(
-            "SELECT started_at FROM rounds WHERE round_number = ?",
-            (game["current_round"],)
-        ).fetchone()
-
-        if round_data and round_data["started_at"]:
+    elif team["team_status"] == "active" and team["current_round"] > 0:
+        if team["phase_started_at"]:
             row = connection.execute(
                 "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
-                (round_data["started_at"],)
+                (team["phase_started_at"],)
             ).fetchone()
             remaining = max(0, int(ROUND_DURATION_SECONDS - row["seconds"]))
 
-    current_status = game["game_status"]
-    current_round = game["current_round"]
+    current_status = team["team_status"]
+    current_round = team["current_round"]
     connection.close()
 
     return {
@@ -525,85 +423,81 @@ def waiting(team_name):
     from_round = request.args.get("from_round", type=int)
     timed_out = request.args.get("timed_out", type=int) == 1
 
+    team = connection.execute(
+        "SELECT * FROM teams WHERE team_name = ?",
+        (team_name,)
+    ).fetchone()
+
+    if team is None:
+        connection.close()
+        return redirect("/join")
+
     # -------------------------------------------------
     # If the player just completed/timed out of a round,
-    # move the game into the correct next phase first.
+    # move this team into the correct next phase first.
     # -------------------------------------------------
     if from_round is not None:
-        game = connection.execute(
-            "SELECT * FROM game_state WHERE id = 1"
-        ).fetchone()
-
-        team = connection.execute(
-            "SELECT * FROM teams WHERE team_name = ?",
-            (team_name,)
-        ).fetchone()
-
         round_data = connection.execute(
             "SELECT * FROM rounds WHERE round_number = ?",
             (from_round,)
         ).fetchone()
 
-        if game is not None and round_data is not None and game["current_round"] == from_round and game["game_status"] == "active":
-            has_submission = False
-            if team is not None:
-                row = connection.execute(
-                    """
-                    SELECT 1
-                    FROM submissions
-                    WHERE team_id = ? AND round_id = ?
-                    LIMIT 1
-                    """,
-                    (team["id"], round_data["id"])
-                ).fetchone()
-                has_submission = row is not None
+        if round_data is not None and team["current_round"] == from_round and team["team_status"] == "active":
+            has_submission = connection.execute(
+                """
+                SELECT 1
+                FROM submissions
+                WHERE team_id = ? AND round_id = ?
+                LIMIT 1
+                """,
+                (team["id"], round_data["id"])
+            ).fetchone() is not None
 
             # A normal submission or an explicit client timeout means
             # this team's round is finished and the next timer must start.
             if has_submission or timed_out:
-                connection.execute(
-                    "UPDATE rounds SET status = 'closed' WHERE round_number = ?",
-                    (from_round,)
-                )
-
                 if from_round == 2:
                     connection.execute(
                         """
-                        UPDATE game_state
-                        SET game_status = 'intermission',
-                            game_started_at = NULL,
+                        UPDATE teams
+                        SET team_status = 'intermission',
+                            phase_started_at = NULL,
                             intermission_until = datetime('now', '+10 minutes')
-                        WHERE id = 1
-                        """
+                        WHERE id = ?
+                        """,
+                        (team["id"],)
                     )
                 elif from_round == 5:
                     connection.execute(
                         """
-                        UPDATE game_state
-                        SET game_status = 'finished',
-                            game_started_at = NULL,
+                        UPDATE teams
+                        SET team_status = 'finished',
+                            phase_started_at = NULL,
                             intermission_until = NULL
-                        WHERE id = 1
-                        """
+                        WHERE id = ?
+                        """,
+                        (team["id"],)
                     )
                 else:
                     connection.execute(
                         """
-                        UPDATE game_state
-                        SET game_status = 'countdown',
-                            game_started_at = datetime('now'),
+                        UPDATE teams
+                        SET team_status = 'countdown',
+                            phase_started_at = datetime('now'),
                             intermission_until = NULL
-                        WHERE id = 1
-                        """
+                        WHERE id = ?
+                        """,
+                        (team["id"],)
                     )
 
                 connection.commit()
 
     # Always advance any countdown/intermission that has reached zero.
-    advance_game_if_needed(connection)
+    advance_team_if_needed(connection, team["id"])
 
-    game = connection.execute(
-        "SELECT * FROM game_state WHERE id = 1"
+    team = connection.execute(
+        "SELECT * FROM teams WHERE id = ?",
+        (team["id"],)
     ).fetchone()
 
     round_score = 0
@@ -619,15 +513,9 @@ def waiting(team_name):
             (from_round,)
         ).fetchone()
 
-        team = connection.execute(
-            "SELECT * FROM teams WHERE team_name = ?",
-            (team_name,)
-        ).fetchone()
-
         if round_data is not None:
             round_points = round_data["points"]
 
-        if team is not None and round_data is not None:
             submission = connection.execute(
                 """
                 SELECT score, answers
@@ -650,14 +538,14 @@ def waiting(team_name):
     # -------------------------------------------------
     # IF NEXT ROUND IS ALREADY ACTIVE, GO THERE.
     # -------------------------------------------------
-    if from_round is not None and game["game_status"] == "active" and game["current_round"] > from_round:
+    if from_round is not None and team["team_status"] == "active" and team["current_round"] > from_round:
         connection.close()
         return redirect(
-            f"/player/round/{game['current_round']}/{team_name}"
+            f"/player/round/{team['current_round']}/{team_name}"
         )
 
     # If no prior round and Round 1 is active, enter it.
-    if from_round is None and game["game_status"] == "active" and game["current_round"] == 1:
+    if from_round is None and team["team_status"] == "active" and team["current_round"] == 1:
         connection.close()
         return redirect(f"/player/round/1/{team_name}")
 
@@ -671,10 +559,10 @@ def waiting(team_name):
         round_score=round_score,
         round_points=round_points,
         answers=answers,
-        game_status=game["game_status"],
-        game_started_at=game["game_started_at"],
-        intermission_until=game["intermission_until"],
-        current_round=game["current_round"]
+        game_status=team["team_status"],
+        game_started_at=team["phase_started_at"],
+        intermission_until=team["intermission_until"],
+        current_round=team["current_round"]
     )
 
 # PLAYER ROUND PAGE
@@ -1066,8 +954,9 @@ def player_round(round_number, team_name):
 
     connection = get_db()
 
-    game = connection.execute(
-        "SELECT * FROM game_state WHERE id = 1"
+    team = connection.execute(
+        "SELECT * FROM teams WHERE team_name = ?",
+        (team_name,)
     ).fetchone()
 
     round_data = connection.execute(
@@ -1086,9 +975,13 @@ def player_round(round_number, team_name):
         return "Round not found.", 404
 
 
-    # Host has not activated this round yet.
+    if team is None:
+        return redirect("/join")
+
+
+    # This team has not reached this round yet.
     # The waiting page will poll the status endpoint.
-    if game["current_round"] < round_number:
+    if team["current_round"] < round_number:
         return render_template(
             "waiting.html",
             team_name=team_name,
@@ -1097,7 +990,7 @@ def player_round(round_number, team_name):
 
 
     # Do not allow a player to go backward into an already completed round.
-    if game["current_round"] > round_number:
+    if team["current_round"] > round_number:
         return "This round has already been completed.", 403
 
 
@@ -1207,26 +1100,38 @@ def final_results():
     )
 
 # PLAYER ROUND TIMER
-@app.route("/player/round-time/<int:round_number>")
-def round_time(round_number):
+@app.route("/player/round-time/<int:round_number>/<team_name>")
+def round_time(round_number, team_name):
 
     connection = get_db()
 
-    round_data = connection.execute(
-        "SELECT started_at, status FROM rounds WHERE round_number = ?",
-        (round_number,)
+    team = connection.execute(
+        "SELECT * FROM teams WHERE team_name = ?",
+        (team_name,)
+    ).fetchone()
+
+    if team is None:
+        connection.close()
+        return {"remaining_seconds": 0, "closed": True}
+
+    advance_team_if_needed(connection, team["id"])
+
+    team = connection.execute(
+        "SELECT * FROM teams WHERE id = ?",
+        (team["id"],)
     ).fetchone()
 
     remaining = 0
+    closed = True
 
-    if round_data and round_data["started_at"]:
-        row = connection.execute(
-            "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
-            (round_data["started_at"],)
-        ).fetchone()
-        remaining = max(0, int(ROUND_DURATION_SECONDS - row["seconds"]))
-
-    closed = round_data["status"] == "closed" if round_data else False
+    if team["current_round"] == round_number and team["team_status"] == "active":
+        if team["phase_started_at"]:
+            row = connection.execute(
+                "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
+                (team["phase_started_at"],)
+            ).fetchone()
+            remaining = max(0, int(ROUND_DURATION_SECONDS - row["seconds"]))
+        closed = False
 
     connection.close()
 
@@ -1241,14 +1146,6 @@ def round_time(round_number):
 def check_round(round_number, team_name):
 
     connection = get_db()
-
-    game = connection.execute(
-        """
-        SELECT *
-        FROM game_state
-        WHERE id = 1
-        """
-    ).fetchone()
 
     round_data = connection.execute(
         """
@@ -1277,8 +1174,11 @@ def check_round(round_number, team_name):
         }
 
 
-    active = game["current_round"] >= round_number
+    active = team["current_round"] >= round_number
 
+    closed = team["current_round"] > round_number or (
+        team["current_round"] == round_number and team["team_status"] != "active"
+    )
 
     submission = connection.execute(
     """
@@ -1298,8 +1198,8 @@ def check_round(round_number, team_name):
     connection.close()
 
 
-    # Round is still open.
-    if round_data["status"] != "closed":
+    # Round is still open for this team.
+    if not closed:
         return {
             "active": active,
             "closed": False
