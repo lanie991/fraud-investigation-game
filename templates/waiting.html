@@ -293,22 +293,6 @@ Waiting Room
 
         {% if from_round != 5 %}
 
-            {% if game_status != "intermission" and from_round and from_round < 5 %}
-
-                {% if game_status != "countdown" %}
-                <div class="waiting-status-card">
-                    <div class="waiting-spinner">
-                        <span></span><span></span><span></span>
-                    </div>
-                    <div>
-                        <strong>NEXT ROUND STARTING AUTOMATICALLY</strong>
-                        <p>Keep this screen open.</p>
-                    </div>
-                </div>
-                {% endif %}
-
-            {% endif %}
-
         {% endif %}
 
         {% if from_round == 5 %}
