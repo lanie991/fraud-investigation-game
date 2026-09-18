@@ -704,10 +704,10 @@ def player_round(round_number, team_name):
         if q1 == "invoice_after_payment":
             score += 34
 
-        if q2 == "email":
+        if q2 == "vendor_edit":
             score += 33
 
-        if q3 == "bank_records":
+        if q3 == "sjones_login":
             score += 33
 
         connection = get_db()

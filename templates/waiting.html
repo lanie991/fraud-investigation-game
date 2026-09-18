@@ -64,17 +64,17 @@ Waiting Room
 
         <div class="correct-answer">
             <strong>QUESTION 1</strong>
-            <p>The invoice was dated after the payment.</p>
+            <p>The invoice is dated four days after the bank transaction had already gone through.</p>
         </div>
 
         <div class="correct-answer">
             <strong>QUESTION 2</strong>
-            <p>The email.</p>
+            <p>The access log showing BDA Consulting's payment routing number was changed 17 minutes before the transfer.</p>
         </div>
 
         <div class="correct-answer">
             <strong>QUESTION 3</strong>
-            <p>BDA Consulting's bank account and supporting documents.</p>
+            <p>SJONES — Sarah Jones's account.</p>
         </div>
 
     {% elif from_round == 2 %}
@@ -195,18 +195,18 @@ Waiting Room
                 <div class="submitted-answer-value">
                     {% if from_round == 1 %}
                         {% set labels = {
-                            "payment_amount": "The payment amount is $45,000.",
-                            "invoice_after_payment": "The invoice was dated after the payment.",
-                            "consulting_company": "The recipient is a consulting company.",
-                            "march_transaction": "The transaction happened in March.",
-                            "invoice": "The invoice.",
-                            "company_name": "The company name.",
-                            "email": "The email.",
-                            "transaction_date": "The transaction date.",
-                            "social_media": "The company's social media.",
-                            "office_decorations": "The company's office decorations.",
-                            "weather": "The weather on March 14.",
-                            "bank_records": "BDA Consulting's bank account and supporting documents."
+                            "invoice_after_payment": "The invoice is dated four days after the bank transaction had already gone through.",
+                            "payment_before_invoice": "The payment was scheduled after a properly issued invoice.",
+                            "same_day": "The invoice and the transaction happened on the same calendar day.",
+                            "cannot_determine": "The dates alone don't tell you anything meaningful.",
+                            "vendor_edit": "The access log showing BDA Consulting's payment routing number was changed 17 minutes before the transfer.",
+                            "email": "Michael Carter's internal email about the payment file.",
+                            "invoice": "The invoice number recorded for the transaction.",
+                            "bank_transfer": "The original $45,000 transfer itself.",
+                            "sjones_login": "SJONES — Sarah Jones's account.",
+                            "mcarter_login": "MCARTER — Michael Carter's account.",
+                            "no_record": "No user was logged for the change.",
+                            "shared_login": "A shared department login used by the whole team."
                         } %}
                     {% elif from_round == 2 %}
                         {% set labels = {

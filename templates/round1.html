@@ -473,7 +473,7 @@ Round 1 — Initial Lead
             <div class="outlook-email">
 
                 <h3>
-                    Payment instruction
+                    Payment confirmation
                 </h3>
 
 
@@ -507,7 +507,7 @@ Round 1 — Initial Lead
 
                     <div>
                         <strong>Date:</strong>
-                        March 13, 2026 — 4:18 PM
+                        March 14, 2026 — 10:46 PM
                     </div>
 
                 </div>
@@ -516,12 +516,12 @@ Round 1 — Initial Lead
                 <div class="email-body">
 
                     <p>
-                        Please hold the BDA Consulting payment.
+                        The BDA Consulting payment has gone out.
                     </p>
 
                     <p>
-                        We have not yet received the final
-                        consulting report.
+                        Let me know as soon as the invoice comes in
+                        from Accounts so we can close out the file.
                     </p>
 
                     <p>
@@ -657,7 +657,7 @@ Round 1 — Initial Lead
 
                     <div>
                         <strong>Date:</strong>
-                        March 14, 2026 — 10:47 PM
+                        March 15, 2026 — 9:10 AM
                     </div>
 
                 </div>
@@ -666,7 +666,7 @@ Round 1 — Initial Lead
                 <div class="email-body">
 
                     <p>
-                        Just following up on the BDA Consulting payment.
+                        Following up on the BDA Consulting payment.
                     </p>
 
                     <p>
@@ -674,7 +674,7 @@ Round 1 — Initial Lead
                     </p>
 
                     <p>
-                        I will review the remaining documentation tomorrow.
+                        I will review the remaining documentation this morning.
                     </p>
 
                     <p>
@@ -719,7 +719,7 @@ Round 1 — Initial Lead
         </div>
 
         <span class="evidence-tag flagged">
-            REVIEW
+            CRITICAL
         </span>
 
     </div>
@@ -826,7 +826,7 @@ Round 1 — Initial Lead
                 </span>
 
                 <strong>
-                    Viewed vendor record
+                    Edited vendor bank routing number
                 </strong>
 
             </div>
@@ -848,9 +848,10 @@ Round 1 — Initial Lead
 
         <div class="invoice-note">
 
-            Access was recorded before the $45,000 payment was authorized.
-            Sarah Jones had legitimate access to vendor records as part of
-            her responsibilities.
+            The settlement account on file for BDA Consulting was changed
+            under the SJONES login at 8:26 PM — roughly two hours before
+            the $45,000 payment was sent. The new account number does not
+            match BDA Consulting's previously verified bank details.
 
         </div>
 
@@ -861,6 +862,261 @@ Round 1 — Initial Lead
     <!-- =========================================
          INVESTIGATION QUESTIONS
     ========================================== -->
+
+    <section class="round1-investigation">
+
+        <div class="investigation-heading">
+
+            <span>
+                INVESTIGATION
+            </span>
+
+            <h2>
+                Initial Lead
+            </h2>
+
+            <p>
+                Weigh each piece of evidence carefully before
+                drawing a conclusion.
+            </p>
+
+        </div>
+
+
+        <form
+            action="/player/round/1/{{ team_name }}"
+            method="POST"
+            class="round1-form"
+        >
+
+
+            <!-- QUESTION 1 -->
+
+            <div class="round1-question">
+
+                <div class="question-number">
+                    01
+                </div>
+
+                <div class="question-content">
+
+                    <h3>
+                        What does comparing the invoice date to the
+                        bank transaction date reveal?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="invoice_after_payment"
+                            required
+                        >
+
+                        <span>
+                            The invoice is dated four days after the
+                            bank transaction had already gone through.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="payment_before_invoice"
+                        >
+
+                        <span>
+                            The payment was scheduled after a properly
+                            issued invoice.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="same_day"
+                        >
+
+                        <span>
+                            The invoice and the transaction happened
+                            on the same calendar day.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="cannot_determine"
+                        >
+
+                        <span>
+                            The dates alone don't tell you anything
+                            meaningful.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 2 -->
+
+            <div class="round1-question">
+
+                <div class="question-number">
+                    02
+                </div>
+
+                <div class="question-content">
+
+                    <h3>
+                        Which piece of evidence shows the clearest
+                        attempt to redirect the funds before they
+                        were paid out?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="vendor_edit"
+                            required
+                        >
+
+                        <span>
+                            The access log showing BDA Consulting's
+                            payment routing number was changed 17
+                            minutes before the transfer.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="email"
+                        >
+
+                        <span>
+                            Michael Carter's internal email about
+                            the payment file.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="invoice"
+                        >
+
+                        <span>
+                            The invoice number recorded for the
+                            transaction.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="bank_transfer"
+                        >
+
+                        <span>
+                            The original $45,000 transfer itself.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 3 -->
+
+            <div class="round1-question">
+
+                <div class="question-number">
+                    03
+                </div>
+
+                <div class="question-content">
+
+                    <h3>
+                        According to the system record, whose login
+                        performed the routing change?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="sjones_login"
+                            required
+                        >
+
+                        <span>
+                            SJONES — Sarah Jones's account.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="mcarter_login"
+                        >
+
+                        <span>
+                            MCARTER — Michael Carter's account.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="no_record"
+                        >
+
+                        <span>
+                            No user was logged for the change.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="shared_login"
+                        >
+
+                        <span>
+                            A shared department login used by the
+                            whole team.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="round1-submit"
+            >
+                SUBMIT INVESTIGATION
+            </button>
+
+        </form>
+
+    </section>
 
 <script>
 
