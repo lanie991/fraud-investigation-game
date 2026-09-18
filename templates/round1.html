@@ -1091,7 +1091,6 @@ Round 1 — Initial Lead
     </section>
 
 <script>
-
 document.addEventListener("DOMContentLoaded", function () {
 
     const timer = document.getElementById("round-timer");
@@ -1101,104 +1100,68 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    const startedAt = timer.dataset.startedAt;
+    const roundNumber = {{ round_data['round_number'] }};
+    const statusUrl = "/player/round-time/" + roundNumber;
+    let redirecting = false;
 
-    if (!startedAt) {
-        console.log("No round start time found.");
-        return;
+    /*
+     * IMPORTANT:
+     * The round timer is driven by the server's remaining_seconds
+     * value, not the player's own device clock. A phone or laptop
+     * whose clock is off would otherwise show 00:00 immediately or
+     * count down at the wrong speed.
+     */
+
+    function formatTime(totalSeconds) {
+        totalSeconds = Math.max(0, Number(totalSeconds) || 0);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        return String(minutes).padStart(2, "0") + ":" +
+               String(seconds).padStart(2, "0");
     }
 
-    function updateTimer() {
+    function paint(remaining) {
+        clock.textContent = formatTime(remaining);
 
-        /*
-         * SQLite datetime('now') is UTC.
-         * Add Z so JavaScript treats it as UTC.
-         */
-
-        const startTime = new Date(
-            startedAt.replace(" ", "T") + "Z"
-        ).getTime();
-
-        const now = Date.now();
-
-        const elapsedSeconds = Math.floor(
-            (now - startTime) / 1000
-        );
-
-        const totalSeconds = 300;
-
-        let remaining = totalSeconds - elapsedSeconds;
-
-
-        /*
-         * TIME HAS RUN OUT
-         */
-
-        if (remaining <= 0) {
-
-            clock.textContent = "00:00";
-
-            clearInterval(timerInterval);
-
-            window.location.href =
-                "/waiting/{{ team_name }}?from_round={{ round_data['round_number'] }}";
-
-            return;
-        }
-
-
-        /*
-         * CALCULATE TIME
-         */
-
-        const minutes = Math.floor(
-            remaining / 60
-        );
-
-        const seconds = remaining % 60;
-
-
-        /*
-         * DISPLAY TIME
-         */
-
-        clock.textContent =
-            String(minutes).padStart(2, "0") +
-            ":" +
-            String(seconds).padStart(2, "0");
-
-
-        /*
-         * TIMER COLORS
-         */
-
-        timer.classList.remove(
-            "warning",
-            "danger"
-        );
+        timer.classList.remove("warning", "danger");
 
         if (remaining <= 60) {
-
             timer.classList.add("danger");
-
         } else if (remaining <= 120) {
-
             timer.classList.add("warning");
-
         }
-
     }
 
+    function poll() {
+        if (redirecting) return;
 
-    updateTimer();
+        fetch(statusUrl, { cache: "no-store" })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("Round time request failed");
+                }
+                return response.json();
+            })
+            .then(function (data) {
+                const remaining = Number(data.remaining_seconds) || 0;
+                paint(remaining);
 
-    const timerInterval = setInterval(
-        updateTimer,
-        1000
-    );
+                if (remaining <= 0 || data.closed) {
+                    redirecting = true;
+                    window.location.href =
+                        "/waiting/{{ team_name }}?from_round=" + roundNumber;
+                }
+            })
+            .catch(function () {
+                // Keep showing the last known time if a single poll fails.
+            });
+    }
+
+    poll();
+    setInterval(poll, 1000);
 
 });
-
 </script>
 
 {% endblock %}

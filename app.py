@@ -54,6 +54,13 @@ def initialize_database():
     except sqlite3.OperationalError:
         pass
 
+    try:
+        connection.execute(
+            "ALTER TABLE game_state ADD COLUMN game_started_at TEXT"
+        )
+    except sqlite3.OperationalError:
+        pass
+
     connection.execute("""
         CREATE TABLE IF NOT EXISTS teams (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -79,6 +86,13 @@ def initialize_database():
             status TEXT DEFAULT 'locked'
         )
     """)
+
+    try:
+        connection.execute(
+            "ALTER TABLE rounds ADD COLUMN started_at TEXT"
+        )
+    except sqlite3.OperationalError:
+        pass
 
     connection.execute("""
         CREATE TABLE IF NOT EXISTS submissions (
@@ -1191,6 +1205,36 @@ def final_results():
         "final_results.html",
         results=results
     )
+
+# PLAYER ROUND TIMER
+@app.route("/player/round-time/<int:round_number>")
+def round_time(round_number):
+
+    connection = get_db()
+
+    round_data = connection.execute(
+        "SELECT started_at, status FROM rounds WHERE round_number = ?",
+        (round_number,)
+    ).fetchone()
+
+    remaining = 0
+
+    if round_data and round_data["started_at"]:
+        row = connection.execute(
+            "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
+            (round_data["started_at"],)
+        ).fetchone()
+        remaining = max(0, int(ROUND_DURATION_SECONDS - row["seconds"]))
+
+    closed = round_data["status"] == "closed" if round_data else False
+
+    connection.close()
+
+    return {
+        "remaining_seconds": remaining,
+        "closed": closed
+    }
+
 
 # PLAYER ROUND STATUS CHECK
 @app.route("/player/check-round/<int:round_number>/<team_name>")
