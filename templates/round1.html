@@ -623,7 +623,7 @@ Round 1 — Initial Lead
             <div class="outlook-email">
 
                 <h3>
-                    BDA Consulting — Follow-Up
+                    BDA Consulting Payment
                 </h3>
 
 
@@ -652,7 +652,7 @@ Round 1 — Initial Lead
 
                     <div>
                         <strong>To:</strong>
-                        Accounts Department
+                        Accounts Payable
                     </div>
 
                     <div>
@@ -666,15 +666,11 @@ Round 1 — Initial Lead
                 <div class="email-body">
 
                     <p>
-                        Just following up on the BDA Consulting payment.
+                        Please proceed with the BDA Consulting payment.
                     </p>
 
                     <p>
-                        Please make sure the payment documentation is kept with the transaction file.
-                    </p>
-
-                    <p>
-                        I will review the remaining documentation tomorrow.
+                        The supporting documentation has been received.
                     </p>
 
                     <p>
@@ -707,19 +703,19 @@ Round 1 — Initial Lead
             <div>
 
                 <small>
-                    SYSTEM ACTIVITY
+                    ACCOUNTS RECORD
                 </small>
 
                 <h2>
-                    Vendor File Access
+                    Vendor Record
                 </h2>
 
             </div>
 
         </div>
 
-        <span class="evidence-tag flagged">
-            REVIEW
+        <span class="evidence-tag document">
+            RECORD
         </span>
 
     </div>
@@ -732,7 +728,7 @@ Round 1 — Initial Lead
             <div>
 
                 <span class="bank-label">
-                    ACCESS LOG
+                    VENDOR FILE
                 </span>
 
                 <h3>
@@ -744,11 +740,11 @@ Round 1 — Initial Lead
             <div class="bank-reference">
 
                 <span>
-                    RECORD
+                    VENDOR ID
                 </span>
 
                 <strong>
-                    LOG-0314-22
+                    VEND-0442
                 </strong>
 
             </div>
@@ -764,36 +760,7 @@ Round 1 — Initial Lead
             <div>
 
                 <span>
-                    DATE
-                </span>
-
-                <strong>
-                    March 14, 2026
-                </strong>
-
-            </div>
-
-            <div>
-
-                <span>
-                    TIME
-                </span>
-
-                <strong>
-                    8:26 PM
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="transaction-main">
-
-            <div>
-
-                <span>
-                    USER
+                    ACCOUNT CONTACT
                 </span>
 
                 <strong>
@@ -822,11 +789,11 @@ Round 1 — Initial Lead
             <div>
 
                 <span>
-                    ACTION
+                    DEPARTMENT
                 </span>
 
                 <strong>
-                    Viewed vendor record
+                    Accounts Department
                 </strong>
 
             </div>
@@ -834,11 +801,11 @@ Round 1 — Initial Lead
             <div>
 
                 <span>
-                    RECORD
+                    VENDOR STATUS
                 </span>
 
                 <strong>
-                    BDA Consulting Ltd.
+                    Active
                 </strong>
 
             </div>
@@ -848,9 +815,10 @@ Round 1 — Initial Lead
 
         <div class="invoice-note">
 
-            Access was recorded before the $45,000 payment was authorized.
-            Sarah Jones had legitimate access to vendor records as part of
-            her responsibilities.
+            Sarah Jones is listed as the account contact for BDA
+            Consulting's vendor file. The record also notes that the
+            vendor's bank settlement details were updated recently —
+            the file doesn't say by whom.
 
         </div>
 
@@ -861,6 +829,266 @@ Round 1 — Initial Lead
     <!-- =========================================
          INVESTIGATION QUESTIONS
     ========================================== -->
+
+    <section class="round1-investigation">
+
+        <div class="investigation-heading">
+
+            <span>
+                INVESTIGATION
+            </span>
+
+            <h2>
+                Initial Lead
+            </h2>
+
+            <p>
+                Weigh each piece of evidence carefully before
+                drawing a conclusion.
+            </p>
+
+        </div>
+
+
+        <form
+            action="/player/round/1/{{ team_name }}"
+            method="POST"
+            class="round1-form"
+        >
+
+
+            <!-- QUESTION 1 -->
+
+            <div class="round1-question">
+
+                <div class="question-number">
+                    01
+                </div>
+
+                <div class="question-content">
+
+                    <h3>
+                        What does comparing the invoice date to the
+                        bank transaction date reveal?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="invoice_after_payment"
+                            required
+                        >
+
+                        <span>
+                            The invoice is dated four days after the
+                            bank transaction had already gone through.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="payment_before_invoice"
+                        >
+
+                        <span>
+                            The payment was scheduled after a properly
+                            issued invoice.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="same_day"
+                        >
+
+                        <span>
+                            The invoice and the transaction happened
+                            on the same calendar day.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q1"
+                            value="cannot_determine"
+                        >
+
+                        <span>
+                            The dates alone don't tell you anything
+                            meaningful.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 2 -->
+
+            <div class="round1-question">
+
+                <div class="question-number">
+                    02
+                </div>
+
+                <div class="question-content">
+
+                    <h3>
+                        Which two pieces of evidence appear to
+                        directly contradict each other?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="hold_vs_proceed"
+                            required
+                        >
+
+                        <span>
+                            Michael's email holding the payment,
+                            and his later email telling Accounts
+                            to proceed — sent after the payment
+                            had already gone out.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="invoice_bank"
+                        >
+
+                        <span>
+                            The invoice and the bank transaction
+                            record.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="vendor_record"
+                        >
+
+                        <span>
+                            The vendor record and the invoice
+                            number.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q2"
+                            value="none"
+                        >
+
+                        <span>
+                            None of the documents contradict
+                            each other.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUESTION 3 -->
+
+            <div class="round1-question">
+
+                <div class="question-number">
+                    03
+                </div>
+
+                <div class="question-content">
+
+                    <h3>
+                        What does the vendor record establish at
+                        this early stage of the investigation?
+                    </h3>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="identifies_reviewer"
+                            required
+                        >
+
+                        <span>
+                            It identifies Sarah Jones as a contact
+                            on BDA Consulting's vendor file — not
+                            evidence of wrongdoing by itself.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="proves_sarah_guilty"
+                        >
+
+                        <span>
+                            It proves Sarah Jones personally
+                            controls the BDA Consulting account.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="irrelevant"
+                        >
+
+                        <span>
+                            It has nothing to do with the
+                            investigation.
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="q3"
+                            value="proves_michael_guilty"
+                        >
+
+                        <span>
+                            It proves Michael Carter falsified
+                            the vendor record.
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="round1-submit"
+            >
+                SUBMIT INVESTIGATION
+            </button>
+
+        </form>
+
+    </section>
 
 <script>
 
