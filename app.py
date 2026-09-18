@@ -554,6 +554,7 @@ def waiting(team_name):
     return render_template(
         "waiting.html",
         team_name=team_name,
+        avatar=team["avatar"],
         from_round=from_round,
         timed_out=timed_out,
         round_score=round_score,
@@ -985,6 +986,7 @@ def player_round(round_number, team_name):
         return render_template(
             "waiting.html",
             team_name=team_name,
+            avatar=team["avatar"],
             round_number=round_number
         )
 
