@@ -15,28 +15,6 @@ app = Flask(
 )
 
 
-@app.after_request
-def force_question_round_timer(response):
-    """Keep the actual question-page timer at 5:00, never 1:30."""
-    try:
-        if (
-            request.method == "GET"
-            and request.path.startswith("/player/round/")
-            and response.content_type
-            and response.content_type.startswith("text/html")
-        ):
-            html = response.get_data(as_text=True)
-            html = html.replace("const totalSeconds = 90;", "const totalSeconds = 300;")
-            html = html.replace("let remaining = 90 - elapsedSeconds;", "let remaining = 300 - elapsedSeconds;")
-            html = html.replace("const remaining = 90 - elapsedSeconds;", "const remaining = 300 - elapsedSeconds;")
-            html = html.replace("Math.max(90 - elapsed, 0)", "Math.max(300 - elapsed, 0)")
-            html = html.replace("Math.max(90 - elapsedSeconds, 0)", "Math.max(300 - elapsedSeconds, 0)")
-            html = html.replace("01:30", "05:00")
-            response.set_data(html)
-    except Exception:
-        pass
-    return response
-
 DATABASE = "fraud_game.db"
 
 PRE_GAME_SECONDS = 90
