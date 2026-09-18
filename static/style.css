@@ -11005,6 +11005,15 @@ body:has(.join-screen) {
     border: 1px solid rgba(99,102,241,.10);
 
     font-size: 14px;
+
+    overflow: hidden;
+}
+
+.host-team-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
 }
 
 .host-round-number small {
