@@ -297,25 +297,7 @@ Waiting Room
 
         {% if from_round != 5 %}
 
-            {% if game_status == "intermission" %}
-
-            <div class="intermission-card">
-                <div class="waiting-label">INTERMISSION</div>
-                <h2>10 MINUTE BREAK</h2>
-                <p>
-                    Round 3 will begin automatically when the intermission ends.
-                </p>
-                <div class="intermission-timer"
-                     id="intermission-timer"
-                     data-until="{{ intermission_until }}">
-                    10:00
-                </div>
-                <div class="intermission-subtext">
-                    ROUND 3 STARTING AUTOMATICALLY
-                </div>
-            </div>
-
-            {% elif from_round and from_round < 5 %}
+            {% if game_status != "intermission" and from_round and from_round < 5 %}
 
                 {% if game_status != "countdown" %}
                 <div class="waiting-status-card">
@@ -393,6 +375,19 @@ Waiting Room
             </div>
         </div>
 
+        <!-- Intermission card is always in the DOM so the polling script can
+             show it and keep its timer live without a page reload. -->
+        <div class="intermission-timer-card" id="intermission-card" style="display:none;">
+            <div class="intermission-label">INTERMISSION</div>
+            <h2>10 MINUTE BREAK</h2>
+            <div class="intermission-clock" id="intermission-timer">
+                10:00
+            </div>
+            <p>
+                ROUND 3 STARTING AUTOMATICALLY
+            </p>
+        </div>
+
         <div class="waiting-footer">
             INVESTIGATION SYSTEM • STANDING BY
         </div>
@@ -411,7 +406,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const waitingStatusText = document.getElementById("waiting-status-text");
     const waitingTitle = document.getElementById("waiting-title");
     const waitingDescription = document.getElementById("waiting-description");
-    const intermission = document.getElementById("intermission-timer");
+    const intermissionCard = document.getElementById("intermission-card");
+    const intermissionTimer = document.getElementById("intermission-timer");
 
     const fromRoundValue = page ? page.dataset.fromRound : "";
     const fromRound = fromRoundValue === "" ? null : Number(fromRoundValue);
@@ -447,6 +443,10 @@ document.addEventListener("DOMContentLoaded", function () {
     function showCountdown(remainingSeconds, isNextRound) {
         if (!countdownCard || !countdown) return;
 
+        if (intermissionCard) {
+            intermissionCard.style.display = "none";
+        }
+
         countdownCard.style.display = "block";
 
         if (countdownLabel) {
@@ -478,6 +478,10 @@ document.addEventListener("DOMContentLoaded", function () {
             countdownCard.style.display = "none";
         }
 
+        if (intermissionCard) {
+            intermissionCard.style.display = "none";
+        }
+
         if (waitingStatusCard) {
             waitingStatusCard.style.display = "flex";
         }
@@ -496,13 +500,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function showIntermission() {
+    function showIntermission(remainingSeconds) {
         if (countdownCard) {
             countdownCard.style.display = "none";
         }
 
         if (waitingStatusCard) {
             waitingStatusCard.style.display = "none";
+        }
+
+        if (intermissionCard) {
+            intermissionCard.style.display = "block";
+        }
+
+        if (intermissionTimer) {
+            intermissionTimer.textContent = formatTime(remainingSeconds);
         }
     }
 
@@ -526,7 +538,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 if (status === "intermission") {
-                    showIntermission();
+                    showIntermission(remaining);
                     return;
                 }
 
