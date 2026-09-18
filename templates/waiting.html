@@ -69,12 +69,12 @@ Waiting Room
 
         <div class="correct-answer">
             <strong>QUESTION 2</strong>
-            <p>The access log showing BDA Consulting's payment routing number was changed 17 minutes before the transfer.</p>
+            <p>Michael's email holding the payment, and his later email telling Accounts to proceed — sent after the payment had already gone out.</p>
         </div>
 
         <div class="correct-answer">
             <strong>QUESTION 3</strong>
-            <p>SJONES — Sarah Jones's account.</p>
+            <p>It identifies Sarah Jones as a contact on BDA Consulting's vendor file — not evidence of wrongdoing by itself.</p>
         </div>
 
     {% elif from_round == 2 %}
@@ -96,7 +96,7 @@ Waiting Room
 
         <div class="correct-answer">
             <strong>QUESTION 4</strong>
-            <p>Ocean View Holdings.</p>
+            <p>Carter Advisory.</p>
         </div>
 
     {% elif from_round == 3 %}
@@ -118,7 +118,7 @@ Waiting Room
 
         <div class="correct-answer">
             <strong>QUESTION 4</strong>
-            <p>10:37 chat → 10:39 invoice created → 10:42 login → 10:44 payment.</p>
+            <p>10:31 Sarah accesses BDA's vendor file → 10:34 Sarah contacts BDA → 10:37 Michael's chat → 10:39 invoice created → 10:42 MCARTER login → 10:44 payment authorized.</p>
         </div>
 
     {% elif from_round == 4 %}
@@ -147,31 +147,26 @@ Waiting Room
 
         <div class="correct-answer">
             <strong>QUESTION 1</strong>
-            <p>Michael Carter (MCARTER)</p>
+            <p>Sarah is relevant to the investigation, but access alone does not establish authorization.</p>
         </div>
 
         <div class="correct-answer">
             <strong>QUESTION 2</strong>
-            <p>The MCARTER login, payment authorization, invoice metadata and chat evidence.</p>
+            <p>The payment authorization log.</p>
         </div>
 
         <div class="correct-answer">
             <strong>QUESTION 3</strong>
-            <p>The funds were moved through multiple entities in a way that could obscure their origin.</p>
+            <p>MCARTER login and activity logs.</p>
         </div>
 
         <div class="correct-answer">
             <strong>QUESTION 4</strong>
-            <p>"I did not use my laptop."</p>
+            <p>10:37 chat → 10:39 invoice created → 10:42 login → 10:44 payment authorized.</p>
         </div>
 
         <div class="correct-answer">
-            <strong>QUESTION 5</strong>
-            <p>10:37 chat → 10:39 invoice created → 10:42 MCARTER login → 10:44 payment authorized.</p>
-        </div>
-
-        <div class="correct-answer">
-            <strong>QUESTION 6</strong>
+            <strong>QUESTION 5 — FINAL VERDICT</strong>
             <p>Michael Carter</p>
         </div>
 
@@ -199,14 +194,14 @@ Waiting Room
                             "payment_before_invoice": "The payment was scheduled after a properly issued invoice.",
                             "same_day": "The invoice and the transaction happened on the same calendar day.",
                             "cannot_determine": "The dates alone don't tell you anything meaningful.",
-                            "vendor_edit": "The access log showing BDA Consulting's payment routing number was changed 17 minutes before the transfer.",
-                            "email": "Michael Carter's internal email about the payment file.",
-                            "invoice": "The invoice number recorded for the transaction.",
-                            "bank_transfer": "The original $45,000 transfer itself.",
-                            "sjones_login": "SJONES — Sarah Jones's account.",
-                            "mcarter_login": "MCARTER — Michael Carter's account.",
-                            "no_record": "No user was logged for the change.",
-                            "shared_login": "A shared department login used by the whole team."
+                            "hold_vs_proceed": "Michael's email holding the payment, and his later email telling Accounts to proceed — sent after the payment had already gone out.",
+                            "invoice_bank": "The invoice and the bank transaction record.",
+                            "vendor_record": "The vendor record and the invoice number.",
+                            "none": "None of the documents contradict each other.",
+                            "identifies_reviewer": "It identifies Sarah Jones as a contact on BDA Consulting's vendor file — not evidence of wrongdoing by itself.",
+                            "proves_sarah_guilty": "It proves Sarah Jones personally controls the BDA Consulting account.",
+                            "irrelevant": "It has nothing to do with the investigation.",
+                            "proves_michael_guilty": "It proves Michael Carter falsified the vendor record."
                         } %}
                     {% elif from_round == 2 %}
                         {% set labels = {
@@ -222,9 +217,9 @@ Waiting Room
                             "withdrawal": "A cash withdrawal.",
                             "layering": "Layering.",
                             "payroll": "Payroll processing.",
-                            "bermuda_holdings": "Bermuda Holdings Ltd.",
+                            "carter_advisory": "Carter Advisory.",
                             "ocean_view": "Ocean View Holdings.",
-                            "bda_consulting": "BDA Consulting Ltd.",
+                            "bermuda_holdings": "Bermuda Holdings Ltd.",
                             "accounts_department": "Accounts Department."
                         } %}
                     {% elif from_round == 3 %}
@@ -235,14 +230,15 @@ Waiting Room
                             "ip": "The IP address by itself.",
                             "payment_user": "The payment record showing authorization by MCARTER.",
                             "chat": "The chat message.",
+                            "sarah_access": "Sarah Jones's vendor file access.",
                             "created_before_payment": "The invoice was created shortly before the payment and attributed to MCARTER.",
                             "old_document": "The invoice was created months earlier.",
                             "different_author": "Someone else created the invoice.",
                             "no_metadata": "The document contains no useful metadata.",
-                            "investigation_timeline": "10:37 chat → 10:39 invoice created → 10:42 login → 10:44 payment.",
+                            "investigation_timeline": "10:31 Sarah accesses BDA's vendor file → 10:34 Sarah contacts BDA → 10:37 Michael's chat → 10:39 invoice created → 10:42 MCARTER login → 10:44 payment authorized.",
+                            "sarah_authorizes": "10:31 Sarah accesses BDA's vendor file → 10:34 Sarah contacts BDA → 10:44 Sarah authorizes the payment.",
                             "overseas": "Michael was overseas and never accessed the system.",
-                            "random": "The timestamps have no relationship.",
-                            "email_only": "The email alone proves what happened."
+                            "random": "The timestamps have no relationship."
                         } %}
                     {% elif from_round == 4 %}
                         {% set labels = {
@@ -262,26 +258,26 @@ Waiting Room
                         } %}
                     {% elif from_round == 5 %}
                         {% set labels = {
-                            "michael": "Michael Carter (MCARTER)",
-                            "sarah": "Sarah",
-                            "accounts": "The Accounts Department",
-                            "bda": "BDA Consulting Ltd.",
-                            "login_payment": "The MCARTER login, payment authorization, invoice metadata and chat evidence.",
-                            "digital_evidence": "The MCARTER login, payment authorization, invoice metadata and chat evidence.",
-                            "invoice_only": "The invoice alone.",
-                            "interview": "Michael's interview statement.",
-                            "layering": "The funds were moved through multiple entities in a way that could obscure their origin.",
-                            "normal": "The transactions were a normal consulting payment.",
-                            "refund": "The money represented a customer refund.",
-                            "payroll": "The money was part of normal payroll.",
-                            "laptop": "I did not use my laptop.",
-                            "payment": "The payment was $45,000.",
-                            "invoice": "The invoice existed.",
-                            "consulting": "BDA Consulting was involved.",
-                            "timeline": "10:37 chat → 10:39 invoice created → 10:42 MCARTER login → 10:44 payment authorized.",
-                            "reverse": "Payment → login → chat → invoice.",
-                            "overseas": "Michael was overseas throughout the entire event.",
-                            "unknown": "There is no meaningful timeline."
+                            "sarah_guilty": "Sarah definitely stole the money.",
+                            "relevant_not_proof": "Sarah is relevant to the investigation, but access alone does not establish authorization.",
+                            "conspiracy": "Sarah definitely worked with Michael.",
+                            "sarah_created_payment": "Sarah created the payment.",
+                            "sarah_communication": "Sarah's communication with BDA.",
+                            "sarah_access": "Sarah's vendor-file access.",
+                            "payment_authorization_log": "The payment authorization log.",
+                            "sarah_interview": "Sarah's interview.",
+                            "sarah_bda_comm": "Sarah's BDA communication.",
+                            "mcarter_login_logs": "MCARTER login and activity logs.",
+                            "vendor_address": "Vendor address.",
+                            "invoice_amount": "Invoice amount.",
+                            "timeline": "10:37 chat → 10:39 invoice created → 10:42 login → 10:44 payment authorized.",
+                            "reverse": "10:44 payment → 10:42 login → 10:39 invoice → 10:37 chat.",
+                            "scrambled": "10:31 Sarah's access → 10:44 payment → 10:37 chat → 10:39 invoice.",
+                            "unrelated": "The events are unrelated and have no order.",
+                            "sarah": "Sarah Jones",
+                            "michael": "Michael Carter",
+                            "bda_person": "Someone at BDA Consulting",
+                            "accounts": "Accounts Department"
                         } %}
                     {% else %}
                         {% set labels = {} %}

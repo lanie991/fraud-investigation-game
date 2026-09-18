@@ -704,10 +704,10 @@ def player_round(round_number, team_name):
         if q1 == "invoice_after_payment":
             score += 34
 
-        if q2 == "vendor_edit":
+        if q2 == "hold_vs_proceed":
             score += 33
 
-        if q3 == "sjones_login":
+        if q3 == "identifies_reviewer":
             score += 33
 
         connection = get_db()
@@ -774,7 +774,7 @@ def player_round(round_number, team_name):
         if q3 == "layering":
             score += 38
 
-        if q4 == "ocean_view":
+        if q4 == "carter_advisory":
             score += 37
 
         connection = get_db()
@@ -966,33 +966,28 @@ def player_round(round_number, team_name):
         q3 = request.form.get("q3")
         q4 = request.form.get("q4")
         q5 = request.form.get("q5")
-        q6 = request.form.get("q6")
 
         score = 0
 
-        # Q1 — Michael Carter
-        if q1 == "michael":
-            score += 60
+        # Q1 — Sarah's access is relevant but not proof of authorization
+        if q1 == "relevant_not_proof":
+            score += 70
 
-        # Q2 — Digital evidence
-        if q2 == "digital_evidence":
-            score += 60
+        # Q2 — The payment authorization log distinguishes the authorizer
+        if q2 == "payment_authorization_log":
+            score += 70
 
-        # Q3 — Layering
-        if q3 == "layering":
-            score += 60
+        # Q3 — MCARTER login/activity logs contradict the laptop claim
+        if q3 == "mcarter_login_logs":
+            score += 70
 
-        # Q4 — Michael said he did not use his laptop
-        if q4 == "laptop":
-            score += 60
+        # Q4 — Correct chronological sequence
+        if q4 == "timeline":
+            score += 70
 
-        # Q5 — Correct timeline
-        if q5 == "timeline":
-            score += 60
-
-        # Q6 — Final verdict: Michael Carter
-        if q6 == "michael":
-            score += 100
+        # Q5 — Final verdict: Michael Carter
+        if q5 == "michael":
+            score += 120
 
 
         # -------------------------
@@ -1044,8 +1039,7 @@ def player_round(round_number, team_name):
                     f"q2={q2};"
                     f"q3={q3};"
                     f"q4={q4};"
-                    f"q5={q5};"
-                    f"q6={q6}"
+                    f"q5={q5}"
                 ),
                 score
             )

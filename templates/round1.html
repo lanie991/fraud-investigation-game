@@ -473,7 +473,7 @@ Round 1 — Initial Lead
             <div class="outlook-email">
 
                 <h3>
-                    Payment confirmation
+                    Payment instruction
                 </h3>
 
 
@@ -507,7 +507,7 @@ Round 1 — Initial Lead
 
                     <div>
                         <strong>Date:</strong>
-                        March 14, 2026 — 10:46 PM
+                        March 13, 2026 — 4:18 PM
                     </div>
 
                 </div>
@@ -516,12 +516,12 @@ Round 1 — Initial Lead
                 <div class="email-body">
 
                     <p>
-                        The BDA Consulting payment has gone out.
+                        Please hold the BDA Consulting payment.
                     </p>
 
                     <p>
-                        Let me know as soon as the invoice comes in
-                        from Accounts so we can close out the file.
+                        We have not yet received the final
+                        consulting report.
                     </p>
 
                     <p>
@@ -623,7 +623,7 @@ Round 1 — Initial Lead
             <div class="outlook-email">
 
                 <h3>
-                    BDA Consulting — Follow-Up
+                    BDA Consulting Payment
                 </h3>
 
 
@@ -652,12 +652,12 @@ Round 1 — Initial Lead
 
                     <div>
                         <strong>To:</strong>
-                        Accounts Department
+                        Accounts Payable
                     </div>
 
                     <div>
                         <strong>Date:</strong>
-                        March 15, 2026 — 9:10 AM
+                        March 14, 2026 — 10:47 PM
                     </div>
 
                 </div>
@@ -666,15 +666,11 @@ Round 1 — Initial Lead
                 <div class="email-body">
 
                     <p>
-                        Following up on the BDA Consulting payment.
+                        Please proceed with the BDA Consulting payment.
                     </p>
 
                     <p>
-                        Please make sure the payment documentation is kept with the transaction file.
-                    </p>
-
-                    <p>
-                        I will review the remaining documentation this morning.
+                        The supporting documentation has been received.
                     </p>
 
                     <p>
@@ -707,19 +703,19 @@ Round 1 — Initial Lead
             <div>
 
                 <small>
-                    SYSTEM ACTIVITY
+                    ACCOUNTS RECORD
                 </small>
 
                 <h2>
-                    Vendor File Access
+                    Vendor Record
                 </h2>
 
             </div>
 
         </div>
 
-        <span class="evidence-tag flagged">
-            CRITICAL
+        <span class="evidence-tag document">
+            RECORD
         </span>
 
     </div>
@@ -732,7 +728,7 @@ Round 1 — Initial Lead
             <div>
 
                 <span class="bank-label">
-                    ACCESS LOG
+                    VENDOR FILE
                 </span>
 
                 <h3>
@@ -744,11 +740,11 @@ Round 1 — Initial Lead
             <div class="bank-reference">
 
                 <span>
-                    RECORD
+                    VENDOR ID
                 </span>
 
                 <strong>
-                    LOG-0314-22
+                    VEND-0442
                 </strong>
 
             </div>
@@ -764,36 +760,7 @@ Round 1 — Initial Lead
             <div>
 
                 <span>
-                    DATE
-                </span>
-
-                <strong>
-                    March 14, 2026
-                </strong>
-
-            </div>
-
-            <div>
-
-                <span>
-                    TIME
-                </span>
-
-                <strong>
-                    8:26 PM
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="transaction-main">
-
-            <div>
-
-                <span>
-                    USER
+                    ACCOUNT CONTACT
                 </span>
 
                 <strong>
@@ -822,11 +789,11 @@ Round 1 — Initial Lead
             <div>
 
                 <span>
-                    ACTION
+                    DEPARTMENT
                 </span>
 
                 <strong>
-                    Edited vendor bank routing number
+                    Accounts Department
                 </strong>
 
             </div>
@@ -834,11 +801,11 @@ Round 1 — Initial Lead
             <div>
 
                 <span>
-                    RECORD
+                    VENDOR STATUS
                 </span>
 
                 <strong>
-                    BDA Consulting Ltd.
+                    Active
                 </strong>
 
             </div>
@@ -848,10 +815,10 @@ Round 1 — Initial Lead
 
         <div class="invoice-note">
 
-            The settlement account on file for BDA Consulting was changed
-            under the SJONES login at 8:26 PM — roughly two hours before
-            the $45,000 payment was sent. The new account number does not
-            match BDA Consulting's previously verified bank details.
+            Sarah Jones is listed as the account contact for BDA
+            Consulting's vendor file. The record also notes that the
+            vendor's bank settlement details were updated recently —
+            the file doesn't say by whom.
 
         </div>
 
@@ -974,23 +941,23 @@ Round 1 — Initial Lead
                 <div class="question-content">
 
                     <h3>
-                        Which piece of evidence shows the clearest
-                        attempt to redirect the funds before they
-                        were paid out?
+                        Which two pieces of evidence appear to
+                        directly contradict each other?
                     </h3>
 
                     <label>
                         <input
                             type="radio"
                             name="q2"
-                            value="vendor_edit"
+                            value="hold_vs_proceed"
                             required
                         >
 
                         <span>
-                            The access log showing BDA Consulting's
-                            payment routing number was changed 17
-                            minutes before the transfer.
+                            Michael's email holding the payment,
+                            and his later email telling Accounts
+                            to proceed — sent after the payment
+                            had already gone out.
                         </span>
                     </label>
 
@@ -998,12 +965,12 @@ Round 1 — Initial Lead
                         <input
                             type="radio"
                             name="q2"
-                            value="email"
+                            value="invoice_bank"
                         >
 
                         <span>
-                            Michael Carter's internal email about
-                            the payment file.
+                            The invoice and the bank transaction
+                            record.
                         </span>
                     </label>
 
@@ -1011,12 +978,12 @@ Round 1 — Initial Lead
                         <input
                             type="radio"
                             name="q2"
-                            value="invoice"
+                            value="vendor_record"
                         >
 
                         <span>
-                            The invoice number recorded for the
-                            transaction.
+                            The vendor record and the invoice
+                            number.
                         </span>
                     </label>
 
@@ -1024,11 +991,12 @@ Round 1 — Initial Lead
                         <input
                             type="radio"
                             name="q2"
-                            value="bank_transfer"
+                            value="none"
                         >
 
                         <span>
-                            The original $45,000 transfer itself.
+                            None of the documents contradict
+                            each other.
                         </span>
                     </label>
 
@@ -1048,20 +1016,22 @@ Round 1 — Initial Lead
                 <div class="question-content">
 
                     <h3>
-                        According to the system record, whose login
-                        performed the routing change?
+                        What does the vendor record establish at
+                        this early stage of the investigation?
                     </h3>
 
                     <label>
                         <input
                             type="radio"
                             name="q3"
-                            value="sjones_login"
+                            value="identifies_reviewer"
                             required
                         >
 
                         <span>
-                            SJONES — Sarah Jones's account.
+                            It identifies Sarah Jones as a contact
+                            on BDA Consulting's vendor file — not
+                            evidence of wrongdoing by itself.
                         </span>
                     </label>
 
@@ -1069,11 +1039,12 @@ Round 1 — Initial Lead
                         <input
                             type="radio"
                             name="q3"
-                            value="mcarter_login"
+                            value="proves_sarah_guilty"
                         >
 
                         <span>
-                            MCARTER — Michael Carter's account.
+                            It proves Sarah Jones personally
+                            controls the BDA Consulting account.
                         </span>
                     </label>
 
@@ -1081,11 +1052,12 @@ Round 1 — Initial Lead
                         <input
                             type="radio"
                             name="q3"
-                            value="no_record"
+                            value="irrelevant"
                         >
 
                         <span>
-                            No user was logged for the change.
+                            It has nothing to do with the
+                            investigation.
                         </span>
                     </label>
 
@@ -1093,12 +1065,12 @@ Round 1 — Initial Lead
                         <input
                             type="radio"
                             name="q3"
-                            value="shared_login"
+                            value="proves_michael_guilty"
                         >
 
                         <span>
-                            A shared department login used by the
-                            whole team.
+                            It proves Michael Carter falsified
+                            the vendor record.
                         </span>
                     </label>
 
