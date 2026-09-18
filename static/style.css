@@ -4952,6 +4952,36 @@ body:has(.join-screen) {
 }
 
 
+.waiting-team-avatar {
+
+    display: block;
+
+    width: 64px;
+
+    height: 64px;
+
+    margin: 8px auto 0;
+
+    border-radius: 14px;
+
+    object-fit: cover;
+
+    border: 1px solid rgba(148, 163, 184, .15);
+
+}
+
+
+.waiting-team-avatar-emoji {
+
+    margin: 8px auto 0;
+
+    font-size: 40px;
+
+    line-height: 1;
+
+}
+
+
 .waiting-team {
 
     margin-top: 5px;

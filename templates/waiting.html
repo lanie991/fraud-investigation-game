@@ -316,6 +316,25 @@ Waiting Room
 
         <div class="waiting-card">
             <div class="waiting-card-label">TEAM</div>
+            {% set avatar_images = {
+                "detective_black": "detective.png",
+                "investigator_black": "investigator.png",
+                "analyst_black": "analyst.png",
+                "researcher_white": "researcher.png",
+                "surveillance_black": "surveillance.png",
+                "forensics_black": "forensics.png",
+                "hacker_white": "hacker.png",
+                "moneymover_black": "money_movers.png",
+                "k9_unit": "k9.png",
+                "field_agent_white": "field_agents.png"
+            } %}
+            {% if avatar in avatar_images %}
+                <img class="waiting-team-avatar"
+                     src="{{ url_for('static', filename='avatars/' + avatar_images[avatar]) }}"
+                     alt="">
+            {% elif avatar %}
+                <div class="waiting-team-avatar-emoji">{{ avatar }}</div>
+            {% endif %}
             <div class="waiting-team">{{ team_name }}</div>
             <div class="waiting-ready">
                 <span class="waiting-dot"></span>
