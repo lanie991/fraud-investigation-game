@@ -12088,30 +12088,47 @@ body:has(.join-screen) {
 ========================================================= */
 
 .intermission-timer-card {
+    width: 100%;
+    max-width: 520px;
     margin: 30px auto;
-    padding: 30px;
+    padding: 40px 30px;
     text-align: center;
-    background: #ffffff;
+    background: rgba(10, 15, 28, 0.96);
+    border: 1px solid rgba(60, 150, 255, 0.35);
     border-radius: 16px;
+    box-shadow: 0 0 40px rgba(30, 100, 255, 0.12);
+}
+
+.intermission-timer-card h2 {
+    color: #f8fafc;
+    margin: 8px 0 0;
 }
 
 .intermission-label {
-    font-size: 14px;
+    color: #818cf8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
 }
 
 .intermission-clock {
-    margin: 10px 0;
+    color: #f8fafc;
+    font-family: "JetBrains Mono", monospace;
+    margin: 20px 0;
     font-size: 64px;
     font-weight: 800;
+    letter-spacing: 4px;
     line-height: 1;
 }
 
 .intermission-timer-card p {
+    color: #94a3b8;
     margin: 10px 0 0;
     font-size: 13px;
     font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .countdown-card {
