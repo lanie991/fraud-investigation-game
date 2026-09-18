@@ -10,66 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 1000);
 });
 </script>
-
-
-<style>
-.auto-starting-card {
-    display: flex !important;
-    align-items: center;
-    gap: 12px;
-    min-height: 64px;
-    padding: 10px 14px !important;
-    text-align: left;
-    cursor: default;
-}
-.auto-starting-icon {
-    width: 34px;
-    height: 34px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: rgba(91, 99, 255, 0.12);
-    font-size: 17px;
-    flex: 0 0 auto;
-}
-.auto-starting-text {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    line-height: 1.15;
-    flex: 1;
-}
-.auto-starting-text strong {
-    font-size: 12px;
-    letter-spacing: .08em;
-}
-.auto-starting-text small {
-    font-size: 10px;
-    opacity: .65;
-    letter-spacing: .02em;
-}
-.auto-starting-dots {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    padding-left: 8px;
-}
-.auto-starting-dots i {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: .35;
-    animation: autoStartPulse 1.2s infinite ease-in-out;
-}
-.auto-starting-dots i:nth-child(2) { animation-delay: .15s; }
-.auto-starting-dots i:nth-child(3) { animation-delay: .3s; }
-@keyframes autoStartPulse {
-    0%, 60%, 100% { transform: translateY(0); opacity: .3; }
-    30% { transform: translateY(-3px); opacity: 1; }
-}
-</style>
-
 {% endblock %}
 
 {% block content %}
@@ -80,40 +20,20 @@ document.addEventListener("DOMContentLoaded", function () {
         <div>
             <div class="host-kicker">FRAUD INVESTIGATION SYSTEM</div>
             <h1>HOST CONTROL</h1>
-            <p>Manage the investigation rounds and control the case.</p>
+            <p>Each team runs its own independent investigation timeline.</p>
         </div>
         <div class="host-status">● HOST</div>
     </div>
 
     <div class="host-overview">
         <div>
-            <span>CURRENT ROUND</span>
-            <strong>
-                {% if game["game_status"] == "countdown" and game["current_round"] == 0 %}
-                    1
-                {% elif game["game_status"] == "intermission" %}
-                    3
-                {% else %}
-                    {{ game["current_round"] }}
-                {% endif %}
-            </strong>
+            <span>TEAMS JOINED</span>
+            <strong>{{ teams|length }}</strong>
         </div>
         <div>
-            <span>STATUS</span>
-            <strong class="overview-status">
-                {% if game["game_status"] == "finished" %}
-                    GAME COMPLETE
-                {% elif game["game_status"] == "intermission" %}
-                    10-MINUTE INTERMISSION
-                {% elif game["game_status"] == "countdown" and game["current_round"] == 0 %}
-                    ROUND 1 STARTING
-                {% elif game["game_status"] == "countdown" %}
-                    ROUND {{ game["current_round"] + 1 }} STARTING
-                {% elif game["current_round"] >= 5 %}
-                    FINAL ROUND ACTIVE
-                {% else %}
-                    ROUND {{ game["current_round"] }} ACTIVE
-                {% endif %}
+            <span>TEAMS FINISHED</span>
+            <strong>
+                {{ teams|selectattr("team_status", "equalto", "finished")|list|length }}
             </strong>
         </div>
     </div>
@@ -121,89 +41,67 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="host-section-header">
         <div>
             <span>INVESTIGATION</span>
-            <h2>ROUND CONTROL</h2>
+            <h2>TEAM PROGRESS</h2>
         </div>
-        <span class="round-count">{{ rounds|length }} ROUNDS</span>
+        <span class="round-count">{{ teams|length }} TEAMS</span>
     </div>
 
     <div class="host-rounds">
-        {% for round in rounds %}
+
+        {% for team in teams %}
         <div class="host-round-card">
 
             <div class="host-round-top">
                 <div class="host-round-number">
-                    <span>
-                        {% if round["round_number"] == 1 %}
-                            🔎
-                        {% elif round["round_number"] == 2 %}
-                            💰
-                        {% elif round["round_number"] == 3 %}
-                            💻
-                        {% elif round["round_number"] == 4 %}
-                            🕵🏽‍♀️
-                        {% else %}
-                            🚨
-                        {% endif %}
-                    </span>
+                    <span>{{ team["avatar"] }}</span>
                     <div>
-                        <small>ROUND {{ round["round_number"] }}</small>
-                        <h3>{{ round["round_name"] }}</h3>
+                        <small>TEAM</small>
+                        <h3>{{ team["team_name"] }}</h3>
                     </div>
                 </div>
 
                 <div class="round-points">
-                    <strong>{{ round["points"] }}</strong>
+                    <strong>{{ team["total_score"] }}</strong>
                     <span>POINTS</span>
                 </div>
             </div>
 
             <div class="host-round-status">
-                {% if round["status"] == "active" %}
+                {% if team["team_status"] == "finished" %}
+                    <div class="host-status-badge closed-status">● FINISHED</div>
+                    <span>This team has completed the investigation.</span>
+                {% elif team["team_status"] == "intermission" %}
+                    <div class="host-status-badge ready-status">● INTERMISSION</div>
+                    <span>On a 10-minute break before Round 3.</span>
+                {% elif team["team_status"] == "countdown" %}
+                    <div class="host-status-badge ready-status">● STARTING</div>
+                    <span>
+                        {% if team["current_round"] == 0 %}
+                            Round 1 starting automatically.
+                        {% else %}
+                            Round {{ team["current_round"] + 1 }} starting automatically.
+                        {% endif %}
+                    </span>
+                {% elif team["team_status"] == "active" %}
                     <div class="host-status-badge active-status">● ACTIVE</div>
-                    <span>Players are currently investigating this round.</span>
-                {% elif round["status"] == "closed" %}
-                    <div class="host-status-badge closed-status">● CLOSED</div>
-                    <span>Round completed. Results are available.</span>
-                {% elif round["round_number"] == game["current_round"] + 1 %}
-                    <div class="host-status-badge ready-status">● READY</div>
-                    <span>Ready to begin the next investigation.</span>
+                    <span>Currently investigating Round {{ team["current_round"] }}.</span>
                 {% else %}
-                    <div class="host-status-badge locked-status">● LOCKED</div>
-                    <span>Complete the previous round to unlock this one.</span>
-                {% endif %}
-            </div>
-
-            <div class="host-round-action">
-                {% if round["status"] == "active" %}
-                    <form action="/host/close-round/{{ round['round_number'] }}" method="POST">
-                        <button type="submit" class="host-action danger-action">CLOSE ROUND</button>
-                    </form>
-                {% elif round["status"] == "closed" %}
-                    <form action="/host/results/{{ round['round_number'] }}" method="GET">
-                        <button type="submit" class="host-action secondary-action">VIEW ROUND RESULTS →</button>
-                    </form>
-                {% elif round["round_number"] == game["current_round"] + 1 %}
-                    {% if round["round_number"] == 1 %}
-                        <form action="/host/unlock-round/1" method="POST">
-                            <button type="submit" class="host-action primary-action">START GAME →</button>
-                        </form>
-                    {% else %}
-                        <div class="host-action secondary-action auto-starting-card" aria-label="Round starts automatically">
-    <span class="auto-starting-icon" aria-hidden="true">⏳</span>
-    <span class="auto-starting-text">
-        <strong>STARTING AUTOMATICALLY</strong>
-        <small>Next round will unlock when the countdown ends.</small>
-    </span>
-    <span class="auto-starting-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-</div>
-                    {% endif %}
-                {% else %}
-                    <button type="button" class="host-action locked-action" disabled>🔒 ROUND LOCKED</button>
+                    <div class="host-status-badge locked-status">● LOBBY</div>
+                    <span>Waiting to begin.</span>
                 {% endif %}
             </div>
 
         </div>
         {% endfor %}
+
+        {% if not teams %}
+        <div class="host-round-card">
+            <div class="host-round-status">
+                <span>No teams have joined yet.</span>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
 
     <div class="host-controls">
@@ -219,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <strong>RESET INVESTIGATION</strong>
                 <p>
                     Reset the game when running a new test session.
-                    This will clear the current investigation progress.
+                    This will remove every team and their progress.
                 </p>
             </div>
 
@@ -230,73 +128,5 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 
 </div>
-
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    setInterval(function () {
-        window.location.reload();
-    }, 1000);
-});
-</script>
-
-
-<style>
-.auto-starting-card {
-    display: flex !important;
-    align-items: center;
-    gap: 12px;
-    min-height: 64px;
-    padding: 10px 14px !important;
-    text-align: left;
-    cursor: default;
-}
-.auto-starting-icon {
-    width: 34px;
-    height: 34px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: rgba(91, 99, 255, 0.12);
-    font-size: 17px;
-    flex: 0 0 auto;
-}
-.auto-starting-text {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    line-height: 1.15;
-    flex: 1;
-}
-.auto-starting-text strong {
-    font-size: 12px;
-    letter-spacing: .08em;
-}
-.auto-starting-text small {
-    font-size: 10px;
-    opacity: .65;
-    letter-spacing: .02em;
-}
-.auto-starting-dots {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    padding-left: 8px;
-}
-.auto-starting-dots i {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: .35;
-    animation: autoStartPulse 1.2s infinite ease-in-out;
-}
-.auto-starting-dots i:nth-child(2) { animation-delay: .15s; }
-.auto-starting-dots i:nth-child(3) { animation-delay: .3s; }
-@keyframes autoStartPulse {
-    0%, 60%, 100% { transform: translateY(0); opacity: .3; }
-    30% { transform: translateY(-3px); opacity: 1; }
-}
-</style>
 
 {% endblock %}

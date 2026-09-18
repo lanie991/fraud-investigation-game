@@ -1253,7 +1253,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const roundNumber = {{ round_data['round_number'] }};
-    const statusUrl = "/player/round-time/" + roundNumber;
+    const statusUrl = "/player/round-time/" + roundNumber + "/" + encodeURIComponent("{{ team_name }}");
     let redirecting = false;
 
     /*
