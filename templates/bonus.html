@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}
+Bonus Question — Tiebreaker
+{% endblock %}
+
+{% block content %}
+
+<div class="waiting-page" data-team-name="{{ team_name }}">
+    <div class="waiting-content">
+
+        {% if not answered %}
+
+        <div class="waiting-label">TIEBREAKER</div>
+        <h1>BONUS QUESTION</h1>
+        <p class="waiting-description">
+            Your team is tied for first place. Answer this bonus
+            question correctly to break the tie.
+        </p>
+
+        <div class="waiting-card" style="margin-bottom: 20px;">
+            <div class="waiting-card-label">TIME REMAINING</div>
+            <div id="countdown-clock"
+                 style="font-size:72px;font-weight:800;line-height:1;text-align:center;margin:25px 0;letter-spacing:4px;font-family:'JetBrains Mono',monospace;color:#f8fafc;">
+                02:00
+            </div>
+        </div>
+
+        <section class="round1-investigation">
+
+            <form action="/player/bonus/{{ team_name }}" method="POST" class="round1-form">
+
+                <div class="round1-question">
+
+                    <div class="question-number">?</div>
+
+                    <div class="question-content">
+
+                        <h3>
+                            Under the "Fraud Triangle" theory used by fraud
+                            examiners, which three elements must typically be
+                            present for occupational fraud to occur?
+                        </h3>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="answer"
+                                value="motive_means_opportunity"
+                                required
+                            >
+                            <span>Motive, Means, and Opportunity</span>
+                        </label>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="answer"
+                                value="pressure_opportunity_rationalization"
+                            >
+                            <span>Pressure, Opportunity, and Rationalization</span>
+                        </label>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="answer"
+                                value="greed_access_secrecy"
+                            >
+                            <span>Greed, Access, and Secrecy</span>
+                        </label>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="answer"
+                                value="incentive_capability_concealment"
+                            >
+                            <span>Incentive, Capability, and Concealment</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+                <button type="submit" class="round1-submit">
+                    SUBMIT ANSWER
+                </button>
+
+            </form>
+
+        </section>
+
+        {% else %}
+
+        <div class="waiting-label">TIEBREAKER RESULT</div>
+
+        {% if correct %}
+        <h1>CORRECT!</h1>
+        {% else %}
+        <h1>INCORRECT</h1>
+        {% endif %}
+
+        <div class="round-result-card">
+            <div class="score-card-label">TIEBREAKER ANSWER</div>
+            <div class="round-result-score">
+                {% if correct %}✓{% else %}✗{% endif %}
+            </div>
+            {% if correct %}
+            <p class="round-result-message">
+                Your team answered the tiebreaker correctly.
+            </p>
+            {% else %}
+            <p class="round-result-message">
+                Your team's answer was incorrect. The correct answer
+                was Pressure, Opportunity, and Rationalization.
+            </p>
+            {% endif %}
+        </div>
+
+        <div class="final-results-section">
+            <a href="/host/final_results" class="final-results-button">
+                🏆 VIEW RESULTS
+            </a>
+        </div>
+
+        {% endif %}
+
+        <div class="waiting-footer">
+            INVESTIGATION SYSTEM • STANDING BY
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const alreadyAnswered = {{ "true" if answered else "false" }};
+    if (alreadyAnswered) {
+        return;
+    }
+
+    const clock = document.getElementById("countdown-clock");
+    const teamName = "{{ team_name }}";
+    const statusUrl = "/player/bonus-time/" + encodeURIComponent(teamName);
+    let redirecting = false;
+
+    function formatTime(totalSeconds) {
+        totalSeconds = Math.max(0, Number(totalSeconds) || 0);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        return String(minutes).padStart(2, "0") + ":" +
+               String(seconds).padStart(2, "0");
+    }
+
+    function poll() {
+        if (redirecting) return;
+
+        fetch(statusUrl, { cache: "no-store" })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("Bonus time request failed");
+                }
+                return response.json();
+            })
+            .then(function (data) {
+                const remaining = Number(data.remaining_seconds) || 0;
+                if (clock) {
+                    clock.textContent = formatTime(remaining);
+                }
+
+                if (remaining <= 0 || data.closed) {
+                    redirecting = true;
+                    window.location.reload();
+                }
+            })
+            .catch(function () {
+                // Keep showing the last known time if a single poll fails.
+            });
+    }
+
+    poll();
+    setInterval(poll, 1000);
+
+});
+</script>
+
+{% endblock %}

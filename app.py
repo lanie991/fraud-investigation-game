@@ -20,6 +20,10 @@ DATABASE = "fraud_game.db"
 PRE_GAME_SECONDS = 90
 ROUND_DURATION_SECONDS = 300
 INTERMISSION_SECONDS = 600
+BONUS_DURATION_SECONDS = 120
+
+# The tiebreaker question asked only of teams tied for first place.
+BONUS_CORRECT_ANSWER = "pressure_opportunity_rationalization"
 
 def get_db():
     connection = sqlite3.connect(DATABASE)
@@ -76,6 +80,29 @@ def initialize_database():
     try:
         connection.execute(
             "ALTER TABLE teams ADD COLUMN intermission_until TEXT"
+        )
+    except sqlite3.OperationalError:
+        pass
+
+    # Tiebreaker bonus question, asked only of teams tied for first
+    # place once they finish Round 5.
+    try:
+        connection.execute(
+            "ALTER TABLE teams ADD COLUMN bonus_started_at TEXT"
+        )
+    except sqlite3.OperationalError:
+        pass
+
+    try:
+        connection.execute(
+            "ALTER TABLE teams ADD COLUMN bonus_answered INTEGER DEFAULT 0"
+        )
+    except sqlite3.OperationalError:
+        pass
+
+    try:
+        connection.execute(
+            "ALTER TABLE teams ADD COLUMN bonus_correct INTEGER DEFAULT 0"
         )
     except sqlite3.OperationalError:
         pass
@@ -1230,6 +1257,147 @@ def check_round(round_number, team_name):
         "score": submission["score"],
         "points": round_data["points"],
         "next_round": next_round
+    }
+
+
+# =========================================================
+# TIEBREAKER BONUS QUESTION
+# =========================================================
+
+# Decides, every time a team asks to view final results, whether
+# they're currently tied for first place and still owe an answer to
+# the tiebreaker. Checking fresh here (rather than once when a team
+# finishes Round 5) means it always reflects every team's current
+# state, including teams that finish later and catch up to a tie.
+@app.route("/player/final/<team_name>")
+def player_final(team_name):
+    connection = get_db()
+
+    team = connection.execute(
+        "SELECT * FROM teams WHERE team_name = ?",
+        (team_name,)
+    ).fetchone()
+
+    if team is None:
+        connection.close()
+        return redirect("/join")
+
+    finished_scores = connection.execute(
+        "SELECT total_score FROM teams WHERE team_status = 'finished'"
+    ).fetchall()
+
+    connection.close()
+
+    is_tied_for_first = False
+    if finished_scores:
+        top_score = max(row["total_score"] for row in finished_scores)
+        tied_count = sum(
+            1 for row in finished_scores if row["total_score"] == top_score
+        )
+        is_tied_for_first = (
+            tied_count > 1 and team["total_score"] == top_score
+        )
+
+    if is_tied_for_first and not team["bonus_answered"]:
+        return redirect(f"/player/bonus/{team_name}")
+
+    return redirect("/host/final_results")
+
+
+@app.route("/player/bonus/<team_name>", methods=["GET", "POST"])
+def player_bonus(team_name):
+    connection = get_db()
+
+    team = connection.execute(
+        "SELECT * FROM teams WHERE team_name = ?",
+        (team_name,)
+    ).fetchone()
+
+    if team is None:
+        connection.close()
+        return redirect("/join")
+
+    if request.method == "POST":
+        if not team["bonus_answered"]:
+            answer = request.form.get("answer")
+            correct = 1 if answer == BONUS_CORRECT_ANSWER else 0
+
+            connection.execute(
+                """
+                UPDATE teams
+                SET bonus_answered = 1, bonus_correct = ?
+                WHERE id = ?
+                """,
+                (correct, team["id"])
+            )
+            connection.commit()
+
+        connection.close()
+        return redirect(f"/player/bonus/{team_name}")
+
+    if not team["bonus_answered"] and not team["bonus_started_at"]:
+        connection.execute(
+            "UPDATE teams SET bonus_started_at = datetime('now') WHERE id = ?",
+            (team["id"],)
+        )
+        connection.commit()
+        team = connection.execute(
+            "SELECT * FROM teams WHERE id = ?",
+            (team["id"],)
+        ).fetchone()
+
+    connection.close()
+
+    return render_template(
+        "bonus.html",
+        team_name=team_name,
+        answered=bool(team["bonus_answered"]),
+        correct=bool(team["bonus_correct"])
+    )
+
+
+@app.route("/player/bonus-time/<team_name>")
+def bonus_time(team_name):
+    connection = get_db()
+
+    team = connection.execute(
+        "SELECT * FROM teams WHERE team_name = ?",
+        (team_name,)
+    ).fetchone()
+
+    if team is None:
+        connection.close()
+        return {"remaining_seconds": 0, "closed": True}
+
+    remaining = 0
+    closed = True
+
+    if team["bonus_answered"]:
+        closed = True
+    elif team["bonus_started_at"]:
+        row = connection.execute(
+            "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
+            (team["bonus_started_at"],)
+        ).fetchone()
+        remaining = max(0, int(BONUS_DURATION_SECONDS - row["seconds"]))
+        closed = remaining <= 0
+
+        if closed:
+            connection.execute(
+                """
+                UPDATE teams
+                SET bonus_answered = 1, bonus_correct = 0
+                WHERE id = ?
+                """,
+                (team["id"],)
+            )
+            connection.commit()
+
+    connection.close()
+
+    return {
+        "remaining_seconds": remaining,
+        "closed": closed
     }
 
 
