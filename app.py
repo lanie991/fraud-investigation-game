@@ -1282,17 +1282,25 @@ def player_final(team_name):
         connection.close()
         return redirect("/join")
 
-    finished_scores = connection.execute(
-        "SELECT total_score FROM teams WHERE team_status = 'finished'"
+    all_teams = connection.execute(
+        "SELECT team_status, total_score FROM teams"
     ).fetchall()
 
     connection.close()
 
+    # Only compare scores once every team has actually finished the
+    # game. Otherwise a couple of teams that happen to finish first
+    # with low scores (or 0, from timing out) would look "tied for
+    # first" just because nobody better has finished yet.
+    everyone_finished = all(
+        row["team_status"] == "finished" for row in all_teams
+    )
+
     is_tied_for_first = False
-    if finished_scores:
-        top_score = max(row["total_score"] for row in finished_scores)
+    if everyone_finished and all_teams:
+        top_score = max(row["total_score"] for row in all_teams)
         tied_count = sum(
-            1 for row in finished_scores if row["total_score"] == top_score
+            1 for row in all_teams if row["total_score"] == top_score
         )
         is_tied_for_first = (
             tied_count > 1 and team["total_score"] == top_score
