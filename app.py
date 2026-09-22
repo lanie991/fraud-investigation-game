@@ -170,6 +170,66 @@ def home():
     return render_template("home.html")
 
 
+# SUSPECTS PAGE
+SUSPECTS = [
+    {
+        "photo": "michael_carter.jpg",
+        "name": "Michael Carter",
+        "role": "Finance Manager",
+        "quote": "I'm numbers driven. Results speak for themselves.",
+        "department": "Finance",
+        "position": "Finance Manager",
+        "years": "3 years",
+        "access": "High"
+    },
+    {
+        "photo": "sarah_mitchell.jpg",
+        "name": "Sarah Mitchell",
+        "role": "Accounts Officer",
+        "quote": "I keep things organized. Details matter.",
+        "department": "Accounts",
+        "position": "Accounts Officer",
+        "years": "2 years",
+        "access": "Medium"
+    },
+    {
+        "photo": "daniel_brooks.jpg",
+        "name": "Daniel Brooks",
+        "role": "IT Administrator",
+        "quote": "It's probably just a glitch.",
+        "department": "IT",
+        "position": "IT Administrator",
+        "years": "4 years",
+        "access": "High"
+    },
+    {
+        "photo": "lauren_price.jpg",
+        "name": "Lauren Price",
+        "role": "Operations Lead",
+        "quote": "I keep things running.",
+        "department": "Operations",
+        "position": "Operations Lead",
+        "years": "3 years",
+        "access": "Medium"
+    },
+    {
+        "photo": "marcus_reed.jpg",
+        "name": "Marcus Reed",
+        "role": "External Consultant",
+        "quote": "I'm just here to help.",
+        "department": "External",
+        "position": "External Consultant",
+        "years": "1 year",
+        "access": "Medium"
+    }
+]
+
+
+@app.route("/suspects")
+def suspects():
+    return render_template("suspects.html", suspects=SUSPECTS)
+
+
 # HOST PAGE
 @app.route("/host")
 def host():
