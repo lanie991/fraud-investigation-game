@@ -4,13 +4,12 @@ A standalone Kahoot-style, single-elimination fraud trivia game that
 runs alongside the existing "Who Stole the Money?" investigation game.
 
 Each player joins with a game PIN, then works through their own set of
-five rounds (Easy, Easy, Intermediate, Hard, Hard) at their own pace. A
-wrong answer eliminates them (when elimination is enabled). Anyone who
-survives reaches a Final Round case file worth extra points.
+three rounds (Easy, Intermediate, Hard) at their own pace. A wrong
+answer eliminates them (when elimination is enabled).
 
 The sample questions below are PLACEHOLDER CONTENT. Replace the entries
-in ROUNDS / FINAL_ROUNDS with real content whenever it's ready -- the
-shape of each dict is all that matters to the rest of this file.
+in ROUNDS with real content whenever it's ready -- the shape of each
+dict is all that matters to the rest of this file.
 """
 
 from importlib import import_module
@@ -154,9 +153,8 @@ def initialize_database():
 # =========================================================
 # QUESTION BANK (PLACEHOLDER CONTENT -- REPLACE WHEN READY)
 #
-# ROUNDS is played in order: Round 1 (Easy) -> Round 2 (Easy) ->
-# Round 3 (Intermediate) -> Round 4 (Hard) -> Round 5 (Hard) -> the
-# Final Round case file below. Each entry's shape is all that matters.
+# ROUNDS is played in order: Round 1 (Easy) -> Round 2 (Intermediate)
+# -> Round 3 (Hard). Each entry's shape is all that matters.
 # =========================================================
 
 ROUNDS = [
@@ -176,20 +174,6 @@ ROUNDS = [
     },
     {
         "round_number": 2,
-        "difficulty": "EASY",
-        "text": "What does the term 'skimming' refer to in occupational fraud?",
-        "options": {
-            "A": "Stealing cash before it is recorded in the books",
-            "B": "Overstating company revenue",
-            "C": "Falsifying a resume",
-            "D": "Filing a late tax return"
-        },
-        "correct": "A",
-        "explanation": "Skimming is the theft of cash before it ever enters the accounting system, making it hard to trace.",
-        "points": 10
-    },
-    {
-        "round_number": 3,
         "difficulty": "INTERMEDIATE",
         "text": "Which of the following best describes a hash value in digital forensics?",
         "options": {
@@ -203,7 +187,7 @@ ROUNDS = [
         "points": 20
     },
     {
-        "round_number": 4,
+        "round_number": 3,
         "difficulty": "HARD",
         "text": "A payment is split into three smaller transactions, each just under the $10,000 reporting threshold. This is best described as:",
         "options": {
@@ -215,45 +199,8 @@ ROUNDS = [
         "correct": "A",
         "explanation": "Structuring (or 'smurfing') deliberately breaks up transactions to stay under reporting thresholds and avoid detection.",
         "points": 30
-    },
-    {
-        "round_number": 5,
-        "difficulty": "HARD",
-        "text": "Which stage of money laundering involves moving illicit funds through multiple accounts or shell entities to obscure their origin?",
-        "options": {
-            "A": "Placement",
-            "B": "Layering",
-            "C": "Integration",
-            "D": "Disbursement"
-        },
-        "correct": "B",
-        "explanation": "Layering is the stage where funds are moved through a complex web of transactions specifically to break the audit trail.",
-        "points": 30
     }
 ]
-
-# The Final Round is just more forensics trivia, same shape as the
-# rounds above -- not a case-file scenario. Add as many entries here
-# as needed; each is played exactly like a regular round, just tagged
-# with difficulty "FINAL" so the tracker/badges style it distinctly.
-FINAL_ROUNDS = [
-    {
-        "round_number": 6,
-        "difficulty": "FINAL",
-        "text": "Which forensic technique is used to recover data from a device without altering the original evidence?",
-        "options": {
-            "A": "Creating a bit-for-bit forensic image of the drive",
-            "B": "Opening files directly on the original device",
-            "C": "Deleting temporary files to free up space",
-            "D": "Reformatting the drive before analysis"
-        },
-        "correct": "A",
-        "explanation": "A bit-for-bit forensic image preserves the original evidence untouched, so all analysis happens on a copy instead of the source device.",
-        "points": 50
-    }
-]
-
-ROUNDS = ROUNDS + FINAL_ROUNDS
 
 
 # =========================================================
