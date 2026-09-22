@@ -1,0 +1,59 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Waiting Room — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-waiting-wrap" data-name="{{ name }}">
+
+    <div class="fe-card fe-waiting-card">
+
+        <div class="fe-waiting-avatar">
+            {% if avatar in avatar_images %}
+            <img src="{{ url_for('static', filename='avatars/' + avatar_images[avatar]) }}" alt="">
+            {% endif %}
+        </div>
+
+        <div class="fe-kicker">INVESTIGATOR</div>
+        <h1 class="fe-title" style="margin-bottom:6px;">{{ name }}</h1>
+        <p class="fe-subtitle" style="margin:0 auto;">
+            You're in the lobby. The case begins the moment the host
+            starts the game.
+        </p>
+
+        <div class="fe-waiting-loader">
+            <span></span><span></span><span></span>
+        </div>
+
+        <p style="color:#64748b; font-size:12px;" id="fe-waiting-text">
+            Waiting for host to start...
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const wrap = document.querySelector(".fe-waiting-wrap");
+    const name = wrap ? wrap.dataset.name : "";
+    const statusUrl = "/elimination/status/" + encodeURIComponent(name);
+    const playUrl = "/elimination/play/" + encodeURIComponent(name);
+
+    function check() {
+        fetch(statusUrl, { cache: "no-store" })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                if (data.game_status === "active" && data.phase === "question") {
+                    window.location.href = playUrl;
+                }
+            })
+            .catch(function () {});
+    }
+
+    check();
+    setInterval(check, 1500);
+});
+</script>
+
+{% endblock %}

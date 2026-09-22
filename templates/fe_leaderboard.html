@@ -1,0 +1,54 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Leaderboard — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page">
+
+    <div class="fe-kicker">TOP INVESTIGATORS WILL ALWAYS STAND OUT</div>
+    <h1 class="fe-title">LEADERBOARD</h1>
+    <p class="fe-subtitle">Real knowledge. Real impact.</p>
+
+    <div class="fe-card fe-leaderboard-table">
+
+        {% if players %}
+            {% for player in players %}
+            <div class="fe-leaderboard-row">
+                <div class="fe-leaderboard-rank">{{ loop.index }}</div>
+
+                <div class="fe-player-avatar">
+                    {% if player["avatar"] in avatar_images %}
+                    <img src="{{ url_for('static', filename='avatars/' + avatar_images[player['avatar']]) }}" alt="">
+                    {% endif %}
+                </div>
+
+                <div class="fe-leaderboard-name">{{ player["name"] }}</div>
+                <div class="fe-leaderboard-score">{{ player["score"] }}</div>
+
+                {% if player["status"] == "eliminated" %}
+                    <span class="fe-status-pill eliminated">ELIMINATED</span>
+                {% elif player["name"] in winners %}
+                    <span class="fe-status-pill winner">WINNER</span>
+                {% else %}
+                    <span class="fe-status-pill in">STILL IN</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="fe-player-empty">No investigators have joined yet.</div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    setInterval(function () {
+        window.location.reload();
+    }, 5000);
+});
+</script>
+
+{% endblock %}

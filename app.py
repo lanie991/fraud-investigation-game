@@ -14,6 +14,10 @@ app = Flask(
     static_url_path="/static"
 )
 
+from elimination import elimination_bp, initialize_database as initialize_elimination_database
+
+app.register_blueprint(elimination_bp)
+
 
 DATABASE = "fraud_game.db"
 
@@ -161,6 +165,7 @@ def initialize_database():
 
 
 initialize_database()
+initialize_elimination_database()
 
 
 # HOME PAGE

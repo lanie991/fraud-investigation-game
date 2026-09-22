@@ -1,0 +1,42 @@
+{% extends "fe_base.html" %}
+
+{% block title %}{{ "Correct" if correct else "Incorrect" }} — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-feedback-wrap">
+
+    <div class="fe-card fe-feedback-card {{ 'correct' if correct else 'incorrect' }}">
+
+        <div class="fe-feedback-icon">
+            {{ "&#10003;"|safe if correct else "&#10007;"|safe }}
+        </div>
+
+        <h1 class="fe-feedback-title">
+            {{ "CORRECT!" if correct else "INCORRECT" }}
+        </h1>
+
+        <div class="fe-feedback-points">
+            {% if correct %}
+                + {{ points }} POINTS
+            {% else %}
+                Correct Answer: <strong style="color:#f8fafc;">{{ question["correct"] }}</strong>
+            {% endif %}
+        </div>
+
+        <div class="fe-feedback-explanation">
+            <strong>EXPLANATION</strong>
+            <p>{{ question["explanation"] }}</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('elimination.advance', name=name) }}">
+            <button type="submit" class="fe-btn fe-btn-gold fe-btn-block">
+                {% if eliminated %}SEE RESULT{% else %}NEXT QUESTION{% endif %}
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

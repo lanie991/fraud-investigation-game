@@ -1,0 +1,37 @@
+{% extends "fe_base.html" %}
+
+{% block title %}You Won! — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-winner-wrap">
+
+    <div class="fe-card fe-winner-card">
+
+        <div class="fe-winner-trophy">&#127942;</div>
+
+        <h1 class="fe-winner-title">CONGRATULATIONS!</h1>
+        <p class="fe-winner-sub">
+            YOU ARE THE LAST INVESTIGATOR STANDING!<br>
+            Knowledge. Analysis. Strategy. You outlasted them all.
+        </p>
+
+        <div class="fe-winner-score">
+            <strong>{{ player["score"] }}</strong>
+            <span>FINAL SCORE</span>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold">
+                VIEW LEADERBOARD
+            </a>
+            <a href="{{ url_for('elimination.home') }}" class="fe-btn fe-btn-ghost">
+                BACK TO LOBBY
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

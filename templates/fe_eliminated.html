@@ -1,0 +1,33 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Eliminated — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-elim-wrap">
+
+    <div class="fe-card fe-elim-card">
+
+        <div class="fe-elim-icon">&#10007;</div>
+
+        <h1 class="fe-elim-title">YOU'VE BEEN ELIMINATED</h1>
+        <p class="fe-elim-sub">Better luck next time!</p>
+
+        <div class="fe-elim-quote">
+            "Investigations are not about being right, it's about finding the truth."
+        </div>
+
+        <div class="fe-elim-score">
+            FINAL SCORE
+            <strong>{{ player["score"] }}</strong>
+        </div>
+
+        <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold fe-btn-block">
+            RETURN TO LOBBY
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

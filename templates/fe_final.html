@@ -1,0 +1,64 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Final Round — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page">
+
+    <span class="fe-final-badge">FINAL ROUND &middot; {{ case["points"] }} POINTS</span>
+    <h1 class="fe-title">{{ case["title"] }}</h1>
+    <p class="fe-subtitle">Read the case and answer the questions that follow.</p>
+
+    <div class="fe-final-grid">
+
+        <div class="fe-card">
+            <h2 style="margin:0 0 12px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:18px;">
+                EVIDENCE
+            </h2>
+            <p class="fe-case-body">{{ case["body"] }}</p>
+        </div>
+
+        <div class="fe-card">
+            <h2 style="margin:0 0 4px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:18px;">
+                QUESTIONS ({{ question_number }}/{{ total_questions }})
+            </h2>
+
+            <ul class="fe-final-nav-list">
+                {% for q in case["questions"] %}
+                {% set idx = loop.index0 %}
+                <li class="fe-final-nav-item {% if idx < question_number - 1 %}done{% elif idx == question_number - 1 %}current{% endif %}">
+                    <span class="fe-final-nav-num">
+                        {% if idx < question_number - 1 %}&#10003;{% else %}{{ loop.index }}{% endif %}
+                    </span>
+                    {{ q["label"] }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="fe-card fe-question-card" style="margin-top:20px;">
+
+        <h1 class="fe-question-text">{{ question["text"] }}</h1>
+
+        <form method="POST" action="{{ url_for('elimination.final_round', name=name) }}">
+            {% for letter, text in question["options"].items() %}
+            <label class="fe-option">
+                <input type="radio" name="answer" value="{{ letter }}" required>
+                <span class="fe-option-letter">{{ letter }}</span>
+                <span>{{ text }}</span>
+            </label>
+            {% endfor %}
+
+            <button type="submit" class="fe-btn fe-btn-gold fe-btn-block" style="margin-top:18px;">
+                {% if question_number == total_questions %}SUBMIT FINAL ANSWER{% else %}NEXT QUESTION{% endif %}
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

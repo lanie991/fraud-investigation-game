@@ -1,0 +1,134 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Host — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page">
+
+    <div class="fe-lobby-status {{ config['status'] }}">
+        &#9679; {{ "GAME IN PROGRESS" if config["status"] == "active" else "LOBBY OPEN" }}
+    </div>
+
+    <h1 class="fe-title">GAME LOBBY</h1>
+    <p class="fe-subtitle">
+        Share the PIN below with players. Each investigator moves through
+        the case at their own pace once the game starts.
+    </p>
+
+    <div class="fe-lobby-grid">
+
+        <div class="fe-card fe-pin-card">
+            <div class="fe-pin-label">GAME PIN</div>
+            <div class="fe-pin-value">{{ config["pin"] }}</div>
+            <p style="color:#64748b; font-size:11px; margin-top:14px;">
+                Share this code with players
+            </p>
+        </div>
+
+        <div class="fe-card">
+            <div class="fe-player-list-header">
+                <h2>PLAYERS ({{ players|length }})</h2>
+            </div>
+
+            {% if players %}
+                {% for player in players %}
+                <div class="fe-player-row">
+                    <div class="fe-player-avatar">
+                        {% if player["avatar"] in avatar_images %}
+                        <img src="{{ url_for('static', filename='avatars/' + avatar_images[player['avatar']]) }}" alt="">
+                        {% endif %}
+                    </div>
+                    <div class="fe-player-name">{{ player["name"] }}</div>
+                    {% if player["status"] == "eliminated" %}
+                        <span class="fe-status-pill eliminated">ELIMINATED</span>
+                    {% elif player["phase"] == "finished" %}
+                        <span class="fe-status-pill winner">FINISHED &middot; {{ player["score"] }} PTS</span>
+                    {% else %}
+                        <span class="fe-status-pill in">{{ player["score"] }} PTS</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="fe-player-empty">Waiting for players to join...</div>
+            {% endif %}
+        </div>
+
+        <div class="fe-card">
+            <h2 style="margin:0 0 14px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:18px;">
+                GAME SETTINGS
+            </h2>
+
+            <form method="POST" action="{{ url_for('elimination.host_settings') }}">
+
+                <div class="fe-settings-row">
+                    <span>Rounds</span>
+                    <span style="color:#64748b; font-size:11px; text-align:right;">Easy &#8594; Intermediate<br>&#8594; Hard &#8594; Final</span>
+                </div>
+
+                <div class="fe-settings-row">
+                    <span>Timer (seconds)</span>
+                    <input type="number" name="timer_seconds" min="5" max="120" value="{{ config['timer_seconds'] }}" {% if config['status'] != 'lobby' %}disabled{% endif %}>
+                </div>
+
+                <div class="fe-settings-row">
+                    <span>Elimination</span>
+                    <label class="fe-toggle">
+                        <input type="checkbox" name="elimination_enabled" {% if config['elimination_enabled'] %}checked{% endif %} {% if config['status'] != 'lobby' %}disabled{% endif %}>
+                        <span class="fe-toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="fe-settings-row">
+                    <span>Lifelines</span>
+                    <label class="fe-toggle">
+                        <input type="checkbox" name="lifelines_enabled" {% if config['lifelines_enabled'] %}checked{% endif %} {% if config['status'] != 'lobby' %}disabled{% endif %}>
+                        <span class="fe-toggle-slider"></span>
+                    </label>
+                </div>
+
+                {% if config["status"] == "lobby" %}
+                <button type="submit" class="fe-btn fe-btn-ghost fe-btn-block" style="margin-top:14px;">
+                    SAVE SETTINGS
+                </button>
+                {% endif %}
+
+            </form>
+        </div>
+
+    </div>
+
+    <div style="display:flex; gap:14px; margin-top:26px; flex-wrap:wrap;">
+
+        {% if config["status"] == "lobby" %}
+        <form method="POST" action="{{ url_for('elimination.host_start') }}">
+            <button type="submit" class="fe-btn fe-btn-gold" {% if not players %}disabled{% endif %}>
+                START GAME
+            </button>
+        </form>
+        {% else %}
+        <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold">
+            VIEW LEADERBOARD
+        </a>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('elimination.host_reset') }}"
+              onsubmit="return confirm('Reset the game? This removes every player and score.');">
+            <button type="submit" class="fe-btn fe-btn-ghost">
+                &#8635; RESET GAME
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    setInterval(function () {
+        window.location.reload();
+    }, 4000);
+});
+</script>
+
+{% endblock %}

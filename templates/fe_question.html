@@ -1,0 +1,103 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Question {{ question_number }} — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page" style="max-width:760px;">
+
+    <div class="fe-progress-bar">
+        {% for label in stage_names %}
+        {% set step_index = loop.index0 %}
+        {% set stage_order = ["EASY", "INTERMEDIATE", "HARD", "FINAL"] %}
+        {% set current_order = stage_order.index(stage) %}
+        <div class="fe-progress-step {% if step_index < current_order %}done{% elif step_index == current_order %}current{% endif %}">
+            <div class="fe-progress-circle">{{ loop.index }}</div>
+            <div class="fe-progress-label">{{ label }}</div>
+        </div>
+        {% if not loop.last %}<div class="fe-progress-line"></div>{% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="fe-question-top">
+        <div class="fe-question-counter">QUESTION {{ question_number }} / {{ total_questions }}</div>
+        <div class="fe-timer" id="fe-timer">{{ "%02d"|format(remaining_seconds) }}</div>
+    </div>
+
+    <div class="fe-card fe-question-card">
+
+        <div class="fe-question-meta">
+            <span class="fe-difficulty-tag {{ stage|lower }}">{{ stage }}</span>
+            <span class="fe-points-tag">{{ question["points"] }} POINTS</span>
+        </div>
+
+        <h1 class="fe-question-text">{{ question["text"] }}</h1>
+
+        <form method="POST" action="{{ url_for('elimination.play', name=name) }}" id="fe-question-form">
+            {% for letter, text in question["options"].items() %}
+            {% if letter not in removed_options %}
+            <label class="fe-option">
+                <input type="radio" name="answer" value="{{ letter }}" required>
+                <span class="fe-option-letter">{{ letter }}</span>
+                <span>{{ text }}</span>
+            </label>
+            {% endif %}
+            {% endfor %}
+
+            <button type="submit" class="fe-btn fe-btn-gold fe-btn-block" style="margin-top:18px;">
+                SUBMIT ANSWER
+            </button>
+        </form>
+
+        {% if lifelines_enabled and not player["lifeline_used"] %}
+        <div class="fe-lifeline-row">
+            <form method="POST" action="{{ url_for('elimination.use_lifeline', name=name) }}">
+                <button type="submit" class="fe-btn fe-lifeline-btn">
+                    &#9878; USE 50/50 LIFELINE
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const timerEl = document.getElementById("fe-timer");
+    const form = document.getElementById("fe-question-form");
+    const timerUrl = "/elimination/timer/{{ name|urlencode }}";
+    let submitted = false;
+
+    function pad(n) {
+        return String(Math.max(0, n)).padStart(2, "0");
+    }
+
+    function poll() {
+        fetch(timerUrl, { cache: "no-store" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (timerEl) {
+                    timerEl.textContent = pad(data.remaining_seconds);
+                    timerEl.classList.toggle("low", data.remaining_seconds <= 5);
+                }
+
+                if (data.closed && !submitted) {
+                    submitted = true;
+                    if (form) {
+                        form.submit();
+                    } else {
+                        window.location.reload();
+                    }
+                }
+            })
+            .catch(function () {});
+    }
+
+    poll();
+    setInterval(poll, 1000);
+});
+</script>
+
+{% endblock %}

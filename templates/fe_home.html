@@ -1,0 +1,45 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-home">
+
+    <div class="fe-home-grid">
+
+        <div class="fe-home-copy">
+
+            <div class="fe-home-tagline">KNOW &nbsp;|&nbsp; ANALYZE &nbsp;|&nbsp; OUTLAST</div>
+
+            <h1 class="fe-home-title">
+                FORENSIC<br><span>ELIMINATION</span>
+            </h1>
+
+            <p class="fe-home-sub">
+                A forensics-based trivia game where knowledge keeps you in
+                the game. Answer wrong, and you're out.
+            </p>
+
+            <div class="fe-home-actions">
+                <a href="{{ url_for('elimination.join') }}" class="fe-btn fe-btn-gold">
+                    JOIN GAME
+                </a>
+                <a href="{{ url_for('elimination.host') }}" class="fe-btn fe-btn-blue">
+                    HOST GAME
+                </a>
+            </div>
+
+        </div>
+
+        <div class="fe-home-side">
+            <div class="fe-home-side-line">REAL KNOWLEDGE. HIGHER STAKES.</div>
+            <p>Same questions. Bigger thinkers.</p>
+            <p style="margin-top:20px;">FORENSICS &nbsp;|&nbsp; INTEGRITY &nbsp;|&nbsp; INSIGHT &nbsp;|&nbsp; IMPACT</p>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

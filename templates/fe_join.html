@@ -1,0 +1,56 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Join Game — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page fe-join-screen">
+
+    <div class="fe-card fe-join-card">
+
+        <h1>JOIN GAME</h1>
+        <p class="fe-subtitle" style="margin-bottom:22px;">
+            Enter the game PIN from the host screen to join the investigation.
+        </p>
+
+        {% if error %}
+        <div class="fe-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('elimination.join') }}">
+
+            <div class="fe-field">
+                <label for="player_name">YOUR NAME</label>
+                <input type="text" id="player_name" name="player_name" placeholder="Investigator name" required maxlength="30">
+            </div>
+
+            <div class="fe-field">
+                <label for="game_pin">GAME PIN</label>
+                <input type="text" id="game_pin" name="game_pin" placeholder="e.g. 7K4Q" required maxlength="8" style="text-transform:uppercase;">
+            </div>
+
+            <div class="fe-field">
+                <label>CHOOSE AN AVATAR</label>
+                <div class="fe-avatar-grid">
+                    {% for value, filename in avatar_images.items() %}
+                    <label class="fe-avatar-option">
+                        <input type="radio" name="avatar" value="{{ value }}" {% if loop.first %}checked{% endif %}>
+                        <span class="fe-avatar-card">
+                            <img src="{{ url_for('static', filename='avatars/' + filename) }}" alt="">
+                        </span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="submit" class="fe-btn fe-btn-gold fe-btn-block">
+                JOIN INVESTIGATION &#8594;
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

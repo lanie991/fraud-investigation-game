@@ -1,0 +1,54 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Case Files — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page">
+
+    <div class="fe-kicker">ARCHIVE</div>
+    <h1 class="fe-title">CASE FILES</h1>
+    <p class="fe-subtitle">A preview of what you're up against, by difficulty tier.</p>
+
+    <div class="fe-card" style="margin-bottom:16px;">
+        <h2 style="margin:0 0 6px; color:#4ade80; font-family:'Rajdhani',sans-serif; font-size:18px;">
+            EASY &middot; {{ easy_questions|length }} QUESTIONS
+        </h2>
+        <p style="color:#94a3b8; font-size:13px;">
+            Fundamentals: red flags, basic fraud vocabulary and control
+            concepts.
+        </p>
+    </div>
+
+    <div class="fe-card" style="margin-bottom:16px;">
+        <h2 style="margin:0 0 6px; color:#facc15; font-family:'Rajdhani',sans-serif; font-size:18px;">
+            INTERMEDIATE &middot; {{ intermediate_questions|length }} QUESTIONS
+        </h2>
+        <p style="color:#94a3b8; font-size:13px;">
+            Applying the fundamentals: conflicts of interest, the fraud
+            triangle and document red flags.
+        </p>
+    </div>
+
+    <div class="fe-card" style="margin-bottom:16px;">
+        <h2 style="margin:0 0 6px; color:#f87171; font-family:'Rajdhani',sans-serif; font-size:18px;">
+            HARD &middot; {{ hard_questions|length }} QUESTIONS
+        </h2>
+        <p style="color:#94a3b8; font-size:13px;">
+            Advanced scenarios: structuring, digital forensics and
+            money-laundering stages.
+        </p>
+    </div>
+
+    <div class="fe-card">
+        <h2 style="margin:0 0 6px; color:#818cf8; font-family:'Rajdhani',sans-serif; font-size:18px;">
+            FINAL &middot; {{ final_case["title"] }}
+        </h2>
+        <p style="color:#94a3b8; font-size:13px;">
+            {{ final_case["body"] }}
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

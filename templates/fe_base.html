@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}Forensic Elimination{% endblock %}
+    </title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='elimination.css') }}"
+    >
+
+</head>
+
+<body class="fe-body">
+
+    <div class="fe-app">
+
+        <header class="fe-topnav">
+            <a href="{{ url_for('elimination.home') }}" class="fe-brand">
+                <span class="fe-brand-mark">&#9673;</span>
+                <span class="fe-brand-text">
+                    FORENSIC<br>ELIMINATION
+                </span>
+            </a>
+
+            <nav class="fe-nav-links">
+                <a href="{{ url_for('elimination.home') }}" class="{{ 'active' if active_nav == 'home' else '' }}">
+                    <span class="fe-nav-icon">&#8962;</span> HOME
+                </a>
+                <a href="{{ url_for('elimination.join') }}" class="{{ 'active' if active_nav == 'play' else '' }}">
+                    <span class="fe-nav-icon">&#9673;</span> PLAY
+                </a>
+                <a href="{{ url_for('elimination.leaderboard') }}" class="{{ 'active' if active_nav == 'leaderboard' else '' }}">
+                    <span class="fe-nav-icon">&#9650;</span> LEADERBOARD
+                </a>
+                <a href="{{ url_for('elimination.case_files') }}" class="{{ 'active' if active_nav == 'case_files' else '' }}">
+                    <span class="fe-nav-icon">&#9635;</span> CASE FILES
+                </a>
+                <a href="{{ url_for('elimination.rules') }}" class="{{ 'active' if active_nav == 'rules' else '' }}">
+                    <span class="fe-nav-icon">&#127942;</span> RULES
+                </a>
+            </nav>
+        </header>
+
+        <main class="fe-main">
+            {% block content %}{% endblock %}
+        </main>
+
+    </div>
+
+</body>
+
+</html>
