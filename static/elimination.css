@@ -19,10 +19,13 @@ html, body {
     font-family: "DM Sans", Arial, sans-serif;
     color: #e2e8f0;
 
-    background:
-        radial-gradient(circle at 15% 0%, rgba(37, 99, 235, 0.12), transparent 45%),
-        radial-gradient(circle at 85% 100%, rgba(250, 204, 21, 0.05), transparent 40%),
-        #060a14;
+    background-image:
+        linear-gradient(rgba(3, 5, 10, 0.72), rgba(3, 5, 10, 0.82)),
+        url("/static/images/home-bg.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 
     line-height: 1.5;
 }
@@ -345,13 +348,6 @@ body:has(.fe-hero) .fe-main {
 
     padding: 60px 30px;
     overflow: hidden;
-
-    background-image:
-        linear-gradient(rgba(3, 5, 10, 0.55), rgba(3, 5, 10, 0.72)),
-        url("/static/images/home-bg.webp");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 .fe-hero::before {
