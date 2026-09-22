@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Forensic Elimination — Display</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='elimination.css') }}">
+
+</head>
+
+<body class="fe-body">
+
+    <div class="fe-display">
+
+        <div class="fe-display-logo">
+            <span class="fe-game-logo-text" style="font-size:34px;">FORENSIC ELIMINATION</span>
+        </div>
+
+        <!-- LOBBY VIEW -->
+        <div id="fe-display-lobby">
+
+            <div class="fe-display-pin-row">
+                <div>
+                    <div class="fe-display-label">GAME PIN</div>
+                    <div class="fe-display-pin" id="fe-display-pin">------</div>
+                    <div class="fe-display-label" id="fe-display-join-hint">OR GO TO {{ join_url }}</div>
+                </div>
+                <img class="fe-display-qr" src="{{ url_for('elimination.qr_png') }}" alt="Scan to join">
+            </div>
+
+            <div class="fe-display-label" style="margin-top:30px;">
+                <span id="fe-display-joined-count">0</span> INVESTIGATORS JOINED
+            </div>
+
+            <div class="fe-display-players-grid" id="fe-display-players-grid"></div>
+
+        </div>
+
+        <!-- ACTIVE GAME VIEW -->
+        <div id="fe-display-active" style="display:none;">
+
+            <div class="fe-display-stats-row" id="fe-display-stats-row"></div>
+
+            <div class="fe-display-label" style="margin-top:26px;">LIVE STANDINGS</div>
+            <div class="fe-display-board" id="fe-display-board"></div>
+
+        </div>
+
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const lobbyView = document.getElementById("fe-display-lobby");
+        const activeView = document.getElementById("fe-display-active");
+        const pinEl = document.getElementById("fe-display-pin");
+        const joinedCountEl = document.getElementById("fe-display-joined-count");
+        const playersGrid = document.getElementById("fe-display-players-grid");
+        const statsRow = document.getElementById("fe-display-stats-row");
+        const board = document.getElementById("fe-display-board");
+
+        function statusClass(status) {
+            if (status === "ELIMINATED") return "eliminated";
+            if (status === "WINNER") return "winner";
+            return "in";
+        }
+
+        function renderLobby(players) {
+            joinedCountEl.textContent = players.length;
+
+            let html = "";
+            players.forEach(function (p) {
+                const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
+                html += '<div class="fe-display-player-chip">'
+                    + '<div class="fe-display-player-avatar">' + avatarImg + "</div>"
+                    + "<div>" + p.name + "</div>"
+                    + "</div>";
+            });
+            playersGrid.innerHTML = html;
+        }
+
+        function renderActive(data) {
+            let statsHtml = "";
+            Object.keys(data.round_counts).sort().forEach(function (roundNum) {
+                statsHtml += '<div class="fe-display-stat">'
+                    + '<strong>' + data.round_counts[roundNum] + '</strong>'
+                    + '<span>ON ROUND ' + roundNum + '</span>'
+                    + '</div>';
+            });
+            statsHtml += '<div class="fe-display-stat">'
+                + '<strong>' + data.finished_count + '</strong><span>FINISHED</span></div>';
+            statsHtml += '<div class="fe-display-stat eliminated">'
+                + '<strong>' + data.eliminated_count + '</strong><span>ELIMINATED</span></div>';
+            statsRow.innerHTML = statsHtml;
+
+            let boardHtml = "";
+            if (!data.players.length) {
+                boardHtml = '<div class="fe-player-empty">No investigators have joined yet.</div>';
+            } else {
+                data.players.forEach(function (p, index) {
+                    const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
+                    boardHtml += '<div class="fe-leaderboard-row fe-display-row">'
+                        + '<div class="fe-leaderboard-rank">' + (index + 1) + "</div>"
+                        + '<div class="fe-player-avatar">' + avatarImg + "</div>"
+                        + '<div class="fe-leaderboard-name">' + p.name + "</div>"
+                        + '<div class="fe-leaderboard-score">' + p.score + "</div>"
+                        + '<span class="fe-status-pill ' + statusClass(p.status) + '">' + p.status + "</span>"
+                        + "</div>";
+                });
+            }
+            board.innerHTML = boardHtml;
+        }
+
+        function poll() {
+            fetch("/elimination/display-data", { cache: "no-store" })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    pinEl.textContent = data.pin;
+
+                    if (data.game_status === "lobby") {
+                        lobbyView.style.display = "block";
+                        activeView.style.display = "none";
+                        renderLobby(data.players);
+                    } else {
+                        lobbyView.style.display = "none";
+                        activeView.style.display = "block";
+                        renderActive(data);
+                    }
+                })
+                .catch(function () {});
+        }
+
+        poll();
+        setInterval(poll, 2500);
+    });
+    </script>
+
+</body>
+
+</html>

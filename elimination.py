@@ -952,6 +952,71 @@ def leaderboard_data():
 
 
 # =========================================================
+# BIG-SCREEN DISPLAY (for projecting during an in-person game)
+# =========================================================
+
+@elimination_bp.route("/display")
+def display():
+    return render_template(
+        "fe_display.html",
+        join_url=url_for("elimination.join", _external=True)
+    )
+
+
+@elimination_bp.route("/display-data")
+def display_data():
+    connection = get_db()
+    config = get_config(connection)
+    players = connection.execute(
+        "SELECT * FROM fe_players ORDER BY score DESC, name ASC"
+    ).fetchall()
+
+    winners = {p["name"] for p in players if is_declared_winner(connection, p)}
+    connection.close()
+
+    round_counts = {r["round_number"]: 0 for r in ROUNDS}
+    eliminated_count = 0
+    finished_count = 0
+
+    rows = []
+    for p in players:
+        round_number = None
+
+        if p["status"] == "eliminated":
+            status = "ELIMINATED"
+            eliminated_count += 1
+        elif p["name"] in winners:
+            status = "WINNER"
+            finished_count += 1
+        elif p["phase"] == "finished":
+            status = "STILL IN"
+            finished_count += 1
+        elif p["phase"] == "question" and p["question_index"] < len(ROUNDS):
+            status = "STILL IN"
+            round_number = ROUNDS[p["question_index"]]["round_number"]
+            round_counts[round_number] = round_counts.get(round_number, 0) + 1
+        else:
+            status = "STILL IN"
+
+        rows.append({
+            "name": p["name"],
+            "avatar": AVATAR_IMAGES.get(p["avatar"]),
+            "score": p["score"],
+            "status": status,
+            "round_number": round_number
+        })
+
+    return jsonify({
+        "game_status": config["status"],
+        "pin": config["pin"],
+        "players": rows,
+        "round_counts": round_counts,
+        "eliminated_count": eliminated_count,
+        "finished_count": finished_count
+    })
+
+
+# =========================================================
 # ANSWER REVIEW
 # =========================================================
 
