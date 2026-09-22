@@ -1,61 +1,152 @@
 {% extends "fe_base.html" %}
 
-{% block title %}Question {{ question_number }} — Forensic Elimination{% endblock %}
+{% block title %}Round {{ current_round }} — Forensic Elimination{% endblock %}
+
+{% block top_header %}
+<header class="fe-game-header">
+
+    <div class="fe-game-logo">
+        <span class="fe-game-logo-text">FORENSIC ELIMINATION</span>
+        <span class="fe-game-logo-sub">KNOW &nbsp;|&nbsp; ANALYZE &nbsp;|&nbsp; OUTLAST</span>
+    </div>
+
+    <div class="fe-round-tracker">
+        {% for r in rounds %}
+        <div class="fe-round-node {% if r.round_number < current_round %}done{% elif r.round_number == current_round %}current{% endif %}">
+            <div class="fe-round-circle">{{ r.round_number }}</div>
+            <div class="fe-round-node-label">
+                <strong>ROUND {{ r.round_number }}</strong>
+                <span class="diff-{{ r.difficulty|lower }}">{{ r.difficulty }}</span>
+            </div>
+        </div>
+        {% if not loop.last %}<div class="fe-round-connector"></div>{% endif %}
+        {% endfor %}
+        <div class="fe-round-connector"></div>
+        <div class="fe-round-node final">
+            <div class="fe-round-circle">&#127942;</div>
+            <div class="fe-round-node-label">
+                <strong>FINAL</strong>
+                <span>ROUND</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="fe-game-tagline">
+        <div class="line1">REAL KNOWLEDGE.<br>HIGHER STAKES.</div>
+        <div class="line2">THE LAST MIND STANDING WINS.</div>
+    </div>
+
+</header>
+{% endblock %}
 
 {% block content %}
 
-<div class="fe-page" style="max-width:760px;">
+<div class="fe-game-body">
 
-    <div class="fe-progress-bar">
-        {% for label in stage_names %}
-        {% set step_index = loop.index0 %}
-        {% set stage_order = ["EASY", "INTERMEDIATE", "HARD", "FINAL"] %}
-        {% set current_order = stage_order.index(stage) %}
-        <div class="fe-progress-step {% if step_index < current_order %}done{% elif step_index == current_order %}current{% endif %}">
-            <div class="fe-progress-circle">{{ loop.index }}</div>
-            <div class="fe-progress-label">{{ label }}</div>
-        </div>
-        {% if not loop.last %}<div class="fe-progress-line"></div>{% endif %}
-        {% endfor %}
-    </div>
+    <div class="fe-card fe-players-panel">
+        <h2>PLAYERS ({{ players|length }})</h2>
 
-    <div class="fe-question-top">
-        <div class="fe-question-counter">QUESTION {{ question_number }} / {{ total_questions }}</div>
-        <div class="fe-timer" id="fe-timer">{{ "%02d"|format(remaining_seconds) }}</div>
-    </div>
-
-    <div class="fe-card fe-question-card">
-
-        <div class="fe-question-meta">
-            <span class="fe-difficulty-tag {{ stage|lower }}">{{ stage }}</span>
-            <span class="fe-points-tag">{{ question["points"] }} POINTS</span>
-        </div>
-
-        <h1 class="fe-question-text">{{ question["text"] }}</h1>
-
-        <form method="POST" action="{{ url_for('elimination.play', name=name) }}" id="fe-question-form">
-            {% for letter, text in question["options"].items() %}
-            {% if letter not in removed_options %}
-            <label class="fe-option">
-                <input type="radio" name="answer" value="{{ letter }}" required>
-                <span class="fe-option-letter">{{ letter }}</span>
-                <span>{{ text }}</span>
-            </label>
-            {% endif %}
+        <div id="fe-players-list">
+            {% for p in players %}
+            <div class="fe-player-status-row {{ 'me' if p['name'] == name else '' }} {{ 'eliminated' if p['status'] == 'eliminated' else '' }}">
+                <div class="fe-player-status-icon">
+                    {% if p['avatar'] in avatar_images %}
+                        {% if p['status'] == 'eliminated' %}
+                            &#10007;
+                        {% else %}
+                        <img src="{{ url_for('static', filename='avatars/' + avatar_images[p['avatar']]) }}" alt="">
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="fe-player-status-text">
+                    <strong>{{ p['name'] }}</strong>
+                    <span>{{ "ELIMINATED" if p['status'] == "eliminated" else "IN PLAY" }}</span>
+                </div>
+            </div>
             {% endfor %}
+        </div>
 
-            <button type="submit" class="fe-btn fe-btn-gold fe-btn-block" style="margin-top:18px;">
-                SUBMIT ANSWER
-            </button>
-        </form>
+        <div class="fe-quote-card">
+            &ldquo;EVIDENCE NEVER LIES.&rdquo;
+        </div>
+    </div>
 
-        {% if lifelines_enabled and not player["lifeline_used"] %}
-        <div class="fe-lifeline-row">
-            <form method="POST" action="{{ url_for('elimination.use_lifeline', name=name) }}">
-                <button type="submit" class="fe-btn fe-lifeline-btn">
-                    &#9878; USE 50/50 LIFELINE
+    <div class="fe-main-panel">
+
+        <div class="fe-round-badge-row">
+            <span class="fe-round-badge">ROUND {{ current_round }}</span>
+            <span class="fe-difficulty-pill {{ question['difficulty']|lower }}">
+                {{ question["difficulty"] }} &middot; {{ question["points"] }} POINTS
+            </span>
+            <span class="fe-remaining-text" id="fe-remaining-text">{{ players_remaining }} PLAYERS REMAINING</span>
+        </div>
+
+        <div class="fe-card fe-question-card">
+
+            <h1 class="fe-question-text">{{ question["text"] }}</h1>
+
+            <form method="POST" action="{{ url_for('elimination.play', name=name) }}" id="fe-question-form">
+                {% for letter, text in question["options"].items() %}
+                {% if letter not in removed_options %}
+                <label class="fe-option">
+                    <input type="radio" name="answer" value="{{ letter }}" required>
+                    <span class="fe-option-letter">{{ letter }}</span>
+                    <span>{{ text }}</span>
+                </label>
+                {% endif %}
+                {% endfor %}
+
+                <button type="submit" class="fe-btn fe-btn-gold fe-btn-block" style="margin-top:18px;">
+                    SUBMIT ANSWER
                 </button>
             </form>
+
+        </div>
+
+    </div>
+
+    <div class="fe-card fe-side-panel">
+
+        <h2>TIMER</h2>
+        <div class="fe-timer-gauge-wrap">
+            <div class="fe-timer-gauge">
+                <svg width="110" height="110" viewBox="0 0 110 110">
+                    <circle class="fe-timer-gauge-track" cx="55" cy="55" r="48"></circle>
+                    <circle class="fe-timer-gauge-progress" id="fe-timer-ring" cx="55" cy="55" r="48"
+                            stroke-dasharray="301.6" stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="fe-timer-gauge-value" id="fe-timer-value">{{ "%02d"|format(remaining_seconds) }}</div>
+            </div>
+        </div>
+
+        {% if lifelines_enabled %}
+        <div class="fe-lifelines-panel">
+            <h2>LIFELINES</h2>
+            <div class="fe-lifelines-row">
+                <form method="POST" action="{{ url_for('elimination.use_fifty_fifty', name=name) }}">
+                    <button type="submit" class="fe-lifeline-item" {% if player["fifty_fifty_used"] %}disabled{% endif %}>
+                        <span class="fe-lifeline-icon">&#128065;</span>
+                        50/50
+                        <span class="fe-lifeline-count">({{ 0 if player["fifty_fifty_used"] else 1 }} left)</span>
+                    </button>
+                </form>
+
+                <button type="button" class="fe-lifeline-item" id="fe-ask-team-btn" {% if player["ask_team_used"] %}disabled{% endif %}>
+                    <span class="fe-lifeline-icon">&#128101;</span>
+                    Ask the Team
+                    <span class="fe-lifeline-count">({{ 0 if player["ask_team_used"] else 1 }} left)</span>
+                </button>
+
+                <form method="POST" action="{{ url_for('elimination.use_skip', name=name) }}">
+                    <button type="submit" class="fe-lifeline-item" {% if player["skip_used"] %}disabled{% endif %}>
+                        <span class="fe-lifeline-icon">&#8635;</span>
+                        Skip
+                        <span class="fe-lifeline-count">({{ 0 if player["skip_used"] else 1 }} left)</span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="fe-ask-team-result" id="fe-ask-team-result"></div>
         </div>
         {% endif %}
 
@@ -65,23 +156,36 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const timerEl = document.getElementById("fe-timer");
+    const timerValue = document.getElementById("fe-timer-value");
+    const timerRing = document.getElementById("fe-timer-ring");
     const form = document.getElementById("fe-question-form");
     const timerUrl = "/elimination/timer/{{ name|urlencode }}";
+    const totalSeconds = {{ timer_seconds }};
+    const circumference = 301.6;
     let submitted = false;
 
     function pad(n) {
         return String(Math.max(0, n)).padStart(2, "0");
     }
 
+    function updateRing(remaining) {
+        const fraction = Math.max(0, Math.min(1, remaining / totalSeconds));
+        if (timerRing) {
+            timerRing.style.strokeDashoffset = String(circumference * (1 - fraction));
+            timerRing.classList.toggle("low", remaining <= 5);
+        }
+    }
+
+    updateRing({{ remaining_seconds }});
+
     function poll() {
         fetch(timerUrl, { cache: "no-store" })
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                if (timerEl) {
-                    timerEl.textContent = pad(data.remaining_seconds);
-                    timerEl.classList.toggle("low", data.remaining_seconds <= 5);
+                if (timerValue) {
+                    timerValue.textContent = pad(data.remaining_seconds);
                 }
+                updateRing(data.remaining_seconds);
 
                 if (data.closed && !submitted) {
                     submitted = true;
@@ -97,6 +201,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     poll();
     setInterval(poll, 1000);
+
+    const remainingText = document.getElementById("fe-remaining-text");
+    function pollPlayers() {
+        fetch("/elimination/players-status", { cache: "no-store" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (remainingText) {
+                    remainingText.textContent = data.remaining + " PLAYERS REMAINING";
+                }
+            })
+            .catch(function () {});
+    }
+    setInterval(pollPlayers, 4000);
+
+    const askTeamBtn = document.getElementById("fe-ask-team-btn");
+    const askTeamResult = document.getElementById("fe-ask-team-result");
+    if (askTeamBtn) {
+        askTeamBtn.addEventListener("click", function () {
+            askTeamBtn.disabled = true;
+            fetch("/elimination/lifeline/ask-team/{{ name|urlencode }}", { method: "POST" })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (!askTeamResult || !data.percentages) return;
+                    let html = "";
+                    Object.keys(data.percentages).sort().forEach(function (letter) {
+                        html += "<div><span>" + letter + "</span><span>" + data.percentages[letter] + "%</span></div>";
+                    });
+                    askTeamResult.innerHTML = html || "<div>No responses yet.</div>";
+                    askTeamResult.classList.add("visible");
+                })
+                .catch(function () {});
+        });
+    }
 });
 </script>
 

@@ -35,36 +35,47 @@
 
     <div class="fe-app">
 
-        <header class="fe-topnav">
+        {% block top_header %}
+        <header class="fe-topbar-simple">
             <a href="{{ url_for('elimination.home') }}" class="fe-brand">
                 <span class="fe-brand-mark">&#9673;</span>
                 <span class="fe-brand-text">
                     FORENSIC<br>ELIMINATION
                 </span>
             </a>
-
-            <nav class="fe-nav-links">
-                <a href="{{ url_for('elimination.home') }}" class="{{ 'active' if active_nav == 'home' else '' }}">
-                    <span class="fe-nav-icon">&#8962;</span> HOME
-                </a>
-                <a href="{{ url_for('elimination.join') }}" class="{{ 'active' if active_nav == 'play' else '' }}">
-                    <span class="fe-nav-icon">&#9673;</span> PLAY
-                </a>
-                <a href="{{ url_for('elimination.leaderboard') }}" class="{{ 'active' if active_nav == 'leaderboard' else '' }}">
-                    <span class="fe-nav-icon">&#9650;</span> LEADERBOARD
-                </a>
-                <a href="{{ url_for('elimination.case_files') }}" class="{{ 'active' if active_nav == 'case_files' else '' }}">
-                    <span class="fe-nav-icon">&#9635;</span> CASE FILES
-                </a>
-                <a href="{{ url_for('elimination.rules') }}" class="{{ 'active' if active_nav == 'rules' else '' }}">
-                    <span class="fe-nav-icon">&#127942;</span> RULES
-                </a>
-            </nav>
         </header>
+        {% endblock %}
 
         <main class="fe-main">
             {% block content %}{% endblock %}
         </main>
+
+        <nav class="fe-bottomnav">
+            <a href="{{ url_for('elimination.home') }}" class="{{ 'active' if active_nav == 'home' else '' }}">
+                <span class="fe-nav-icon">&#8962;</span>
+                <span>HOME</span>
+            </a>
+            <a href="{{ url_for('elimination.join') }}" class="{{ 'active' if active_nav == 'play' else '' }}">
+                <span class="fe-nav-icon">&#10067;</span>
+                <span>PLAY</span>
+            </a>
+            <a href="{{ url_for('elimination.leaderboard') }}" class="{{ 'active' if active_nav == 'leaderboard' else '' }}">
+                <span class="fe-nav-icon">&#9650;</span>
+                <span>LEADERBOARD</span>
+            </a>
+            <a href="{{ url_for('elimination.case_files') }}" class="{{ 'active' if active_nav == 'case_files' else '' }}">
+                <span class="fe-nav-icon">&#9635;</span>
+                <span>CASE FILES</span>
+            </a>
+            <a href="{{ url_for('elimination.rules') }}" class="{{ 'active' if active_nav == 'rules' else '' }}">
+                <span class="fe-nav-icon">&#127942;</span>
+                <span>RULES</span>
+            </a>
+            <a href="{{ url_for('elimination.settings') }}" class="{{ 'active' if active_nav == 'settings' else '' }}">
+                <span class="fe-nav-icon">&#9881;</span>
+                <span>SETTINGS</span>
+            </a>
+        </nav>
 
     </div>
 

@@ -4,14 +4,13 @@ A standalone Kahoot-style, single-elimination fraud trivia game that
 runs alongside the existing "Who Stole the Money?" investigation game.
 
 Each player joins with a game PIN, then works through their own set of
-Easy -> Intermediate -> Hard trivia questions at their own pace. A wrong
-answer eliminates them (when elimination is enabled). Anyone who survives
-reaches a Final Round case file worth extra points.
+five rounds (Easy, Easy, Intermediate, Hard, Hard) at their own pace. A
+wrong answer eliminates them (when elimination is enabled). Anyone who
+survives reaches a Final Round case file worth extra points.
 
 The sample questions below are PLACEHOLDER CONTENT. Replace the entries
-in EASY_QUESTIONS / INTERMEDIATE_QUESTIONS / HARD_QUESTIONS / FINAL_CASE
-with real content whenever it's ready -- the shape of each dict is all
-that matters to the rest of this file.
+in ROUNDS / FINAL_CASE with real content whenever it's ready -- the
+shape of each dict is all that matters to the rest of this file.
 """
 
 from importlib import import_module
@@ -91,10 +90,47 @@ def initialize_database():
             last_correct INTEGER,
             last_points INTEGER DEFAULT 0,
             phase_started_at TEXT,
-            lifeline_used INTEGER DEFAULT 0,
+            fifty_fifty_used INTEGER DEFAULT 0,
             lifeline_removed TEXT,
+            skip_used INTEGER DEFAULT 0,
+            ask_team_used INTEGER DEFAULT 0,
             final_index INTEGER DEFAULT 0,
             joined_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Older databases created before the three-lifeline system: add the
+    # new columns and carry over the original single lifeline flag.
+    existing_columns = {
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(fe_players)")
+    }
+
+    if "fifty_fifty_used" not in existing_columns:
+        if "lifeline_used" in existing_columns:
+            connection.execute(
+                "ALTER TABLE fe_players ADD COLUMN fifty_fifty_used INTEGER DEFAULT 0"
+            )
+            connection.execute(
+                "UPDATE fe_players SET fifty_fifty_used = lifeline_used"
+            )
+        else:
+            connection.execute(
+                "ALTER TABLE fe_players ADD COLUMN fifty_fifty_used INTEGER DEFAULT 0"
+            )
+
+    for column in ("skip_used", "ask_team_used"):
+        if column not in existing_columns:
+            connection.execute(
+                f"ALTER TABLE fe_players ADD COLUMN {column} INTEGER DEFAULT 0"
+            )
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS fe_answer_tally (
+            round_number INTEGER NOT NULL,
+            option TEXT NOT NULL,
+            count INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (round_number, option)
         )
     """)
 
@@ -118,10 +154,16 @@ def initialize_database():
 
 # =========================================================
 # QUESTION BANK (PLACEHOLDER CONTENT -- REPLACE WHEN READY)
+#
+# ROUNDS is played in order: Round 1 (Easy) -> Round 2 (Easy) ->
+# Round 3 (Intermediate) -> Round 4 (Hard) -> Round 5 (Hard) -> the
+# Final Round case file below. Each entry's shape is all that matters.
 # =========================================================
 
-EASY_QUESTIONS = [
+ROUNDS = [
     {
+        "round_number": 1,
+        "difficulty": "EASY",
         "text": "Which of the following is a common red flag in financial fraud?",
         "options": {
             "A": "Consistent reconciliations",
@@ -134,6 +176,8 @@ EASY_QUESTIONS = [
         "points": 10
     },
     {
+        "round_number": 2,
+        "difficulty": "EASY",
         "text": "What does the term 'skimming' refer to in occupational fraud?",
         "options": {
             "A": "Stealing cash before it is recorded in the books",
@@ -146,72 +190,22 @@ EASY_QUESTIONS = [
         "points": 10
     },
     {
-        "text": "Which document is most useful for verifying that a vendor actually exists?",
+        "round_number": 3,
+        "difficulty": "INTERMEDIATE",
+        "text": "Which of the following best describes a hash value in digital forensics?",
         "options": {
-            "A": "A birthday card",
-            "B": "The company holiday schedule",
-            "C": "A business registration or W-9 form",
-            "D": "An employee's parking pass"
-        },
-        "correct": "C",
-        "explanation": "Business registration and tax documents help confirm a vendor is a real, independent entity rather than a shell company.",
-        "points": 10
-    },
-    {
-        "text": "What is 'segregation of duties' designed to prevent?",
-        "options": {
-            "A": "Employees taking lunch breaks together",
-            "B": "One person controlling an entire transaction from start to finish",
-            "C": "Slow computer systems",
-            "D": "Office disagreements"
-        },
-        "correct": "B",
-        "explanation": "Splitting responsibilities across multiple people makes it harder for any single employee to commit and conceal fraud alone.",
-        "points": 10
-    }
-]
-
-INTERMEDIATE_QUESTIONS = [
-    {
-        "text": "A vendor's registered address matches an employee's home address. What does this suggest?",
-        "options": {
-            "A": "Nothing unusual -- coincidences happen",
-            "B": "A possible conflict of interest or shell company",
-            "C": "The vendor offers home delivery",
-            "D": "The employee works remotely"
-        },
-        "correct": "B",
-        "explanation": "A vendor address matching an employee's home address is a classic shell-company red flag worth investigating further.",
-        "points": 20
-    },
-    {
-        "text": "In the fraud triangle, 'rationalization' refers to:",
-        "options": {
-            "A": "The method used to hide the fraud",
-            "B": "The justification a person uses to excuse their dishonest act",
-            "C": "The financial pressure driving the fraud",
-            "D": "The audit process that catches the fraud"
-        },
-        "correct": "B",
-        "explanation": "Rationalization is the internal excuse ('I'll pay it back', 'I deserve this') that lets someone reconcile fraud with their self-image.",
-        "points": 20
-    },
-    {
-        "text": "Which of these is the strongest indicator of invoice fraud?",
-        "options": {
-            "A": "An invoice number formatted differently than the vendor's usual sequence",
-            "B": "An invoice printed in color",
-            "C": "An invoice paid by check instead of wire",
-            "D": "An invoice with a due date"
+            "A": "A file's unique digital fingerprint used to verify integrity",
+            "B": "A method used to encrypt deleted files",
+            "C": "A tool for recovering lost passwords",
+            "D": "A type of malware used to hide data"
         },
         "correct": "A",
-        "explanation": "Inconsistent invoice numbering compared to a vendor's normal pattern can indicate a fabricated or altered invoice.",
+        "explanation": "A hash value is a fixed-length fingerprint of a file's contents -- if the file changes at all, the hash changes, which is how investigators verify evidence hasn't been altered.",
         "points": 20
-    }
-]
-
-HARD_QUESTIONS = [
+    },
     {
+        "round_number": 4,
+        "difficulty": "HARD",
         "text": "A payment is split into three smaller transactions, each just under the $10,000 reporting threshold. This is best described as:",
         "options": {
             "A": "Structuring",
@@ -224,18 +218,8 @@ HARD_QUESTIONS = [
         "points": 30
     },
     {
-        "text": "During an investigation, an employee's login logs show activity from a location inconsistent with their claimed whereabouts. This type of evidence is called:",
-        "options": {
-            "A": "Circumstantial testimony",
-            "B": "Digital forensic evidence",
-            "C": "Hearsay",
-            "D": "Character evidence"
-        },
-        "correct": "B",
-        "explanation": "System and login logs are digital forensic evidence -- objective records that can corroborate or contradict a person's account.",
-        "points": 30
-    },
-    {
+        "round_number": 5,
+        "difficulty": "HARD",
         "text": "Which stage of money laundering involves moving illicit funds through multiple accounts or shell entities to obscure their origin?",
         "options": {
             "A": "Placement",
@@ -248,16 +232,6 @@ HARD_QUESTIONS = [
         "points": 30
     }
 ]
-
-REGULAR_QUESTIONS = EASY_QUESTIONS + INTERMEDIATE_QUESTIONS + HARD_QUESTIONS
-
-STAGE_BOUNDARIES = [
-    ("EASY", len(EASY_QUESTIONS)),
-    ("INTERMEDIATE", len(INTERMEDIATE_QUESTIONS)),
-    ("HARD", len(HARD_QUESTIONS))
-]
-
-STAGE_NAMES = ["EASY", "INTERMEDIATE", "HARD", "FINAL"]
 
 FINAL_CASE = {
     "title": "CASE INVESTIGATION",
@@ -357,19 +331,16 @@ def get_player(connection, name):
     ).fetchone()
 
 
-def current_stage_label(question_index):
-    seen = 0
-    for label, count in STAGE_BOUNDARIES:
-        seen += count
-        if question_index < seen:
-            return label
-    return "FINAL"
+def players_remaining_count(connection):
+    return connection.execute(
+        "SELECT COUNT(*) AS count FROM fe_players WHERE status = 'in'"
+    ).fetchone()["count"]
 
 
 def grade_regular_answer(connection, player, config, answer):
-    question = REGULAR_QUESTIONS[player["question_index"]]
-    correct = 1 if answer == question["correct"] else 0
-    points = question["points"] if correct else 0
+    round_data = ROUNDS[player["question_index"]]
+    correct = 1 if answer == round_data["correct"] else 0
+    points = round_data["points"] if correct else 0
 
     new_status = player["status"]
     if not correct and config["elimination_enabled"]:
@@ -384,6 +355,18 @@ def grade_regular_answer(connection, player, config, answer):
         """,
         (points, new_status, correct, points, player["id"])
     )
+
+    if answer in round_data["options"]:
+        connection.execute(
+            """
+            INSERT INTO fe_answer_tally (round_number, option, count)
+            VALUES (?, ?, 1)
+            ON CONFLICT(round_number, option)
+            DO UPDATE SET count = count + 1
+            """,
+            (round_data["round_number"], answer)
+        )
+
     connection.commit()
 
 
@@ -451,12 +434,15 @@ def rules():
 def case_files():
     return render_template(
         "fe_case_files.html",
-        easy_questions=EASY_QUESTIONS,
-        intermediate_questions=INTERMEDIATE_QUESTIONS,
-        hard_questions=HARD_QUESTIONS,
+        rounds=ROUNDS,
         final_case=FINAL_CASE,
         active_nav="case_files"
     )
+
+
+@elimination_bp.route("/settings")
+def settings():
+    return redirect(url_for("elimination.host"))
 
 
 # =========================================================
@@ -476,7 +462,8 @@ def host():
         "fe_host.html",
         config=config,
         players=players,
-        avatar_images=AVATAR_IMAGES
+        avatar_images=AVATAR_IMAGES,
+        active_nav="settings"
     )
 
 
@@ -535,6 +522,7 @@ def host_start():
 def host_reset():
     connection = get_db()
     connection.execute("DELETE FROM fe_players")
+    connection.execute("DELETE FROM fe_answer_tally")
     connection.execute(
         "UPDATE fe_config SET pin = ?, status = 'lobby' WHERE id = 1",
         (generate_pin(),)
@@ -607,7 +595,8 @@ def waiting(name):
         "fe_waiting.html",
         name=name,
         avatar=player["avatar"],
-        avatar_images=AVATAR_IMAGES
+        avatar_images=AVATAR_IMAGES,
+        active_nav="play"
     )
 
 
@@ -630,8 +619,22 @@ def player_status(name):
     })
 
 
+@elimination_bp.route("/players-status")
+def players_status_json():
+    connection = get_db()
+    players = connection.execute(
+        "SELECT name, avatar, status FROM fe_players ORDER BY joined_at"
+    ).fetchall()
+    connection.close()
+
+    return jsonify({
+        "players": [dict(p) for p in players],
+        "remaining": sum(1 for p in players if p["status"] == "in")
+    })
+
+
 # =========================================================
-# REGULAR QUESTIONS (EASY / INTERMEDIATE / HARD)
+# ROUNDS 1-5
 # =========================================================
 
 @elimination_bp.route("/play/<name>", methods=["GET", "POST"])
@@ -661,7 +664,7 @@ def play(name):
         connection.close()
         return redirect(url_for("elimination.waiting", name=name))
 
-    if player["question_index"] >= len(REGULAR_QUESTIONS):
+    if player["question_index"] >= len(ROUNDS):
         connection.execute(
             "UPDATE fe_players SET phase = 'final', final_index = 0 WHERE id = ?",
             (player["id"],)
@@ -699,10 +702,15 @@ def play(name):
         connection.close()
         return redirect(url_for("elimination.feedback", name=name))
 
-    question = REGULAR_QUESTIONS[player["question_index"]]
+    round_data = ROUNDS[player["question_index"]]
     removed_options = set()
     if player["lifeline_removed"]:
         removed_options = set(player["lifeline_removed"].split(","))
+
+    players = connection.execute(
+        "SELECT name, avatar, status FROM fe_players ORDER BY joined_at"
+    ).fetchall()
+    remaining = sum(1 for p in players if p["status"] == "in")
 
     connection.close()
 
@@ -710,38 +718,40 @@ def play(name):
         "fe_question.html",
         name=name,
         player=player,
-        question=question,
-        question_number=player["question_index"] + 1,
-        total_questions=len(REGULAR_QUESTIONS),
-        stage=current_stage_label(player["question_index"]),
-        stage_names=STAGE_NAMES,
+        question=round_data,
+        rounds=ROUNDS,
+        current_round=round_data["round_number"],
         timer_seconds=config["timer_seconds"],
         remaining_seconds=max(0, int(config["timer_seconds"] - elapsed)),
         lifelines_enabled=config["lifelines_enabled"],
-        removed_options=removed_options
+        removed_options=removed_options,
+        players=players,
+        players_remaining=remaining,
+        avatar_images=AVATAR_IMAGES,
+        active_nav="play"
     )
 
 
-@elimination_bp.route("/lifeline/<name>", methods=["POST"])
-def use_lifeline(name):
+@elimination_bp.route("/lifeline/fifty-fifty/<name>", methods=["POST"])
+def use_fifty_fifty(name):
     connection = get_db()
     player = get_player(connection, name)
     config = get_config(connection)
 
     if (player is not None and config["lifelines_enabled"]
-            and not player["lifeline_used"] and player["phase"] == "question"
+            and not player["fifty_fifty_used"] and player["phase"] == "question"
             and not player["answered_current"]
-            and player["question_index"] < len(REGULAR_QUESTIONS)):
+            and player["question_index"] < len(ROUNDS)):
 
-        question = REGULAR_QUESTIONS[player["question_index"]]
-        wrong_options = [key for key in question["options"] if key != question["correct"]]
+        round_data = ROUNDS[player["question_index"]]
+        wrong_options = [key for key in round_data["options"] if key != round_data["correct"]]
         random.shuffle(wrong_options)
         removed = ",".join(wrong_options[:2])
 
         connection.execute(
             """
             UPDATE fe_players
-            SET lifeline_used = 1, lifeline_removed = ?
+            SET fifty_fifty_used = 1, lifeline_removed = ?
             WHERE id = ?
             """,
             (removed, player["id"])
@@ -750,6 +760,77 @@ def use_lifeline(name):
 
     connection.close()
     return redirect(url_for("elimination.play", name=name))
+
+
+@elimination_bp.route("/lifeline/skip/<name>", methods=["POST"])
+def use_skip(name):
+    connection = get_db()
+    player = get_player(connection, name)
+    config = get_config(connection)
+
+    if (player is not None and config["lifelines_enabled"]
+            and not player["skip_used"] and player["phase"] == "question"
+            and not player["answered_current"]
+            and player["question_index"] < len(ROUNDS)):
+
+        next_index = player["question_index"] + 1
+        finishing_regular = next_index >= len(ROUNDS)
+
+        connection.execute(
+            """
+            UPDATE fe_players
+            SET skip_used = 1, question_index = ?, answered_current = 0,
+                last_correct = NULL, phase_started_at = NULL, lifeline_removed = NULL,
+                phase = ?, final_index = CASE WHEN ? THEN 0 ELSE final_index END
+            WHERE id = ?
+            """,
+            (next_index, "final" if finishing_regular else "question",
+             finishing_regular, player["id"])
+        )
+        connection.commit()
+
+    connection.close()
+    return redirect(url_for("elimination.play", name=name))
+
+
+@elimination_bp.route("/lifeline/ask-team/<name>", methods=["POST"])
+def use_ask_team(name):
+    connection = get_db()
+    player = get_player(connection, name)
+    config = get_config(connection)
+
+    if player is None:
+        connection.close()
+        return jsonify({"error": "not_found"}), 404
+
+    if (not config["lifelines_enabled"] or player["ask_team_used"]
+            or player["phase"] != "question" or player["answered_current"]
+            or player["question_index"] >= len(ROUNDS)):
+        connection.close()
+        return jsonify({"error": "unavailable"}), 400
+
+    round_data = ROUNDS[player["question_index"]]
+
+    connection.execute(
+        "UPDATE fe_players SET ask_team_used = 1 WHERE id = ?",
+        (player["id"],)
+    )
+    connection.commit()
+
+    rows = connection.execute(
+        "SELECT option, count FROM fe_answer_tally WHERE round_number = ?",
+        (round_data["round_number"],)
+    ).fetchall()
+    connection.close()
+
+    tally = {row["option"]: row["count"] for row in rows}
+    total = sum(tally.values())
+    percentages = {}
+    for letter in round_data["options"]:
+        votes = tally.get(letter, 0)
+        percentages[letter] = round((votes / total) * 100) if total else 0
+
+    return jsonify({"percentages": percentages, "responses": total})
 
 
 @elimination_bp.route("/timer/<name>")
@@ -787,11 +868,11 @@ def feedback(name):
         connection.close()
         return redirect(url_for("elimination.join"))
 
-    if not player["answered_current"] or player["question_index"] >= len(REGULAR_QUESTIONS):
+    if not player["answered_current"] or player["question_index"] >= len(ROUNDS):
         connection.close()
         return redirect(url_for("elimination.play", name=name))
 
-    question = REGULAR_QUESTIONS[player["question_index"]]
+    question = ROUNDS[player["question_index"]]
     connection.close()
 
     return render_template(
@@ -801,7 +882,8 @@ def feedback(name):
         question=question,
         correct=bool(player["last_correct"]),
         points=player["last_points"],
-        eliminated=(player["status"] == "eliminated")
+        eliminated=(player["status"] == "eliminated"),
+        active_nav="play"
     )
 
 
@@ -820,7 +902,7 @@ def advance(name):
 
     next_index = player["question_index"] + 1
 
-    if next_index >= len(REGULAR_QUESTIONS):
+    if next_index >= len(ROUNDS):
         connection.execute(
             """
             UPDATE fe_players
@@ -844,7 +926,7 @@ def advance(name):
     connection.commit()
     connection.close()
 
-    if next_index >= len(REGULAR_QUESTIONS):
+    if next_index >= len(ROUNDS):
         return redirect(url_for("elimination.final_round", name=name))
     return redirect(url_for("elimination.play", name=name))
 
@@ -862,7 +944,8 @@ def eliminated(name):
         "fe_eliminated.html",
         name=name,
         player=player,
-        question_number=min(player["question_index"] + 1, len(REGULAR_QUESTIONS))
+        question_number=min(player["question_index"] + 1, len(ROUNDS)),
+        active_nav="play"
     )
 
 
@@ -927,7 +1010,8 @@ def final_round(name):
         case=FINAL_CASE,
         question=question,
         question_number=player["final_index"] + 1,
-        total_questions=len(FINAL_CASE["questions"])
+        total_questions=len(FINAL_CASE["questions"]),
+        active_nav="play"
     )
 
 
@@ -948,9 +1032,9 @@ def results(name):
     connection.close()
 
     if winner:
-        return render_template("fe_winner.html", name=name, player=player)
+        return render_template("fe_winner.html", name=name, player=player, active_nav="play")
 
-    return render_template("fe_results.html", name=name, player=player)
+    return render_template("fe_results.html", name=name, player=player, active_nav="play")
 
 
 # =========================================================
