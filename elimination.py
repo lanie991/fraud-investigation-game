@@ -433,6 +433,20 @@ def host_start():
     return redirect(url_for("elimination.host"))
 
 
+@elimination_bp.route("/host/kick/<name>", methods=["POST"])
+def host_kick(name):
+    connection = get_db()
+    player = get_player(connection, name)
+
+    if player is not None:
+        connection.execute("DELETE FROM fe_answer_history WHERE player_id = ?", (player["id"],))
+        connection.execute("DELETE FROM fe_players WHERE id = ?", (player["id"],))
+        connection.commit()
+
+    connection.close()
+    return redirect(url_for("elimination.host"))
+
+
 @elimination_bp.route("/host/reset", methods=["POST"])
 def host_reset():
     connection = get_db()

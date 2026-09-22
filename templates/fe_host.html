@@ -52,6 +52,13 @@
                     {% else %}
                         <span class="fe-status-pill in">{{ player["score"] }} PTS</span>
                     {% endif %}
+                    <form method="POST"
+                          action="{{ url_for('elimination.host_kick', name=player['name']) }}"
+                          onsubmit="return confirm('Remove {{ player['name']|e }} from the game?');">
+                        <button type="submit" class="fe-player-kick" title="Remove player" aria-label="Remove {{ player['name'] }}">
+                            &#10005;
+                        </button>
+                    </form>
                 </div>
                 {% endfor %}
             {% else %}
