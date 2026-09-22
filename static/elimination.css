@@ -828,6 +828,7 @@ html, body {
 .fe-round-node-label span.diff-easy { color: #4ade80; }
 .fe-round-node-label span.diff-intermediate { color: #60a5fa; }
 .fe-round-node-label span.diff-hard { color: #f87171; }
+.fe-round-node-label span.diff-final { color: #facc15; }
 
 .fe-round-node.final .fe-round-circle {
     font-size: 15px;
@@ -1031,6 +1032,11 @@ html, body {
 .fe-difficulty-pill.hard {
     background: rgba(239, 68, 68, 0.16);
     color: #f87171;
+}
+
+.fe-difficulty-pill.final {
+    background: rgba(250, 204, 21, 0.16);
+    color: #facc15;
 }
 
 .fe-remaining-text {

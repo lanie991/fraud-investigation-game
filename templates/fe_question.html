@@ -12,23 +12,16 @@
 
     <div class="fe-round-tracker">
         {% for r in rounds %}
-        <div class="fe-round-node {% if r.round_number < current_round %}done{% elif r.round_number == current_round %}current{% endif %}">
-            <div class="fe-round-circle">{{ r.round_number }}</div>
+        {% set is_final = r.difficulty == "FINAL" %}
+        <div class="fe-round-node {% if is_final %}final{% endif %} {% if r.round_number < current_round %}done{% elif r.round_number == current_round %}current{% endif %}">
+            <div class="fe-round-circle">{% if is_final %}&#127942;{% else %}{{ r.round_number }}{% endif %}</div>
             <div class="fe-round-node-label">
-                <strong>ROUND {{ r.round_number }}</strong>
-                <span class="diff-{{ r.difficulty|lower }}">{{ r.difficulty }}</span>
+                <strong>{{ "FINAL" if is_final else "ROUND " ~ r.round_number }}</strong>
+                <span class="diff-{{ r.difficulty|lower }}">{{ "ROUND" if is_final else r.difficulty }}</span>
             </div>
         </div>
         {% if not loop.last %}<div class="fe-round-connector"></div>{% endif %}
         {% endfor %}
-        <div class="fe-round-connector"></div>
-        <div class="fe-round-node final">
-            <div class="fe-round-circle">&#127942;</div>
-            <div class="fe-round-node-label">
-                <strong>FINAL</strong>
-                <span>ROUND</span>
-            </div>
-        </div>
     </div>
 
     <div class="fe-game-tagline">
@@ -74,7 +67,7 @@
     <div class="fe-main-panel">
 
         <div class="fe-round-badge-row">
-            <span class="fe-round-badge">ROUND {{ current_round }}</span>
+            <span class="fe-round-badge">{{ "FINAL ROUND" if question["difficulty"] == "FINAL" else "ROUND " ~ current_round }}</span>
             <span class="fe-difficulty-pill {{ question['difficulty']|lower }}">
                 {{ question["difficulty"] }} &middot; {{ question["points"] }} POINTS
             </span>

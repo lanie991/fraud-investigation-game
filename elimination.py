@@ -9,7 +9,7 @@ wrong answer eliminates them (when elimination is enabled). Anyone who
 survives reaches a Final Round case file worth extra points.
 
 The sample questions below are PLACEHOLDER CONTENT. Replace the entries
-in ROUNDS / FINAL_CASE with real content whenever it's ready -- the
+in ROUNDS / FINAL_ROUNDS with real content whenever it's ready -- the
 shape of each dict is all that matters to the rest of this file.
 """
 
@@ -94,7 +94,6 @@ def initialize_database():
             lifeline_removed TEXT,
             skip_used INTEGER DEFAULT 0,
             ask_team_used INTEGER DEFAULT 0,
-            final_index INTEGER DEFAULT 0,
             joined_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -233,86 +232,28 @@ ROUNDS = [
     }
 ]
 
-FINAL_CASE = {
-    "title": "CASE INVESTIGATION",
-    "points": 50,
-    "body": (
-        "A finance manager creates a new vendor. The manager approves "
-        "the vendor and their invoices. Over 12 months, the company "
-        "pays the vendor $475,000. The vendor's registered address is "
-        "connected to a person related to the manager. No competitive "
-        "bids were obtained and several invoices contain nearly "
-        "identical descriptions. The manager says the vendor provided "
-        "\"special consulting services.\""
-    ),
-    "questions": [
-        {
-            "label": "Control weakness",
-            "text": "What is the primary internal control weakness in this scenario?",
-            "options": {
-                "A": "The vendor was paid by direct deposit",
-                "B": "The same person created, approved and managed the vendor relationship",
-                "C": "The invoices were sent by email",
-                "D": "The company used accounting software"
-            },
-            "correct": "B",
-            "explanation": "One person controlling vendor setup, approval and payment removes the checks that segregation of duties provides.",
-            "points": 10
+# The Final Round is just more forensics trivia, same shape as the
+# rounds above -- not a case-file scenario. Add as many entries here
+# as needed; each is played exactly like a regular round, just tagged
+# with difficulty "FINAL" so the tracker/badges style it distinctly.
+FINAL_ROUNDS = [
+    {
+        "round_number": 6,
+        "difficulty": "FINAL",
+        "text": "Which forensic technique is used to recover data from a device without altering the original evidence?",
+        "options": {
+            "A": "Creating a bit-for-bit forensic image of the drive",
+            "B": "Opening files directly on the original device",
+            "C": "Deleting temporary files to free up space",
+            "D": "Reformatting the drive before analysis"
         },
-        {
-            "label": "Fraud scheme",
-            "text": "What type of fraud scheme does this scenario most closely resemble?",
-            "options": {
-                "A": "Payroll fraud",
-                "B": "Shell company / conflict-of-interest vendor fraud",
-                "C": "Expense reimbursement fraud",
-                "D": "Check tampering"
-            },
-            "correct": "B",
-            "explanation": "A vendor connected to the approving manager, with no competitive bidding, is a textbook shell-company conflict of interest scheme.",
-            "points": 10
-        },
-        {
-            "label": "Evidence to obtain",
-            "text": "Which piece of evidence would be most valuable to obtain next?",
-            "options": {
-                "A": "The vendor's business registration and ownership records",
-                "B": "The office lunch menu",
-                "C": "The company's parking policy",
-                "D": "The manager's calendar for next month"
-            },
-            "correct": "A",
-            "explanation": "Ownership and registration records can confirm whether the vendor is genuinely independent or connected to the manager.",
-            "points": 10
-        },
-        {
-            "label": "Fraud Triangle",
-            "text": "Which leg of the Fraud Triangle does the manager's approval authority over the vendor represent?",
-            "options": {
-                "A": "Pressure",
-                "B": "Rationalization",
-                "C": "Opportunity",
-                "D": "Detection"
-            },
-            "correct": "C",
-            "explanation": "Unchecked authority to create, approve and pay a vendor is what creates the opportunity to commit the fraud.",
-            "points": 10
-        },
-        {
-            "label": "Conclusion",
-            "text": "Based on the evidence, what is the most appropriate next step?",
-            "options": {
-                "A": "Take no action since invoices exist",
-                "B": "Escalate to a formal fraud investigation and suspend further payments",
-                "C": "Ask the manager to review their own vendor file",
-                "D": "Close the case with no further review"
-            },
-            "correct": "B",
-            "explanation": "Given the conflict of interest and lack of competitive bidding, the matter should be escalated and payments paused pending investigation.",
-            "points": 10
-        }
-    ]
-}
+        "correct": "A",
+        "explanation": "A bit-for-bit forensic image preserves the original evidence untouched, so all analysis happens on a copy instead of the source device.",
+        "points": 50
+    }
+]
+
+ROUNDS = ROUNDS + FINAL_ROUNDS
 
 
 # =========================================================
@@ -370,22 +311,6 @@ def grade_regular_answer(connection, player, config, answer):
     connection.commit()
 
 
-def grade_final_answer(connection, player, answer):
-    question = FINAL_CASE["questions"][player["final_index"]]
-    correct = 1 if answer == question["correct"] else 0
-    points = question["points"] if correct else 0
-
-    connection.execute(
-        """
-        UPDATE fe_players
-        SET score = score + ?, final_index = final_index + 1
-        WHERE id = ?
-        """,
-        (points, player["id"])
-    )
-    connection.commit()
-
-
 def is_declared_winner(connection, player):
     """Best-effort winner check under independent, per-player pacing.
 
@@ -435,7 +360,6 @@ def case_files():
     return render_template(
         "fe_case_files.html",
         rounds=ROUNDS,
-        final_case=FINAL_CASE,
         active_nav="case_files"
     )
 
@@ -652,10 +576,6 @@ def play(name):
         connection.close()
         return redirect(url_for("elimination.eliminated", name=name))
 
-    if player["phase"] == "final":
-        connection.close()
-        return redirect(url_for("elimination.final_round", name=name))
-
     if player["phase"] == "finished":
         connection.close()
         return redirect(url_for("elimination.results", name=name))
@@ -666,12 +586,12 @@ def play(name):
 
     if player["question_index"] >= len(ROUNDS):
         connection.execute(
-            "UPDATE fe_players SET phase = 'final', final_index = 0 WHERE id = ?",
+            "UPDATE fe_players SET phase = 'finished' WHERE id = ?",
             (player["id"],)
         )
         connection.commit()
         connection.close()
-        return redirect(url_for("elimination.final_round", name=name))
+        return redirect(url_for("elimination.results", name=name))
 
     if request.method == "POST":
         if not player["answered_current"]:
@@ -774,18 +694,17 @@ def use_skip(name):
             and player["question_index"] < len(ROUNDS)):
 
         next_index = player["question_index"] + 1
-        finishing_regular = next_index >= len(ROUNDS)
+        finished = next_index >= len(ROUNDS)
 
         connection.execute(
             """
             UPDATE fe_players
             SET skip_used = 1, question_index = ?, answered_current = 0,
                 last_correct = NULL, phase_started_at = NULL, lifeline_removed = NULL,
-                phase = ?, final_index = CASE WHEN ? THEN 0 ELSE final_index END
+                phase = ?
             WHERE id = ?
             """,
-            (next_index, "final" if finishing_regular else "question",
-             finishing_regular, player["id"])
+            (next_index, "finished" if finished else "question", player["id"])
         )
         connection.commit()
 
@@ -901,33 +820,24 @@ def advance(name):
         return redirect(url_for("elimination.eliminated", name=name))
 
     next_index = player["question_index"] + 1
+    finished = next_index >= len(ROUNDS)
 
-    if next_index >= len(ROUNDS):
-        connection.execute(
-            """
-            UPDATE fe_players
-            SET phase = 'final', question_index = ?, answered_current = 0,
-                last_correct = NULL, phase_started_at = NULL, final_index = 0
-            WHERE id = ?
-            """,
-            (next_index, player["id"])
-        )
-    else:
-        connection.execute(
-            """
-            UPDATE fe_players
-            SET question_index = ?, answered_current = 0,
-                last_correct = NULL, phase_started_at = NULL, lifeline_removed = NULL
-            WHERE id = ?
-            """,
-            (next_index, player["id"])
-        )
+    connection.execute(
+        """
+        UPDATE fe_players
+        SET question_index = ?, answered_current = 0, last_correct = NULL,
+            phase_started_at = NULL, lifeline_removed = NULL,
+            phase = ?
+        WHERE id = ?
+        """,
+        (next_index, "finished" if finished else "question", player["id"])
+    )
 
     connection.commit()
     connection.close()
 
-    if next_index >= len(ROUNDS):
-        return redirect(url_for("elimination.final_round", name=name))
+    if finished:
+        return redirect(url_for("elimination.results", name=name))
     return redirect(url_for("elimination.play", name=name))
 
 
@@ -945,72 +855,6 @@ def eliminated(name):
         name=name,
         player=player,
         question_number=min(player["question_index"] + 1, len(ROUNDS)),
-        active_nav="play"
-    )
-
-
-# =========================================================
-# FINAL ROUND (CASE FILE)
-# =========================================================
-
-@elimination_bp.route("/final/<name>", methods=["GET", "POST"])
-def final_round(name):
-    connection = get_db()
-    player = get_player(connection, name)
-
-    if player is None:
-        connection.close()
-        return redirect(url_for("elimination.join"))
-
-    if player["status"] == "eliminated":
-        connection.close()
-        return redirect(url_for("elimination.eliminated", name=name))
-
-    if player["phase"] == "finished":
-        connection.close()
-        return redirect(url_for("elimination.results", name=name))
-
-    if player["phase"] != "final":
-        connection.close()
-        return redirect(url_for("elimination.play", name=name))
-
-    if player["final_index"] >= len(FINAL_CASE["questions"]):
-        connection.execute(
-            "UPDATE fe_players SET phase = 'finished' WHERE id = ?",
-            (player["id"],)
-        )
-        connection.commit()
-        connection.close()
-        return redirect(url_for("elimination.results", name=name))
-
-    if request.method == "POST":
-        answer = request.form.get("answer")
-        grade_final_answer(connection, player, answer)
-        player = get_player(connection, player["name"])
-
-        if player["final_index"] >= len(FINAL_CASE["questions"]):
-            connection.execute(
-                "UPDATE fe_players SET phase = 'finished' WHERE id = ?",
-                (player["id"],)
-            )
-            connection.commit()
-            connection.close()
-            return redirect(url_for("elimination.results", name=name))
-
-        connection.close()
-        return redirect(url_for("elimination.final_round", name=name))
-
-    question = FINAL_CASE["questions"][player["final_index"]]
-    connection.close()
-
-    return render_template(
-        "fe_final.html",
-        name=name,
-        player=player,
-        case=FINAL_CASE,
-        question=question,
-        question_number=player["final_index"] + 1,
-        total_questions=len(FINAL_CASE["questions"]),
         active_nav="play"
     )
 

@@ -14,22 +14,13 @@
     <div class="fe-card" style="margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
         <div>
             <h2 style="margin:0 0 4px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:18px;">
-                ROUND {{ r.round_number }}
+                {{ "FINAL ROUND" if r.difficulty == "FINAL" else "ROUND " ~ r.round_number }}
             </h2>
             <p style="color:#94a3b8; font-size:13px; margin:0;">{{ r.points }} points</p>
         </div>
         <span class="fe-difficulty-pill {{ r.difficulty|lower }}">{{ r.difficulty }}</span>
     </div>
     {% endfor %}
-
-    <div class="fe-card">
-        <h2 style="margin:0 0 6px; color:#818cf8; font-family:'Rajdhani',sans-serif; font-size:18px;">
-            FINAL ROUND &middot; {{ final_case["title"] }}
-        </h2>
-        <p style="color:#94a3b8; font-size:13px;">
-            {{ final_case["body"] }}
-        </p>
-    </div>
 
 </div>
 
