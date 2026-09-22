@@ -2,42 +2,103 @@
 
 {% block title %}Forensic Elimination{% endblock %}
 
+{% block top_header %}
+<header class="fe-hero-nav">
+    <a href="{{ url_for('elimination.home') }}" class="fe-hero-nav-item active">
+        <span class="fe-hero-nav-icon">&#8962;</span>
+        <span>HOME</span>
+    </a>
+    <a href="{{ url_for('elimination.join') }}" class="fe-hero-nav-item">
+        <span class="fe-hero-nav-icon">&#10067;</span>
+        <span>PLAY</span>
+    </a>
+    <a href="{{ url_for('elimination.leaderboard') }}" class="fe-hero-nav-item">
+        <span class="fe-hero-nav-icon">&#128202;</span>
+        <span>LEADERBOARD</span>
+    </a>
+    <a href="{{ url_for('elimination.case_files') }}" class="fe-hero-nav-item">
+        <span class="fe-hero-nav-icon">&#128193;</span>
+        <span>CASE FILES</span>
+    </a>
+    <a href="{{ url_for('elimination.rules') }}" class="fe-hero-nav-item">
+        <span class="fe-hero-nav-icon">&#128220;</span>
+        <span>RULES</span>
+    </a>
+</header>
+{% endblock %}
+
 {% block content %}
 
-<div class="fe-home">
+<div class="fe-hero">
 
-    <div class="fe-home-grid">
+    <div class="fe-hero-side-left">
+        <div class="fe-evidence-stack">
+            <div class="fe-evidence-binder">EVIDENCE</div>
+            <div class="fe-evidence-binder">ANALYSIS</div>
+            <div class="fe-evidence-binder">INVESTIGATION</div>
+            <div class="fe-evidence-binder">RESULTS</div>
+        </div>
+        <div class="fe-hero-side-tagline">
+            SAME<br>QUESTIONS.<br>BIGGER<br>THINKERS.
+        </div>
+    </div>
 
-        <div class="fe-home-copy">
+    <div class="fe-hero-center">
 
-            <div class="fe-home-tagline">KNOW &nbsp;|&nbsp; ANALYZE &nbsp;|&nbsp; OUTLAST</div>
+        <h1 class="fe-hero-title">
+            FORENSIC<br><span>ELIMINATI<em>&#9678;</em>N</span>
+        </h1>
 
-            <h1 class="fe-home-title">
-                FORENSIC<br><span>ELIMINATION</span>
-            </h1>
+        <div class="fe-hero-kicker">KNOW &nbsp;|&nbsp; ANALYZE &nbsp;|&nbsp; OUTLAST</div>
 
-            <p class="fe-home-sub">
-                A forensics-based trivia game where knowledge keeps you in
-                the game. Answer wrong, and you're out.
-            </p>
+        <p class="fe-hero-sub">
+            A FORENSICS-BASED TRIVIA GAME<br>
+            WHERE KNOWLEDGE KEEPS YOU IN THE GAME.
+        </p>
 
-            <div class="fe-home-actions">
-                <a href="{{ url_for('elimination.join') }}" class="fe-btn fe-btn-gold">
-                    JOIN GAME
-                </a>
-                <a href="{{ url_for('elimination.host') }}" class="fe-btn fe-btn-blue">
-                    HOST GAME
-                </a>
-            </div>
-
+        <div class="fe-hero-actions">
+            <a href="{{ url_for('elimination.join') }}" class="fe-hero-btn fe-hero-btn-gold">
+                JOIN GAME <span>&#8594;</span>
+            </a>
+            <a href="{{ url_for('elimination.host') }}" class="fe-hero-btn fe-hero-btn-dark">
+                HOST GAME <span>&#8594;</span>
+            </a>
         </div>
 
-        <div class="fe-home-side">
-            <div class="fe-home-side-line">REAL KNOWLEDGE. HIGHER STAKES.</div>
-            <p>Same questions. Bigger thinkers.</p>
-            <p style="margin-top:20px;">FORENSICS &nbsp;|&nbsp; INTEGRITY &nbsp;|&nbsp; INSIGHT &nbsp;|&nbsp; IMPACT</p>
+        <div class="fe-hero-footer-line">
+            FORENSICS &nbsp;|&nbsp; COMPLIANCE &nbsp;|&nbsp; INVESTIGATION &nbsp;|&nbsp; FRAUD &nbsp;|&nbsp; REAL-WORLD CASES
         </div>
 
+    </div>
+
+    <div class="fe-hero-side-right">
+        <div class="fe-hero-side-tagline-right">
+            REAL KNOWLEDGE.<br>HIGHER STAKES.<br>
+            <span>THE LAST MIND<br>STANDING WINS.</span>
+        </div>
+        <div class="fe-hero-fingerprint" aria-hidden="true">
+            <svg viewBox="0 0 100 100" width="130" height="130">
+                <g fill="none" stroke="#3b82f6" stroke-width="1.4" opacity="0.55">
+                    <path d="M50 12 a38 38 0 0 1 38 38"/>
+                    <path d="M50 20 a30 30 0 0 1 30 30"/>
+                    <path d="M50 28 a22 22 0 0 1 22 22"/>
+                    <path d="M50 36 a14 14 0 0 1 14 14"/>
+                    <path d="M12 50 a38 38 0 0 1 38 -38"/>
+                    <path d="M20 50 a30 30 0 0 1 30 -30"/>
+                    <path d="M28 50 a22 22 0 0 1 22 -22"/>
+                    <path d="M36 50 a14 14 0 0 1 14 -14"/>
+                    <path d="M50 88 a38 38 0 0 1 -38 -38"/>
+                    <path d="M50 80 a30 30 0 0 1 -30 -30"/>
+                    <path d="M50 72 a22 22 0 0 1 -22 -22"/>
+                    <path d="M50 64 a14 14 0 0 1 -14 -14"/>
+                    <path d="M88 50 a38 38 0 0 1 -38 38"/>
+                    <path d="M80 50 a30 30 0 0 1 -30 30"/>
+                    <path d="M72 50 a22 22 0 0 1 -22 22"/>
+                    <path d="M64 50 a14 14 0 0 1 -14 14"/>
+                </g>
+            </svg>
+        </div>
+        <div class="fe-hero-side-caption">INVESTIGATE<br>ANALYZE<br>DETECT<br>ELIMINATE</div>
     </div>
 
 </div>
