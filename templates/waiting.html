@@ -74,7 +74,7 @@ Waiting Room
 
         <div class="correct-answer">
             <strong>QUESTION 3</strong>
-            <p>It identifies Sarah Jones as a contact on BDA Consulting's vendor file — not evidence of wrongdoing by itself.</p>
+            <p>It identifies Sarah Mitchell as a contact on BDA Consulting's vendor file — not evidence of wrongdoing by itself.</p>
         </div>
 
     {% elif from_round == 2 %}
@@ -198,8 +198,8 @@ Waiting Room
                             "invoice_bank": "The invoice and the bank transaction record.",
                             "vendor_record": "The vendor record and the invoice number.",
                             "none": "None of the documents contradict each other.",
-                            "identifies_reviewer": "It identifies Sarah Jones as a contact on BDA Consulting's vendor file — not evidence of wrongdoing by itself.",
-                            "proves_sarah_guilty": "It proves Sarah Jones personally controls the BDA Consulting account.",
+                            "identifies_reviewer": "It identifies Sarah Mitchell as a contact on BDA Consulting's vendor file — not evidence of wrongdoing by itself.",
+                            "proves_sarah_guilty": "It proves Sarah Mitchell personally controls the BDA Consulting account.",
                             "irrelevant": "It has nothing to do with the investigation.",
                             "proves_michael_guilty": "It proves Michael Carter falsified the vendor record."
                         } %}
@@ -230,7 +230,7 @@ Waiting Room
                             "ip": "The IP address by itself.",
                             "payment_user": "The payment record showing authorization by MCARTER.",
                             "chat": "The chat message.",
-                            "sarah_access": "Sarah Jones's vendor file access.",
+                            "sarah_access": "Sarah Mitchell's vendor file access.",
                             "created_before_payment": "The invoice was created shortly before the payment and attributed to MCARTER.",
                             "old_document": "The invoice was created months earlier.",
                             "different_author": "Someone else created the invoice.",
@@ -274,10 +274,11 @@ Waiting Room
                             "reverse": "10:44 payment → 10:42 login → 10:39 invoice → 10:37 chat.",
                             "scrambled": "10:31 Sarah's access → 10:44 payment → 10:37 chat → 10:39 invoice.",
                             "unrelated": "The events are unrelated and have no order.",
-                            "sarah": "Sarah Jones",
+                            "sarah": "Sarah Mitchell",
                             "michael": "Michael Carter",
-                            "bda_person": "Someone at BDA Consulting",
-                            "accounts": "Accounts Department"
+                            "daniel": "Daniel Brooks",
+                            "lauren": "Lauren Price",
+                            "marcus": "Marcus Reed"
                         } %}
                     {% else %}
                         {% set labels = {} %}

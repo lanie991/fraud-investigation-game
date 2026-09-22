@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}
+Suspects — Who Stole the Money?
+{% endblock %}
+
+{% block content %}
+
+<div class="suspects-page">
+
+    <div class="suspects-header">
+        <div class="suspects-kicker">PERSONS OF INTEREST</div>
+        <h1>SUSPECTS</h1>
+        <p>Five employees. One theft. Everyone has a story — not everyone is telling the truth.</p>
+    </div>
+
+    <div class="suspects-grid">
+
+        {% for person in suspects %}
+        <div class="suspect-card">
+
+            <div class="suspect-photo">
+                <img src="{{ url_for('static', filename='suspects/' + person.photo) }}" alt="{{ person.name }}">
+            </div>
+
+            <div class="suspect-body">
+
+                <div class="suspect-name-row">
+                    <div>
+                        <h2>{{ person.name }}</h2>
+                        <div class="suspect-role">{{ person.role }}</div>
+                    </div>
+                    <div class="suspect-quote">&ldquo;{{ person.quote }}&rdquo;</div>
+                </div>
+
+                <div class="suspect-divider"></div>
+
+                <div class="suspect-stats">
+                    <div class="suspect-stat">
+                        <span class="suspect-stat-icon">🏢</span>
+                        <div>
+                            <span class="suspect-stat-label">Department</span>
+                            <strong>{{ person.department }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="suspect-stat">
+                        <span class="suspect-stat-icon">🕐</span>
+                        <div>
+                            <span class="suspect-stat-label">Years at Company</span>
+                            <strong>{{ person.years }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="suspect-stat">
+                        <span class="suspect-stat-icon">💼</span>
+                        <div>
+                            <span class="suspect-stat-label">Position</span>
+                            <strong>{{ person.position }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="suspect-stat">
+                        <span class="suspect-stat-icon">🔒</span>
+                        <div>
+                            <span class="suspect-stat-label">Access Level</span>
+                            <strong>{{ person.access }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div class="suspects-footer">
+        INVESTIGATION SYSTEM • STANDING BY
+    </div>
+
+</div>
+
+{% endblock %}
