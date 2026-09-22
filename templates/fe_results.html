@@ -22,12 +22,26 @@
             <span>YOUR SCORE</span>
         </div>
 
-        <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold fe-btn-block">
-            VIEW LEADERBOARD
-        </a>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold">
+                VIEW LEADERBOARD
+            </a>
+            <a href="{{ url_for('elimination.review', name=name) }}" class="fe-btn fe-btn-ghost">
+                REVIEW ANSWERS
+            </a>
+        </div>
 
     </div>
 
+    <div class="fe-card" style="width:100%; max-width:460px;">
+        <h2 style="margin:0 0 14px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:16px;">
+            LIVE STANDINGS
+        </h2>
+        <div id="fe-spectate-board"></div>
+    </div>
+
 </div>
+
+<script src="{{ url_for('static', filename='elimination-spectate.js') }}"></script>
 
 {% endblock %}

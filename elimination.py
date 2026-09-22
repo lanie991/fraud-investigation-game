@@ -132,6 +132,17 @@ def initialize_database():
         )
     """)
 
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS fe_answer_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            player_id INTEGER NOT NULL,
+            round_number INTEGER NOT NULL,
+            answer TEXT,
+            correct INTEGER NOT NULL,
+            points INTEGER NOT NULL DEFAULT 0
+        )
+    """)
+
     existing_config = connection.execute(
         "SELECT COUNT(*) AS count FROM fe_config"
     ).fetchone()
@@ -254,6 +265,14 @@ def grade_regular_answer(connection, player, config, answer):
             """,
             (round_data["round_number"], answer)
         )
+
+    connection.execute(
+        """
+        INSERT INTO fe_answer_history (player_id, round_number, answer, correct, points)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (player["id"], round_data["round_number"], answer, correct, points)
+    )
 
     connection.commit()
 
@@ -394,6 +413,7 @@ def host_reset():
     connection = get_db()
     connection.execute("DELETE FROM fe_players")
     connection.execute("DELETE FROM fe_answer_tally")
+    connection.execute("DELETE FROM fe_answer_history")
     connection.execute(
         "UPDATE fe_config SET pin = ?, status = 'lobby' WHERE id = 1",
         (generate_pin(),)
@@ -851,4 +871,84 @@ def leaderboard():
         avatar_images=AVATAR_IMAGES,
         winners=winners,
         active_nav="leaderboard"
+    )
+
+
+@elimination_bp.route("/leaderboard-data")
+def leaderboard_data():
+    connection = get_db()
+    players = connection.execute(
+        "SELECT * FROM fe_players ORDER BY score DESC, name ASC"
+    ).fetchall()
+
+    winners = {p["name"] for p in players if is_declared_winner(connection, p)}
+    connection.close()
+
+    rows = []
+    for p in players:
+        if p["status"] == "eliminated":
+            status = "ELIMINATED"
+        elif p["name"] in winners:
+            status = "WINNER"
+        else:
+            status = "STILL IN"
+
+        rows.append({
+            "name": p["name"],
+            "avatar": AVATAR_IMAGES.get(p["avatar"]),
+            "score": p["score"],
+            "status": status
+        })
+
+    return jsonify({"players": rows})
+
+
+# =========================================================
+# ANSWER REVIEW
+# =========================================================
+
+@elimination_bp.route("/review/<name>")
+def review(name):
+    connection = get_db()
+    player = get_player(connection, name)
+
+    if player is None:
+        connection.close()
+        return redirect(url_for("elimination.join"))
+
+    history_rows = connection.execute(
+        """
+        SELECT * FROM fe_answer_history
+        WHERE player_id = ?
+        ORDER BY round_number ASC
+        """,
+        (player["id"],)
+    ).fetchall()
+    connection.close()
+
+    rounds_by_number = {r["round_number"]: r for r in ROUNDS}
+
+    reviewed = []
+    for row in history_rows:
+        round_data = rounds_by_number.get(row["round_number"])
+        if round_data is None:
+            continue
+        reviewed.append({
+            "round_number": row["round_number"],
+            "difficulty": round_data["difficulty"],
+            "text": round_data["text"],
+            "options": round_data["options"],
+            "correct_answer": round_data["correct"],
+            "explanation": round_data["explanation"],
+            "player_answer": row["answer"],
+            "was_correct": bool(row["correct"]),
+            "points": row["points"]
+        })
+
+    return render_template(
+        "fe_review.html",
+        name=name,
+        player=player,
+        reviewed=reviewed,
+        active_nav="play"
     )

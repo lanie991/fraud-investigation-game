@@ -171,6 +171,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     updateRing({{ remaining_seconds }});
 
+    let lastTickedSecond = null;
+
     function poll() {
         fetch(timerUrl, { cache: "no-store" })
             .then(function (r) { return r.json(); })
@@ -179,6 +181,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     timerValue.textContent = pad(data.remaining_seconds);
                 }
                 updateRing(data.remaining_seconds);
+
+                if (window.FE_SFX && data.remaining_seconds > 0
+                        && data.remaining_seconds <= 5
+                        && data.remaining_seconds !== lastTickedSecond) {
+                    lastTickedSecond = data.remaining_seconds;
+                    FE_SFX.playTick();
+                }
 
                 if (data.closed && !submitted) {
                     submitted = true;

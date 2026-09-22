@@ -25,6 +25,9 @@
             <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold">
                 VIEW LEADERBOARD
             </a>
+            <a href="{{ url_for('elimination.review', name=name) }}" class="fe-btn fe-btn-ghost">
+                REVIEW ANSWERS
+            </a>
             <a href="{{ url_for('elimination.home') }}" class="fe-btn fe-btn-ghost">
                 BACK TO LOBBY
             </a>
@@ -33,5 +36,11 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.FE_SFX) FE_SFX.playWin();
+});
+</script>
 
 {% endblock %}

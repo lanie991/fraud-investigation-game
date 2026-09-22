@@ -39,4 +39,16 @@
 
 </div>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.FE_SFX) {
+        {% if correct %}
+        FE_SFX.playCorrect();
+        {% else %}
+        FE_SFX.playIncorrect();
+        {% endif %}
+    }
+});
+</script>
+
 {% endblock %}
