@@ -123,21 +123,27 @@
                     <button type="submit" class="fe-lifeline-item" {% if player["fifty_fifty_used"] %}disabled{% endif %}>
                         <span class="fe-lifeline-icon">&#128065;</span>
                         50/50
-                        <span class="fe-lifeline-count">({{ 0 if player["fifty_fifty_used"] else 1 }} left)</span>
+                        <span class="fe-lifeline-count">
+                            {% if player["fifty_fifty_used"] %}(0 left){% else %}(1 left &middot; -3 PTS){% endif %}
+                        </span>
                     </button>
                 </form>
 
                 <button type="button" class="fe-lifeline-item" id="fe-ask-team-btn" {% if player["ask_team_used"] %}disabled{% endif %}>
                     <span class="fe-lifeline-icon">&#128101;</span>
                     Ask the Team
-                    <span class="fe-lifeline-count">({{ 0 if player["ask_team_used"] else 1 }} left)</span>
+                    <span class="fe-lifeline-count">
+                        {% if player["ask_team_used"] %}(0 left){% else %}(1 left &middot; -3 PTS){% endif %}
+                    </span>
                 </button>
 
                 <form method="POST" action="{{ url_for('elimination.use_skip', name=name) }}">
                     <button type="submit" class="fe-lifeline-item" {% if player["skip_used"] %}disabled{% endif %}>
                         <span class="fe-lifeline-icon">&#8635;</span>
                         Skip
-                        <span class="fe-lifeline-count">({{ 0 if player["skip_used"] else 1 }} left)</span>
+                        <span class="fe-lifeline-count">
+                            {% if player["skip_used"] %}(0 left){% else %}(1 left &middot; -3 PTS){% endif %}
+                        </span>
                     </button>
                 </form>
             </div>

@@ -38,6 +38,7 @@ elimination_bp = Blueprint(
 DATABASE = "fraud_game.db"
 
 DEFAULT_TIMER_SECONDS = 20
+LIFELINE_PENALTY = 3
 
 AVATAR_IMAGES = {
     "detective_black": "detective.png",
@@ -694,10 +695,11 @@ def use_fifty_fifty(name):
         connection.execute(
             """
             UPDATE fe_players
-            SET fifty_fifty_used = 1, lifeline_removed = ?
+            SET fifty_fifty_used = 1, lifeline_removed = ?,
+                score = MAX(0, score - ?)
             WHERE id = ?
             """,
-            (removed, player["id"])
+            (removed, LIFELINE_PENALTY, player["id"])
         )
         connection.commit()
 
@@ -724,10 +726,10 @@ def use_skip(name):
             UPDATE fe_players
             SET skip_used = 1, question_index = ?, answered_current = 0,
                 last_correct = NULL, phase_started_at = NULL, lifeline_removed = NULL, option_order = NULL,
-                phase = ?
+                phase = ?, score = MAX(0, score - ?)
             WHERE id = ?
             """,
-            (next_index, "finished" if finished else "question", player["id"])
+            (next_index, "finished" if finished else "question", LIFELINE_PENALTY, player["id"])
         )
         connection.commit()
 
@@ -754,8 +756,8 @@ def use_ask_team(name):
     round_data = ROUNDS[player["question_index"]]
 
     connection.execute(
-        "UPDATE fe_players SET ask_team_used = 1 WHERE id = ?",
-        (player["id"],)
+        "UPDATE fe_players SET ask_team_used = 1, score = MAX(0, score - ?) WHERE id = ?",
+        (LIFELINE_PENALTY, player["id"])
     )
     connection.commit()
 
