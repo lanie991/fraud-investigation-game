@@ -21,8 +21,13 @@
         <div class="fe-card fe-pin-card">
             <div class="fe-pin-label">GAME PIN</div>
             <div class="fe-pin-value">{{ config["pin"] }}</div>
-            <p style="color:#64748b; font-size:11px; margin-top:14px;">
-                Share this code with players
+            <img
+                class="fe-qr-code"
+                src="{{ url_for('elimination.qr_png') }}?v={{ config['pin'] }}"
+                alt="Scan to join with PIN {{ config['pin'] }}"
+            >
+            <p style="color:#64748b; font-size:11px; margin-top:10px;">
+                Share this code, or scan to join
             </p>
         </div>
 

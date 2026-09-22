@@ -13,11 +13,13 @@ dict is all that matters to the rest of this file.
 """
 
 from importlib import import_module
+import io
 import random
 import sqlite3
 import string
 
 flask = import_module("flask")
+qrcode = import_module("qrcode")
 
 Blueprint = flask.Blueprint
 render_template = flask.render_template
@@ -25,6 +27,7 @@ redirect = flask.redirect
 request = flask.request
 jsonify = flask.jsonify
 url_for = flask.url_for
+send_file = flask.send_file
 
 elimination_bp = Blueprint(
     "elimination",
@@ -363,6 +366,22 @@ def host():
     )
 
 
+@elimination_bp.route("/qr.png")
+def qr_png():
+    connection = get_db()
+    config = get_config(connection)
+    connection.close()
+
+    join_url = url_for("elimination.join", pin=config["pin"], _external=True)
+
+    img = qrcode.make(join_url, box_size=8, border=2)
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    return send_file(buffer, mimetype="image/png")
+
+
 @elimination_bp.route("/host/settings", methods=["POST"])
 def host_settings():
     connection = get_db()
@@ -469,7 +488,8 @@ def join():
         "fe_join.html",
         error=error,
         avatar_images=AVATAR_IMAGES,
-        active_nav="play"
+        active_nav="play",
+        prefill_pin=request.args.get("pin", "").strip().upper()
     )
 
 

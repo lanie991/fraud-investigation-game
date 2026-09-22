@@ -679,6 +679,16 @@ body:has(.fe-hero) .fe-main {
     color: #facc15;
 }
 
+.fe-qr-code {
+    width: 140px;
+    height: 140px;
+    margin: 16px auto 0;
+    display: block;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 8px;
+}
+
 .fe-player-list-header {
     display: flex;
     align-items: center;
