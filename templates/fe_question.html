@@ -79,11 +79,11 @@
             <h1 class="fe-question-text">{{ question["text"] }}</h1>
 
             <form method="POST" action="{{ url_for('elimination.play', name=name) }}" id="fe-question-form">
-                {% for letter, text in question["options"].items() %}
-                {% if letter not in removed_options %}
+                {% for display_letter, canonical_key, text in ordered_options %}
+                {% if canonical_key not in removed_options %}
                 <label class="fe-option">
-                    <input type="radio" name="answer" value="{{ letter }}" required>
-                    <span class="fe-option-letter">{{ letter }}</span>
+                    <input type="radio" name="answer" value="{{ canonical_key }}" required>
+                    <span class="fe-option-letter">{{ display_letter }}</span>
                     <span>{{ text }}</span>
                 </label>
                 {% endif %}

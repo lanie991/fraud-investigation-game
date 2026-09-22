@@ -93,6 +93,7 @@ def initialize_database():
             lifeline_removed TEXT,
             skip_used INTEGER DEFAULT 0,
             ask_team_used INTEGER DEFAULT 0,
+            option_order TEXT,
             joined_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -122,6 +123,11 @@ def initialize_database():
             connection.execute(
                 f"ALTER TABLE fe_players ADD COLUMN {column} INTEGER DEFAULT 0"
             )
+
+    if "option_order" not in existing_columns:
+        connection.execute(
+            "ALTER TABLE fe_players ADD COLUMN option_order TEXT"
+        )
 
     connection.execute("""
         CREATE TABLE IF NOT EXISTS fe_answer_tally (
@@ -571,10 +577,18 @@ def play(name):
         connection.close()
         return redirect(url_for("elimination.feedback", name=name))
 
+    round_data = ROUNDS[player["question_index"]]
+
     if not player["phase_started_at"]:
+        shuffled_keys = list(round_data["options"].keys())
+        random.shuffle(shuffled_keys)
         connection.execute(
-            "UPDATE fe_players SET phase_started_at = datetime('now') WHERE id = ?",
-            (player["id"],)
+            """
+            UPDATE fe_players
+            SET phase_started_at = datetime('now'), option_order = ?
+            WHERE id = ?
+            """,
+            (",".join(shuffled_keys), player["id"])
         )
         connection.commit()
         player = get_player(connection, player["name"])
@@ -589,10 +603,17 @@ def play(name):
         connection.close()
         return redirect(url_for("elimination.feedback", name=name))
 
-    round_data = ROUNDS[player["question_index"]]
     removed_options = set()
     if player["lifeline_removed"]:
         removed_options = set(player["lifeline_removed"].split(","))
+
+    display_letters = "ABCDEFGH"
+    order = (player["option_order"] or ",".join(round_data["options"].keys())).split(",")
+    ordered_options = [
+        (display_letters[i], key, round_data["options"][key])
+        for i, key in enumerate(order)
+        if key in round_data["options"]
+    ]
 
     players = connection.execute(
         "SELECT name, avatar, status FROM fe_players ORDER BY joined_at"
@@ -606,6 +627,7 @@ def play(name):
         name=name,
         player=player,
         question=round_data,
+        ordered_options=ordered_options,
         rounds=ROUNDS,
         current_round=round_data["round_number"],
         timer_seconds=config["timer_seconds"],
@@ -667,7 +689,7 @@ def use_skip(name):
             """
             UPDATE fe_players
             SET skip_used = 1, question_index = ?, answered_current = 0,
-                last_correct = NULL, phase_started_at = NULL, lifeline_removed = NULL,
+                last_correct = NULL, phase_started_at = NULL, lifeline_removed = NULL, option_order = NULL,
                 phase = ?
             WHERE id = ?
             """,
@@ -711,10 +733,16 @@ def use_ask_team(name):
 
     tally = {row["option"]: row["count"] for row in rows}
     total = sum(tally.values())
+
+    display_letters = "ABCDEFGH"
+    order = (player["option_order"] or ",".join(round_data["options"].keys())).split(",")
+
     percentages = {}
-    for letter in round_data["options"]:
-        votes = tally.get(letter, 0)
-        percentages[letter] = round((votes / total) * 100) if total else 0
+    for i, canonical_key in enumerate(order):
+        if canonical_key not in round_data["options"]:
+            continue
+        votes = tally.get(canonical_key, 0)
+        percentages[display_letters[i]] = round((votes / total) * 100) if total else 0
 
     return jsonify({"percentages": percentages, "responses": total})
 
@@ -793,7 +821,7 @@ def advance(name):
         """
         UPDATE fe_players
         SET question_index = ?, answered_current = 0, last_correct = NULL,
-            phase_started_at = NULL, lifeline_removed = NULL,
+            phase_started_at = NULL, lifeline_removed = NULL, option_order = NULL,
             phase = ?
         WHERE id = ?
         """,
