@@ -230,6 +230,23 @@ def suspects():
     return render_template("suspects.html", suspects=SUSPECTS)
 
 
+# RULES PAGE
+@app.route("/rules")
+def rules():
+    return render_template("rules.html")
+
+
+# LEADERBOARD PAGE
+@app.route("/leaderboard")
+def leaderboard():
+    connection = get_db()
+    teams = connection.execute(
+        "SELECT * FROM teams ORDER BY total_score DESC, team_name ASC"
+    ).fetchall()
+    connection.close()
+    return render_template("leaderboard.html", teams=teams)
+
+
 # HOST PAGE
 @app.route("/host")
 def host():

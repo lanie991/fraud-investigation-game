@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}
+Rules — Who Stole the Money?
+{% endblock %}
+
+{% block content %}
+
+<div class="rules-page">
+
+    <div class="rules-header">
+        <div class="rules-kicker">BRIEFING</div>
+        <h1>HOW TO PLAY</h1>
+        <p>Everything your team needs to know before the investigation begins.</p>
+    </div>
+
+    <div class="rules-list">
+
+        <div class="rules-card">
+            <div class="rules-card-number">01</div>
+            <div>
+                <h3>Join as a team</h3>
+                <p>Enter a team name and the game code your host gives you. Everyone on your team shares one screen and one investigation.</p>
+            </div>
+        </div>
+
+        <div class="rules-card">
+            <div class="rules-card-number">02</div>
+            <div>
+                <h3>Five rounds, one case</h3>
+                <p>Each round unlocks new evidence — financial records, digital logs, interview transcripts. Read carefully: later rounds depend on details from earlier ones.</p>
+            </div>
+        </div>
+
+        <div class="rules-card">
+            <div class="rules-card-number">03</div>
+            <div>
+                <h3>Beat the clock</h3>
+                <p>Every round has its own timer. Submit your answers before time runs out, or the round closes automatically with whatever you've selected.</p>
+            </div>
+        </div>
+
+        <div class="rules-card">
+            <div class="rules-card-number">04</div>
+            <div>
+                <h3>Score points for accuracy</h3>
+                <p>Each question is worth points toward your team's total. The final round is worth the most — your verdict on who committed the fraud matters most of all.</p>
+            </div>
+        </div>
+
+        <div class="rules-card">
+            <div class="rules-card-number">05</div>
+            <div>
+                <h3>Ties go to a tiebreaker</h3>
+                <p>If teams are tied for first place after Round 5, those teams face one final, harder bonus question with its own 2-minute clock to determine the winner.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="rules-footer">
+        <p>&ldquo;Different skills. One truth.&rdquo;</p>
+    </div>
+
+</div>
+
+<nav class="home-bottom-nav">
+    <a href="/home" class="home-bottom-nav-item">
+        <span class="home-bottom-nav-icon">🏠</span>
+        <span>HOME</span>
+    </a>
+    <a href="/suspects" class="home-bottom-nav-item">
+        <span class="home-bottom-nav-icon">📁</span>
+        <span>CASE FILES</span>
+    </a>
+    <a href="/leaderboard" class="home-bottom-nav-item">
+        <span class="home-bottom-nav-icon">📊</span>
+        <span>LEADERBOARD</span>
+    </a>
+    <a href="/rules" class="home-bottom-nav-item is-active">
+        <span class="home-bottom-nav-icon">📄</span>
+        <span>RULES</span>
+    </a>
+</nav>
+
+{% endblock %}

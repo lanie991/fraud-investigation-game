@@ -8,14 +8,34 @@ Who Stole the Money?
 
 <div class="home-screen">
 
+    <div class="home-kicker home-kicker-left">
+        <span>FORENSIC</span>
+        <span>INTELLIGENCE</span>
+        <span>REAL CASES</span>
+        <span>REAL IMPACT</span>
+    </div>
+
+    <div class="home-kicker home-kicker-right">
+        <span>INVESTIGATE</span>
+        <span>ANALYZE</span>
+        <span>CONNECT</span>
+        <span>SOLVE</span>
+    </div>
+
     <div class="home-content">
 
         <h1 class="home-title">
-            WHO STOLE THE MONEY?
+            <span class="home-title-line1">WHO STOLE</span>
+            <span class="home-title-line2">THE MONEY?</span>
         </h1>
 
+        <div class="home-tagline">
+            FRAUD INVESTIGATION GAME
+        </div>
+
         <p class="home-subtitle">
-            Access your investigation. Solve the case.
+            An interactive investigation experience<br>
+            inspired by real-world fraud cases.
         </p>
 
         <div class="home-actions">
@@ -24,14 +44,14 @@ Who Stole the Money?
                 href="/join"
                 class="home-button home-button-primary"
             >
-                JOIN INVESTIGATION
+                PLAY GAME <span class="home-button-arrow">→</span>
             </a>
 
             <a
                 href="/host"
                 class="home-button home-button-secondary"
             >
-                HOST GAME
+                <span class="home-button-icon">👥</span> HOST GAME
             </a>
 
         </div>
@@ -43,5 +63,24 @@ Who Stole the Money?
     </div>
 
 </div>
+
+<nav class="home-bottom-nav">
+    <a href="/home" class="home-bottom-nav-item is-active">
+        <span class="home-bottom-nav-icon">🏠</span>
+        <span>HOME</span>
+    </a>
+    <a href="/suspects" class="home-bottom-nav-item">
+        <span class="home-bottom-nav-icon">📁</span>
+        <span>CASE FILES</span>
+    </a>
+    <a href="/leaderboard" class="home-bottom-nav-item">
+        <span class="home-bottom-nav-icon">📊</span>
+        <span>LEADERBOARD</span>
+    </a>
+    <a href="/rules" class="home-bottom-nav-item">
+        <span class="home-bottom-nav-icon">📄</span>
+        <span>RULES</span>
+    </a>
+</nav>
 
 {% endblock %}
