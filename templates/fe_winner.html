@@ -37,9 +37,11 @@
 
 </div>
 
+<script src="{{ url_for('static', filename='elimination-confetti.js') }}"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     if (window.FE_SFX) FE_SFX.playWin();
+    if (window.FE_CONFETTI) FE_CONFETTI.burst();
 });
 </script>
 
