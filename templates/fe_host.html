@@ -59,7 +59,7 @@
                 GAME SETTINGS
             </h2>
 
-            <form method="POST" action="{{ url_for('elimination.host_settings') }}">
+            <form method="POST" action="{{ url_for('elimination.host_settings') }}" id="fe-settings-form">
 
                 <div class="fe-settings-row">
                     <span>Rounds</span>
@@ -125,8 +125,21 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    let userEditing = false;
+
+    const settingsForm = document.getElementById("fe-settings-form");
+    if (settingsForm) {
+        settingsForm.querySelectorAll("input").forEach(function (el) {
+            el.addEventListener("focus", function () { userEditing = true; });
+            el.addEventListener("blur", function () { userEditing = false; });
+        });
+        settingsForm.addEventListener("submit", function () { userEditing = false; });
+    }
+
     setInterval(function () {
-        window.location.reload();
+        if (!userEditing) {
+            window.location.reload();
+        }
     }, 4000);
 });
 </script>
