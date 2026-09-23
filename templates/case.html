@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}
+Case 1: The Missing Money — Who Stole the Money?
+{% endblock %}
+
+{% block content %}
+
+<div class="case-page">
+
+    <nav class="case-page-nav">
+        <a href="/home" class="case-page-brand">
+            <span class="case-page-brand-title">WHO STOLE</span>
+            <span class="case-page-brand-sub">THE MONEY?</span>
+            <span class="case-page-brand-tag">FRAUD INVESTIGATION GAME</span>
+        </a>
+
+        <div class="case-page-links">
+            <a href="/home" class="case-page-link">
+                <span class="case-page-link-icon">🏠</span>
+                <span>HOME</span>
+            </a>
+            <a href="/case" class="case-page-link is-active">
+                <span class="case-page-link-icon">📁</span>
+                <span>CASE</span>
+            </a>
+            <span class="case-page-link is-disabled">
+                <span class="case-page-link-icon">🗂️</span>
+                <span>EVIDENCE</span>
+            </span>
+            <a href="/suspects" class="case-page-link">
+                <span class="case-page-link-icon">👥</span>
+                <span>SUSPECTS</span>
+            </a>
+            <span class="case-page-link is-disabled">
+                <span class="case-page-link-icon">📝</span>
+                <span>NOTES</span>
+            </span>
+        </div>
+
+        <a href="/join" class="case-page-profile">👤</a>
+    </nav>
+
+    <div class="case-page-header">
+        <h1>CASE 1: THE MISSING MONEY</h1>
+        <p>Navigate the investigation to uncover the truth.</p>
+    </div>
+
+    <div class="case-page-sticky-note">
+        <p>Follow the clues.<br>Connect the dots.<br>Find the truth.</p>
+    </div>
+
+    <div class="case-page-map">
+
+        {% for room in case_rooms %}
+        <div class="case-room case-room-{{ room.number }} {{ room.state }}">
+
+            <a
+                href="{{ '/join' if room.state == 'current' else '#' }}"
+                class="case-room-hex"
+            >
+                <span class="case-room-icon">
+                    {% if room.state == 'locked' %}🔒{% else %}📍{% endif %}
+                </span>
+            </a>
+
+            <div class="case-room-label">
+                <span class="case-room-number">{{ room.number }}</span>
+                <span class="case-room-name">{{ room.name }}</span>
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div class="case-page-tagline">
+        IT'S<br>ALL<br>CONNECTED.
+    </div>
+
+    <div class="case-page-side-words">
+        <span>INVESTIGATE</span>
+        <span>ANALYZE</span>
+        <span>CONNECT</span>
+        <span>SOLVE</span>
+    </div>
+
+</div>
+
+{% endblock %}

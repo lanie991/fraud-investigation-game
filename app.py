@@ -236,6 +236,19 @@ def rules():
     return render_template("rules.html")
 
 
+# CASE OVERVIEW PAGE
+@app.route("/case")
+def case():
+    case_rooms = [
+        {"number": 1, "name": "Crime Scene", "state": "current"},
+        {"number": 2, "name": "Evidence Room", "state": "locked"},
+        {"number": 3, "name": "Digital Forensics", "state": "locked"},
+        {"number": 4, "name": "Interview Room", "state": "locked"},
+        {"number": 5, "name": "Final Analysis", "state": "locked"},
+    ]
+    return render_template("case.html", case_rooms=case_rooms)
+
+
 # LEADERBOARD PAGE
 @app.route("/leaderboard")
 def leaderboard():
