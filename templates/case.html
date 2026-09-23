@@ -8,106 +8,92 @@ Case 1: The Missing Money — Who Stole the Money?
 
 <div class="case-page">
 
-    <nav class="case-page-nav">
-        <a href="/home" class="case-page-brand">
-            <span class="case-page-brand-title">WHO STOLE</span>
-            <span class="case-page-brand-sub">THE MONEY?</span>
-            <span class="case-page-brand-tag">FRAUD INVESTIGATION GAME</span>
+    <nav class="case-nav">
+        <a href="/home" class="case-logo">
+            <span class="logo-white">WHO STOLE</span>
+            <span class="logo-gold">THE MONEY?</span>
+            <span class="logo-subtitle">FRAUD INVESTIGATION GAME</span>
         </a>
 
-        <div class="case-page-links">
-            <a href="/home" class="case-page-link">
-                <span class="case-page-link-icon">🏠</span>
+        <div class="case-nav-links">
+            <a href="/home" class="case-nav-link">
+                <span class="case-nav-icon">🏠</span>
                 <span>HOME</span>
             </a>
-            <a href="/case" class="case-page-link is-active">
-                <span class="case-page-link-icon">📁</span>
+            <a href="/case" class="case-nav-link active">
+                <span class="case-nav-icon">📁</span>
                 <span>CASE</span>
             </a>
-            <span class="case-page-link is-disabled">
-                <span class="case-page-link-icon">🗂️</span>
+            <span class="case-nav-link is-disabled">
+                <span class="case-nav-icon">🗂️</span>
                 <span>EVIDENCE</span>
             </span>
-            <a href="/suspects" class="case-page-link">
-                <span class="case-page-link-icon">👥</span>
+            <a href="/suspects" class="case-nav-link">
+                <span class="case-nav-icon">👥</span>
                 <span>SUSPECTS</span>
             </a>
-            <span class="case-page-link is-disabled">
-                <span class="case-page-link-icon">📝</span>
+            <span class="case-nav-link is-disabled">
+                <span class="case-nav-icon">📝</span>
                 <span>NOTES</span>
             </span>
         </div>
 
-        <a href="/join" class="case-page-profile">👤</a>
+        <div class="case-profile">
+            <a href="/join" class="case-profile-circle">👤</a>
+        </div>
     </nav>
 
-    <div class="case-page-header">
+    <div class="case-heading">
         <h1>CASE 1: THE MISSING MONEY</h1>
         <p>Navigate the investigation to uncover the truth.</p>
     </div>
 
-    <div class="case-page-sticky-note">
-        <p>Follow the clues.<br>Connect the dots.<br>Find the truth.</p>
-    </div>
+    <div class="case-map">
 
-    <div class="case-page-map">
-
-        <svg class="case-page-path" viewBox="0 0 1300 560" preserveAspectRatio="none">
-            <path
-                d="M150,85 L358,343 L566,107 L800,365 L1034,208"
-                fill="none"
-                stroke="rgba(255,255,255,0.55)"
-                stroke-width="4"
-                stroke-linecap="round"
-                stroke-dasharray="2 16"
-            />
-        </svg>
+        <div class="case-footprints">
+            {% for step in footprints %}
+                <div
+                    class="case-footprint"
+                    style="left: {{ step.left }}px; top: {{ step.top }}px; transform: rotate({{ step.angle }}deg);"
+                ></div>
+            {% endfor %}
+        </div>
 
         {% for room in case_rooms %}
-        <div class="case-room case-room-{{ room.number }} {{ room.state }}">
-
-            <a
-                href="{{ '/join' if room.state == 'current' else '#' }}"
-                class="case-room-hex"
-            >
+        <a
+            href="{{ '/join' if room.state == 'active' else '#' }}"
+            class="case-location location-{{ room.slug }} {{ room.state }}"
+        >
+            <div class="case-location-image">
                 {% if room.photo %}
                     <img
-                        class="case-room-photo"
-                        src="{{ url_for('static', filename='case-rooms/' + room.photo) }}"
+                        src="{{ url_for('static', filename='images/' + room.photo) }}"
                         alt="{{ room.name }}"
                     >
                 {% endif %}
-
-                {% if room.state == 'locked' %}
-                    <span class="case-room-icon">🔒</span>
-                {% elif not room.photo %}
-                    <span class="case-room-icon">📍</span>
-                {% endif %}
-            </a>
-
-            {% if room.state == 'current' %}
-                <span class="case-room-pin">📍</span>
-            {% endif %}
-
-            <div class="case-room-label">
-                <span class="case-room-number">{{ room.number }}</span>
-                <span class="case-room-name">{{ room.name }}</span>
             </div>
 
-        </div>
+            {% if room.state == 'locked' %}
+                <div class="case-lock">🔒</div>
+            {% endif %}
+
+            <div class="case-location-number">{{ room.number }}</div>
+            <div class="case-location-label">{{ room.name }}</div>
+        </a>
         {% endfor %}
 
-    </div>
+        <div class="case-clue">
+            <p class="case-clue-text">Follow the clues.<br>Connect the dots.<br>Find the truth.</p>
+        </div>
 
-    <div class="case-page-tagline">
-        IT'S<br>ALL<br>CONNECTED.
-    </div>
+        <div class="case-connected">
+            IT'S<br>ALL<br>CONNECTED.
+        </div>
 
-    <div class="case-page-side-words">
-        <span>INVESTIGATE</span>
-        <span>ANALYZE</span>
-        <span>CONNECT</span>
-        <span>SOLVE</span>
+        <div class="case-side-text">
+            INVESTIGATE<br>ANALYZE<br>CONNECT<br>SOLVE
+        </div>
+
     </div>
 
 </div>

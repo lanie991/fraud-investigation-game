@@ -237,16 +237,47 @@ def rules():
 
 
 # CASE OVERVIEW PAGE
+def build_footprint_trail(waypoints, spacing=42, offset=9):
+    """Interpolate alternating footprint dots along a path of (x, y) waypoints."""
+    import math
+
+    footprints = []
+    for (x1, y1), (x2, y2) in zip(waypoints, waypoints[1:]):
+        dx, dy = x2 - x1, y2 - y1
+        length = math.hypot(dx, dy)
+        if length == 0:
+            continue
+        angle = math.degrees(math.atan2(dy, dx))
+        nx, ny = -dy / length, dx / length
+        steps = max(int(length // spacing), 1)
+        for i in range(steps):
+            t = i / steps
+            side = offset if i % 2 == 0 else -offset
+            footprints.append({
+                "left": round(x1 + dx * t + nx * side, 1),
+                "top": round(y1 + dy * t + ny * side, 1),
+                "angle": round(angle, 1),
+            })
+    return footprints
+
+
 @app.route("/case")
 def case():
     case_rooms = [
-        {"number": 1, "name": "Crime Scene", "state": "current", "photo": "crime_scene.webp"},
-        {"number": 2, "name": "Evidence Room", "state": "locked", "photo": "evidence_room.webp"},
-        {"number": 3, "name": "Digital Forensics", "state": "locked", "photo": "digital_forensics.webp"},
-        {"number": 4, "name": "Interview Room", "state": "locked", "photo": "interview_room.webp"},
-        {"number": 5, "name": "Final Analysis", "state": "locked", "photo": None},
+        {"number": 1, "name": "Crime Scene", "slug": "crime", "state": "active", "photo": "crime-scene.webp"},
+        {"number": 2, "name": "Evidence Room", "slug": "evidence", "state": "locked", "photo": "evidence-room.webp"},
+        {"number": 3, "name": "Digital Forensics", "slug": "digital", "state": "locked", "photo": "digital-forensics.webp"},
+        {"number": 4, "name": "Interview Room", "slug": "interview", "state": "locked", "photo": "interview-room.webp"},
+        {"number": 5, "name": "Final Analysis", "slug": "final", "state": "locked", "photo": None},
     ]
-    return render_template("case.html", case_rooms=case_rooms)
+
+    # Approximate centers of each hex image within the 1450x700 .case-map, in room order 1-5.
+    room_centers = [(195, 137), (725, 157), (1255, 287), (514, 512), (921, 527)]
+    trail_order = [0, 3, 1, 4, 2]  # crime -> interview -> evidence -> final -> digital
+    trail_waypoints = [room_centers[i] for i in trail_order]
+    footprints = build_footprint_trail(trail_waypoints)
+
+    return render_template("case.html", case_rooms=case_rooms, footprints=footprints)
 
 
 # LEADERBOARD PAGE
