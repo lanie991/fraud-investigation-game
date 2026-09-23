@@ -3379,19 +3379,14 @@ body:has(.case-page) .site-nav {
 
     background: #111923;
 
-    clip-path: polygon(
-        0 25%,
-        50% 0,
-        100% 25%,
-        100% 78%,
-        50% 100%,
-        0 78%
-    );
+    clip-path: polygon(18% 0%, 82% 0%, 100% 50%, 82% 100%, 18% 100%, 0% 50%);
 
     border: 3px solid rgba(120, 160, 195, 0.35);
 
     box-shadow:
         0 20px 45px rgba(0, 0, 0, 0.55);
+
+    transition: filter .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
 
 .case-location-image img {
@@ -3401,6 +3396,8 @@ body:has(.case-page) .site-nav {
     object-fit: cover;
 
     display: block;
+
+    transition: filter .25s ease;
 }
 
 
@@ -3409,9 +3406,10 @@ body:has(.case-page) .site-nav {
 .case-location.locked {
     color: white;
     background: transparent;
-    filter:
-        brightness(0.58)
-        saturate(0.65);
+}
+
+.case-location.locked .case-location-image img {
+    filter: brightness(0.22) saturate(0.35);
 }
 
 .case-location.locked .case-location-image {
@@ -3424,15 +3422,19 @@ body:has(.case-page) .site-nav {
 .case-location.active {
     color: white;
     background: transparent;
-    filter: brightness(1.04);
+}
+
+.case-location.active .case-location-image img {
+    filter: brightness(1.15) saturate(1.1);
 }
 
 .case-location.active .case-location-image {
     border-color: var(--gold);
 
     box-shadow:
-        0 0 8px rgba(255, 213, 47, 0.9),
-        0 0 25px rgba(255, 213, 47, 0.55),
+        0 0 10px rgba(255, 213, 47, 1),
+        0 0 34px rgba(255, 213, 47, 0.7),
+        0 0 70px rgba(255, 213, 47, 0.35),
         0 25px 50px rgba(0, 0, 0, 0.65);
 }
 
