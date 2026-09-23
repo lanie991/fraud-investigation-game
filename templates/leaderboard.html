@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}
+Leaderboard — Who Stole the Money?
+{% endblock %}
+
+{% block content %}
+
+<div class="leaderboard-page">
+
+    {% set avatar_images = {
+        "detective_black": "detective.png",
+        "investigator_black": "investigator.png",
+        "analyst_black": "analyst.png",
+        "researcher_white": "researcher.png",
+        "surveillance_black": "surveillance.png",
+        "forensics_black": "forensics.png",
+        "hacker_white": "hacker.png",
+        "moneymover_black": "money_movers.png",
+        "k9_unit": "k9.png",
+        "field_agent_white": "field_agents.png"
+    } %}
+
+    <div class="leaderboard-header">
+        <div class="leaderboard-kicker">RANKINGS</div>
+        <h1>LEADERBOARD</h1>
+        <p>Every team's investigation, ranked by points.</p>
+    </div>
+
+    {% if teams %}
+    <div class="leaderboard-list">
+        {% for team in teams %}
+        <div class="leaderboard-row {% if loop.index <= 3 %}leaderboard-row-top{% endif %}">
+
+            <div class="leaderboard-rank rank-{{ loop.index }}">
+                {{ loop.index }}
+            </div>
+
+            <div class="leaderboard-avatar">
+                {% if team["avatar"] in avatar_images %}
+                    <img src="{{ url_for('static', filename='avatars/' + avatar_images[team['avatar']]) }}" alt="">
+                {% else %}
+                    <span>{{ team["avatar"] or "🕵️" }}</span>
+                {% endif %}
+            </div>
+
+            <div class="leaderboard-name">
+                <strong>{{ team["team_name"] }}</strong>
+                <span class="leaderboard-status">
+                    {% if team["team_status"] == "finished" %}FINISHED
+                    {% elif team["team_status"] == "intermission" %}ON BREAK
+                    {% elif team["team_status"] == "countdown" %}STARTING
+                    {% else %}INVESTIGATING — ROUND {{ team["current_round"] }}{% endif %}
+                </span>
+            </div>
+
+            <div class="leaderboard-score">
+                <strong>{{ team["total_score"] }}</strong>
+                <span>PTS</span>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="leaderboard-empty">
+        No teams have joined the investigation yet.
+    </div>
+    {% endif %}
+
+</div>
+
+<nav class="home-bottom-nav">
+    <a href="/home" class="home-bottom-nav-item">
+        <span class="home-bottom-nav-icon">🏠</span>
+        <span>HOME</span>
+    </a>
+    <a href="/suspects" class="home-bottom-nav-item">
+        <span class="home-bottom-nav-icon">📁</span>
+        <span>CASE FILES</span>
+    </a>
+    <a href="/leaderboard" class="home-bottom-nav-item is-active">
+        <span class="home-bottom-nav-icon">📊</span>
+        <span>LEADERBOARD</span>
+    </a>
+    <a href="/rules" class="home-bottom-nav-item">
+        <span class="home-bottom-nav-icon">📄</span>
+        <span>RULES</span>
+    </a>
+</nav>
+
+{% endblock %}

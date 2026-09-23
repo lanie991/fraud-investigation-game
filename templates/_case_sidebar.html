@@ -1,0 +1,30 @@
+<aside class="case-sidebar">
+
+    <div class="case-sidebar-label">CASE PROGRESS</div>
+
+    {% set case_rounds = [
+        (1, 'Initial Lead'),
+        (2, 'Follow the Money'),
+        (3, 'Digital Evidence'),
+        (4, 'The Interview'),
+        (5, 'Final Verdict')
+    ] %}
+
+    {% for num, name in case_rounds %}
+        {% if num < round_data['round_number'] %}
+            {% set state = 'done' %}
+        {% elif num == round_data['round_number'] %}
+            {% set state = 'current' %}
+        {% else %}
+            {% set state = 'locked' %}
+        {% endif %}
+
+        <div class="case-sidebar-item {{ state }}">
+            <span class="case-sidebar-icon">
+                {% if state == 'done' %}✓{% elif state == 'locked' %}🔒{% else %}{{ num }}{% endif %}
+            </span>
+            <span class="case-sidebar-name">{{ name }}</span>
+        </div>
+    {% endfor %}
+
+</aside>

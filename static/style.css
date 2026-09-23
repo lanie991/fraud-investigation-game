@@ -383,24 +383,6 @@ body h1:first-child + h2 + p {
    HOME PAGE BUTTONS
 ========================================================= */
 
-.home-page {
-    text-align: center;
-    padding-top: 50px;
-}
-
-.home-page h1 {
-    margin-bottom: 10px;
-}
-
-.home-page h2 {
-    margin-top: 0;
-}
-
-.home-page p {
-    max-width: 600px;
-    margin: 20px auto 35px;
-}
-
 .home-buttons {
     display: flex;
     justify-content: center;
@@ -1123,184 +1105,6 @@ body h1:first-child + h2 + p {
 
 }
 
-
-/* =========================================================
-   CANVA-STYLE HOME SCREEN
-========================================================= */
-
-.home-page {
-    min-height: 78vh;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    max-width: 1000px;
-
-    margin: 0 auto;
-
-    padding: 40px 20px;
-
-    text-align: center;
-}
-
-/* Main title */
-
-.home-page h1 {
-    margin: 0;
-
-    color: #f8fafc;
-
-    font-size: clamp(2.4rem, 6vw, 4rem);
-    font-weight: 900;
-
-    line-height: 1.05;
-
-    letter-spacing: -0.04em;
-
-    text-shadow:
-        0 5px 25px rgba(0, 0, 0, 0.35);
-}
-
-/* Gold subtitle */
-
-.home-page h2 {
-    margin: 18px 0 10px;
-
-    color: #facc15;
-
-    font-size: 1.1rem;
-    font-weight: 800;
-
-    letter-spacing: 0.08em;
-}
-
-/* Description */
-
-.home-page > p {
-    max-width: 550px;
-
-    margin: 10px auto 30px;
-
-    color: #cbd5e1;
-
-    font-size: 1rem;
-}
-
-/* Buttons */
-
-.home-buttons {
-    display: flex;
-    justify-content: center;
-
-    gap: 14px;
-
-    margin-top: 8px;
-}
-
-.home-buttons .game-button {
-    min-width: 175px;
-
-    padding: 13px 22px;
-
-    border-radius: 9px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #2563eb,
-            #1d4ed8
-        );
-
-    border: 1px solid rgba(96, 165, 250, 0.35);
-
-    color: #ffffff !important;
-
-    font-size: 0.9rem;
-    font-weight: 800;
-
-    letter-spacing: 0.04em;
-
-    text-decoration: none !important;
-
-    box-shadow:
-        0 8px 22px rgba(0, 0, 0, 0.25);
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
-}
-
-.home-buttons .game-button:hover {
-    color: #ffffff !important;
-
-    background:
-        linear-gradient(
-            135deg,
-            #3b82f6,
-            #2563eb
-        );
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 12px 28px rgba(37, 99, 235, 0.3);
-}
-
-/* Host button */
-
-.home-buttons .game-button:last-child {
-    background:
-        rgba(15, 23, 42, 0.9);
-
-    border-color:
-        rgba(250, 204, 21, 0.35);
-
-    color: #facc15 !important;
-}
-
-.home-buttons .game-button:last-child:hover {
-    background:
-        rgba(250, 204, 21, 0.08);
-
-    color: #fde68a !important;
-}
-
-/* Mobile */
-
-@media (max-width: 600px) {
-
-    .home-page {
-        min-height: 75vh;
-
-        padding: 30px 12px;
-    }
-
-    .home-page h1 {
-        font-size: 2.5rem;
-    }
-
-    .home-page h2 {
-        font-size: 0.9rem;
-    }
-
-    .home-buttons {
-        width: 100%;
-
-        flex-direction: column;
-
-        align-items: center;
-
-        gap: 10px;
-    }
-
-    .home-buttons .game-button {
-        width: 100%;
-        max-width: 320px;
-    }
-}
 
 /* =========================================================
    WHO STOLE THE MONEY?
@@ -2837,7 +2641,7 @@ body:has(.home-screen) {
    HOME
 --------------------------------------------------------- */
 
-body:has(.home-screen),
+body:has(.home-page),
 body:has(.join-screen) {
     margin: 0;
     padding: 0;
@@ -2851,10 +2655,13 @@ body:has(.join-screen) {
         #070810;
 }
 
+body:has(.home-page) .site-nav {
+    display: none;
+}
+
 
 /* subtle investigation grid */
 
-.home-screen::before,
 .join-screen::before {
     content: "";
     position: absolute;
@@ -2878,147 +2685,1096 @@ body:has(.join-screen) {
 
 
 /* ---------------------------------------------------------
-   HOME CONTENT
+   HOME PAGE (real desk photo)
 --------------------------------------------------------- */
 
-.home-screen {
-
+.home-page {
     position: relative;
-
-    width: 100%;
     min-height: 100vh;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    box-sizing: border-box;
-
-}
-
-
-.home-content {
-
-    position: relative;
-    z-index: 2;
-
-    width: 420px;
-    max-width: calc(100% - 40px);
-
-    margin-top: -20px;
-
-}
-
-
-/* NO MAGNIFYING GLASS */
-
-.home-title {
-
+    width: 100%;
+    max-width: none;
     margin: 0;
-
-    color: #f8fafc;
-
-    font-family:
-        "Rajdhani",
-        sans-serif;
-
-    font-size: 27px;
-
-    font-weight: 700;
-
-    line-height: 1;
-
-    letter-spacing: .05em;
-
-}
-
-
-.home-subtitle {
-
-    margin: 10px 0 21px;
-
-    color: #7d899e;
-
-    font-family:
-        "DM Sans",
-        sans-serif;
-
-    font-size: 11px;
-
-}
-
-
-/* HOME BUTTONS */
-
-.home-actions {
-
-    width: 100%;
-
-}
-
-
-.home-button {
-
-    width: 100%;
-
-    height: 45px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    box-sizing: border-box;
-
-    border-radius: 10px;
-
-    text-decoration: none;
-
-    font-family:
-        "JetBrains Mono",
-        monospace;
-
-    font-size: 8px;
-
-    font-weight: 700;
-
-    letter-spacing: .08em;
-
-}
-
-
-.home-button-primary {
-
-    color: white !important;
+    overflow: hidden;
 
     background:
         linear-gradient(
-            100deg,
-            #5146e5,
-            #7c3aed
+            rgba(0, 0, 0, 0.35),
+            rgba(0, 0, 0, 0.55)
+        ),
+        url("/static/backgrounds/home_desk.webp") center center / cover no-repeat;
+}
+
+.home-page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255, 190, 40, 0.05),
+            transparent 45%
+        ),
+        linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.05),
+            rgba(0, 0, 0, 0.35)
         );
+    pointer-events: none;
+}
 
+.home-page .logo {
+    position: absolute;
+    top: 30px;
+    left: 42px;
+    z-index: 5;
+}
+
+.home-page .logo-main {
+    font-size: clamp(24px, 2.6vw, 34px);
+    line-height: 0.9;
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: -1px;
+    color: white;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, .8);
+}
+
+.home-page .logo-money {
+    color: #ffc928;
+    display: block;
+}
+
+.home-page .logo-subtitle {
+    margin-top: 8px;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #d9e2ef;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.home-page .side-tagline {
+    position: absolute;
+    right: 42px;
+    top: 140px;
+    z-index: 5;
+
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.home-page .side-line {
+    width: 2px;
+    height: 78px;
+    background: #eec52a;
+}
+
+.home-page .side-text {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    font-size: 13px;
+    letter-spacing: 4px;
+    line-height: 1.4;
+    color: #dce3ec;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.home-page .center-content {
+    position: relative;
+    z-index: 5;
+
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 100px 20px 140px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: min(650px, 90vw);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.home-page .title {
+    font-size: clamp(40px, 5.5vw, 78px);
+    line-height: 0.9;
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: -2px;
+    text-shadow: 0 5px 15px rgba(0, 0, 0, .9);
+}
+
+.home-page .title-white {
+    color: white;
+    display: block;
+}
+
+.home-page .title-yellow {
+    color: #ffd12d;
+    display: block;
+    text-shadow:
+        0 0 18px rgba(255, 196, 30, .15),
+        0 5px 15px rgba(0, 0, 0, .9);
+}
+
+.home-page .game-title {
+    margin-top: 16px;
+    font-size: clamp(13px, 1.4vw, 18px);
+    letter-spacing: 5px;
+    color: #e8edf5;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.home-page .description {
+    margin-top: 18px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    line-height: 1.8;
+    color: #d4dce7;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.home-page .buttons {
+    margin: 30px auto 0;
+    width: min(460px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.home-page .game-button {
+    width: 100%;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    text-decoration: none;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    box-sizing: border-box;
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.home-page .play-button {
+    border: 2px solid #ffe06a;
+    background: linear-gradient(135deg, #ffda43, #f2b91d);
+    color: #080b0f !important;
     box-shadow:
-        0 8px 25px
-        rgba(79, 70, 229, .22);
+        0 0 25px rgba(255, 204, 48, .35),
+        inset 0 1px rgba(255, 255, 255, .5);
+}
 
+.home-page .play-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 35px rgba(255, 204, 48, .65);
+}
+
+.home-page .host-button {
+    border: 1px solid #4d7295;
+    background: rgba(3, 15, 26, .85);
+    color: white !important;
+    box-shadow: inset 0 0 20px rgba(30, 100, 150, .08);
+}
+
+.home-page .host-button:hover {
+    transform: translateY(-2px);
+    border-color: #ffd02e;
+    box-shadow: 0 0 25px rgba(255, 205, 40, .2);
+}
+
+.home-page .button-arrow {
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+.home-page .host-icon {
+    margin-right: 8px;
+    font-size: 15px;
+}
+
+.home-page .bottom-words {
+    position: absolute;
+    right: 42px;
+    bottom: 130px;
+    z-index: 5;
+    font-size: 10px;
+    letter-spacing: 4px;
+    line-height: 2;
+    color: #d6dde7;
+    font-family: "JetBrains Mono", monospace;
+    text-align: right;
+}
+
+.home-page .bottom-nav {
+    position: fixed;
+    z-index: 10;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: min(700px, 100%);
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: linear-gradient(rgba(2, 7, 12, .82), rgba(2, 7, 12, .95));
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    backdrop-filter: blur(10px);
+}
+
+.home-page .nav-item {
+    height: 100%;
+    min-width: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #d6deea;
+    text-decoration: none;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+.home-page .nav-icon {
+    font-size: 20px;
+}
+
+.home-page .nav-item.active {
+    color: #ffd12d;
+}
+
+.home-page .nav-item.active::after {
+    content: "";
+    position: absolute;
+    bottom: 6px;
+    width: 60px;
+    height: 3px;
+    background: #ffd12d;
+    box-shadow: 0 0 12px rgba(255, 208, 45, .7);
+}
+
+@media (max-width: 1000px) {
+    .home-page .side-tagline,
+    .home-page .bottom-words {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-page .logo {
+        left: 20px;
+        top: 16px;
+    }
+
+    .home-page .center-content {
+        padding: 70px 16px 110px;
+    }
+
+    .home-page .description {
+        font-size: 9px;
+        letter-spacing: 1.5px;
+    }
+
+    .home-page .bottom-nav {
+        height: 68px;
+    }
+
+    .home-page .nav-item {
+        min-width: auto;
+        font-size: 8px;
+    }
+
+    .home-page .nav-icon {
+        font-size: 16px;
+    }
 }
 
 
-.home-button-secondary {
+/* =========================================================
+   CASE PAGE — WHO STOLE THE MONEY?
+   Cinematic Investigation Map
+   ========================================================= */
 
-    margin-top: 8px;
+:root {
+    --case-bg: #02080e;
+    --case-panel: #07121b;
+    --case-panel-light: #0c1823;
+    --white: #f4f7fb;
+    --muted: #aebfd4;
+    --blue: #9fc5ef;
+    --gold: #ffd52f;
+    --gold-bright: #ffe45c;
+    --gold-dark: #a98600;
+    --line: rgba(150, 190, 225, 0.28);
+}
 
-    color: #67e8f9 !important;
+body:has(.case-page) {
+    margin: 0;
+    padding: 0;
+}
+
+body:has(.case-page) .site-nav {
+    display: none;
+}
+
+/* ---------- PAGE ---------- */
+
+.case-page {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    overflow: hidden;
+
+    color: var(--white);
 
     background:
-        rgba(6, 182, 212, .025);
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(30, 58, 75, 0.22),
+            transparent 48%
+        ),
+        radial-gradient(
+            circle at 15% 85%,
+            rgba(10, 37, 55, 0.30),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #02070c 0%,
+            #06111a 48%,
+            #02070c 100%
+        );
+}
 
-    border:
-        1px solid
-        rgba(6, 182, 212, .35);
 
+/* ---------- DARK MAP/TEXTURE ---------- */
+
+.case-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            rgba(2, 8, 14, 0.38),
+            rgba(2, 8, 14, 0.52)
+        ),
+        url("/static/images/case-map-background.webp");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    opacity: 0.72;
+    z-index: 0;
+}
+
+
+/* ---------- VIGNETTE ---------- */
+
+.case-page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 40%,
+            rgba(0, 0, 0, 0.35) 75%,
+            rgba(0, 0, 0, 0.72) 100%
+        );
+
+    pointer-events: none;
+    z-index: 1;
+}
+
+
+/* ---------- EVERYTHING ABOVE BACKGROUND ---------- */
+
+.case-page > * {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   TOP NAVIGATION
+   ========================================================= */
+
+.case-nav {
+    height: 112px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 28px;
+
+    border-bottom: 1px solid rgba(180, 210, 240, 0.15);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(1, 7, 13, 0.97),
+            rgba(1, 7, 13, 0.78)
+        );
+}
+
+
+/* ---------- LOGO ---------- */
+
+.case-logo {
+    width: 285px;
+    flex-shrink: 0;
+
+    line-height: 0.86;
+
+    font-family: Impact, "Arial Black", sans-serif;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+.case-logo .logo-white {
+    display: block;
+
+    color: #ffffff;
+
+    font-size: 38px;
+    letter-spacing: -2px;
+}
+
+.case-logo .logo-gold {
+    display: block;
+
+    color: var(--gold);
+
+    font-size: 43px;
+    letter-spacing: -2px;
+}
+
+.case-logo .logo-subtitle {
+    display: block;
+
+    margin-top: 12px;
+
+    color: #b8c7d8;
+
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 4px;
+}
+
+
+/* ---------- NAV ITEMS ---------- */
+
+.case-nav-links {
+    flex: 1;
+
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+
+    height: 100%;
+}
+
+.case-nav-link {
+    position: relative;
+
+    width: 145px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    gap: 8px;
+
+    color: #b8c9dc;
+
+    text-decoration: none;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.case-nav-link:hover {
+    color: #ffffff;
+}
+
+.case-nav-link.active {
+    color: var(--gold);
+    background: transparent;
+}
+
+.case-nav-link.active::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+
+    height: 5px;
+
+    border-radius: 10px;
+
+    background: var(--gold);
+
+    box-shadow:
+        0 0 8px var(--gold),
+        0 0 22px rgba(255, 213, 47, 0.65);
+}
+
+.case-nav-link.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+
+/* ---------- NAV ICON ---------- */
+
+.case-nav-icon {
+    font-size: 30px;
+    line-height: 1;
+}
+
+.case-nav-link.active .case-nav-icon {
+    filter:
+        drop-shadow(0 0 8px rgba(255, 213, 47, 0.65));
+}
+
+
+/* ---------- PROFILE ---------- */
+
+.case-profile {
+    width: 95px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.case-profile-circle {
+    width: 66px;
+    height: 66px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 2px solid var(--gold);
+
+    border-radius: 50%;
+
+    color: #e8f0fa;
+
+    font-size: 28px;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 0 10px rgba(255, 213, 47, 0.22);
+}
+
+
+/* =========================================================
+   PAGE TITLE
+   ========================================================= */
+
+.case-heading {
+    text-align: center;
+
+    padding-top: 25px;
+}
+
+.case-heading h1 {
+    margin: 0;
+
+    font-family:
+        Arial Black,
+        Impact,
+        sans-serif;
+
+    font-size: 46px;
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    color: #ffffff;
+}
+
+.case-heading p {
+    margin: 10px 0 0;
+
+    color: #b9cbe1;
+
+    font-size: 25px;
+}
+
+
+/* =========================================================
+   INVESTIGATION MAP
+   ========================================================= */
+
+.case-map {
+    position: relative;
+
+    width: min(1450px, 94vw);
+    height: 700px;
+
+    margin: 30px auto 0;
+}
+
+
+/* =========================================================
+   ROOM CARDS
+   ========================================================= */
+
+.case-location {
+    position: absolute;
+
+    width: 390px;
+
+    text-decoration: none;
+
+    color: white;
+
+    transition:
+        transform 0.25s ease,
+        filter 0.25s ease;
+}
+
+.case-location:hover {
+    transform: translateY(-5px);
+
+    filter:
+        brightness(1.08);
+}
+
+
+/* ---------- ROOM IMAGE ---------- */
+
+.case-location-image {
+    position: relative;
+
+    width: 100%;
+    height: 245px;
+
+    overflow: hidden;
+
+    background: #111923;
+
+    clip-path: polygon(18% 0%, 82% 0%, 100% 50%, 82% 100%, 18% 100%, 0% 50%);
+
+    border: 3px solid rgba(120, 160, 195, 0.35);
+
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.55);
+
+    transition: filter .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.case-location-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: filter .25s ease;
+}
+
+
+/* ---------- LOCKED ROOM ---------- */
+
+.case-location.locked {
+    color: white;
+    background: transparent;
+}
+
+.case-location.locked .case-location-image img {
+    filter: brightness(0.22) saturate(0.35);
+}
+
+.case-location.locked .case-location-image {
+    border-color: rgba(120, 160, 195, 0.28);
+}
+
+
+/* ---------- ACTIVE ROOM ---------- */
+
+.case-location.active {
+    color: white;
+    background: transparent;
+}
+
+.case-location.active .case-location-image img {
+    filter: brightness(1.15) saturate(1.1);
+}
+
+.case-location.active .case-location-image {
+    border-color: var(--gold);
+
+    box-shadow:
+        0 0 10px rgba(255, 213, 47, 1),
+        0 0 34px rgba(255, 213, 47, 0.7),
+        0 0 70px rgba(255, 213, 47, 0.35),
+        0 25px 50px rgba(0, 0, 0, 0.65);
+}
+
+
+/* =========================================================
+   LOCATION LABEL
+   ========================================================= */
+
+.case-location-label {
+    position: absolute;
+
+    left: 50%;
+    bottom: -25px;
+
+    transform: translateX(-50%);
+
+    min-width: 280px;
+
+    padding: 16px 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(13, 22, 31, 0.97),
+            rgba(5, 12, 18, 0.98)
+        );
+
+    border-radius: 4px;
+
+    border: 1px solid rgba(180, 205, 230, 0.12);
+
+    color: #ffffff;
+
+    font-family:
+        Arial Black,
+        Impact,
+        sans-serif;
+
+    font-size: 24px;
+
+    white-space: nowrap;
+}
+
+.case-location.active .case-location-label {
+    color: #111;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffe45c,
+            #f4c728
+        );
+
+    border-color: #ffe45c;
+
+    box-shadow:
+        0 0 20px rgba(255, 213, 47, 0.45);
+}
+
+
+/* =========================================================
+   NUMBER CIRCLE
+   ========================================================= */
+
+.case-location-number {
+    position: absolute;
+
+    left: 35px;
+    bottom: -24px;
+
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #152434;
+
+    border: 2px solid #6d87a1;
+
+    color: #dce8f5;
+
+    font-size: 27px;
+    font-weight: 800;
+
+    z-index: 5;
+}
+
+.case-location.active .case-location-number {
+    background: var(--gold);
+
+    border-color: var(--gold);
+
+    color: #111;
+
+    box-shadow:
+        0 0 20px rgba(255, 213, 47, 0.35);
+}
+
+
+/* =========================================================
+   LOCK ICON
+   ========================================================= */
+
+.case-lock {
+    position: absolute;
+
+    top: 30px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(3, 9, 15, 0.82);
+
+    color: #dce9f8;
+
+    font-size: 32px;
+
+    z-index: 5;
+}
+
+
+/* =========================================================
+   MAP POSITIONS
+   ========================================================= */
+
+/* 1 — Crime Scene */
+.location-crime {
+    left: 0;
+    top: 15px;
+}
+
+/* 2 — Evidence Room */
+.location-evidence {
+    left: 50%;
+    top: 35px;
+
+    transform: translateX(-50%);
+}
+
+/* 3 — Digital Forensics */
+.location-digital {
+    right: 0;
+    top: 165px;
+}
+
+/* 4 — Interview Room */
+.location-interview {
+    left: 22%;
+    bottom: 25px;
+}
+
+/* 5 — Final Analysis */
+.location-final {
+    right: 23%;
+    bottom: 10px;
+}
+
+
+/* =========================================================
+   CONNECTING FOOTPRINT TRAIL
+   ========================================================= */
+
+.case-footprints {
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+.case-footprint {
+    position: absolute;
+
+    width: 14px;
+    height: 24px;
+
+    border-radius: 50% 50% 45% 45%;
+
+    background: rgba(225, 239, 255, 0.88);
+
+    transform: rotate(35deg);
+
+    box-shadow:
+        0 0 5px rgba(200, 225, 255, 0.45);
+}
+
+
+/* =========================================================
+   CLUE PAPER — UPPER RIGHT
+   ========================================================= */
+
+.case-clue {
+    position: absolute;
+
+    right: 10px;
+    top: -5px;
+
+    width: 305px;
+
+    padding: 28px 35px;
+
+    color: #171717;
+
+    background:
+        linear-gradient(
+            135deg,
+            #b9a37e,
+            #d2c19f
+        );
+
+    transform: rotate(2deg);
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.case-clue::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0.25;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 5px,
+            rgba(70, 55, 35, 0.15) 6px
+        );
+}
+
+.case-clue-text {
+    position: relative;
+
+    font-family:
+        "Comic Sans MS",
+        cursive;
+
+    font-size: 24px;
+
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   LOWER LEFT TEXT
+   ========================================================= */
+
+.case-connected {
+    position: absolute;
+
+    left: 5px;
+    bottom: 10px;
+
+    color: #9eb9d9;
+
+    font-size: 31px;
+
+    font-style: italic;
+
+    letter-spacing: 7px;
+
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   LOWER RIGHT TEXT
+   ========================================================= */
+
+.case-side-text {
+    position: absolute;
+
+    right: 15px;
+    bottom: 5px;
+
+    padding-left: 25px;
+
+    border-left: 3px solid var(--gold);
+
+    color: #a8c1df;
+
+    font-size: 20px;
+
+    line-height: 1.75;
+
+    letter-spacing: 3px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .case-map {
+        transform: scale(0.82);
+        transform-origin: top center;
+
+        height: 610px;
+    }
+
+    .case-logo {
+        width: 220px;
+    }
+
+    .case-nav-link {
+        width: 110px;
+    }
+
+    .case-nav-link {
+        font-size: 15px;
+    }
+
+    .case-heading h1 {
+        font-size: 38px;
+    }
 }
 
 
@@ -3234,13 +3990,17 @@ body:has(.join-screen) {
 
         max-width: 420px;
 
+        padding-bottom: 70px;
+
     }
 
 
-    .home-title {
+    .home-title-line1 {
+        font-size: 32px;
+    }
 
-        font-size: 23px;
-
+    .home-title-line2 {
+        font-size: 40px;
     }
 
 
@@ -9405,6 +10165,73 @@ body:has(.join-screen) {
     letter-spacing: .1em;
 }
 
+.accusation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.round5-question-content label.accusation-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 8px 14px;
+    background: rgba(255,255,255,.02);
+    border: 2px solid rgba(255,255,255,.06);
+    border-radius: 10px;
+    font-size: 10px;
+    text-align: center;
+}
+
+.round5-question-content label.accusation-card:hover {
+    border-color: rgba(245,158,11,.35);
+    background: rgba(245,158,11,.05);
+}
+
+.accusation-card input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.accusation-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,.1);
+}
+
+.accusation-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.accusation-name {
+    color: #cbd5e1;
+    font-weight: 600;
+    font-size: 10.5px;
+}
+
+.accusation-card:has(input:checked) {
+    border-color: #fbbf24;
+    background: rgba(245,158,11,.1);
+}
+
+.accusation-card:has(input:checked) .accusation-photo {
+    border-color: #fbbf24;
+}
+
+.accusation-card:has(input:checked) .accusation-name {
+    color: #fbbf24;
+}
+
 
 /* =========================================================
    SUBMIT
@@ -12203,6 +13030,164 @@ body:has(.join-screen) {
     text-transform: uppercase;
 }
 
+/* =========================================================
+   SITE NAV
+========================================================= */
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(244, 196, 48, 0.18);
+}
+
+.site-nav-brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    text-decoration: none;
+}
+
+.site-nav-brand-title {
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.site-nav-brand-sub {
+    color: #f4c430;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.site-nav-links {
+    display: flex;
+    gap: 22px;
+}
+
+.site-nav-links a {
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+}
+
+.site-nav-links a:hover {
+    color: #f4c430;
+}
+
+@media (max-width: 480px) {
+    .site-nav {
+        margin-bottom: 20px;
+    }
+    .site-nav-links {
+        gap: 14px;
+    }
+}
+
+.case-sidebar {
+    display: none;
+}
+
+@media (min-width: 1300px) {
+    .case-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        position: fixed;
+        top: 150px;
+        left: 40px;
+        width: 190px;
+        padding: 18px 16px;
+        border: 1px solid rgba(244, 196, 48, 0.18);
+        border-radius: 10px;
+        background: rgba(10, 15, 28, 0.85);
+        backdrop-filter: blur(4px);
+        z-index: 5;
+    }
+}
+
+.case-sidebar-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
+.case-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 6px;
+    border-radius: 6px;
+}
+
+.case-sidebar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    color: #94a3b8;
+}
+
+.case-sidebar-name {
+    font-size: 12.5px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.case-sidebar-item.done .case-sidebar-icon {
+    background: rgba(244, 196, 48, 0.15);
+    border-color: #f4c430;
+    color: #f4c430;
+}
+
+.case-sidebar-item.done .case-sidebar-name {
+    color: #cbd5e1;
+    text-decoration: line-through;
+    text-decoration-color: rgba(148, 163, 184, 0.5);
+}
+
+.case-sidebar-item.current {
+    background: rgba(244, 196, 48, 0.1);
+}
+
+.case-sidebar-item.current .case-sidebar-icon {
+    background: #f4c430;
+    border-color: #f4c430;
+    color: #0a0f1c;
+}
+
+.case-sidebar-item.current .case-sidebar-name {
+    color: #f8fafc;
+}
+
+.case-sidebar-item.locked .case-sidebar-icon {
+    color: #475569;
+    border-color: rgba(71, 85, 105, 0.4);
+}
+
+.case-sidebar-item.locked .case-sidebar-name {
+    color: #475569;
+}
+
 .home-suspects-link {
     display: inline-block;
     margin-top: 24px;
@@ -12363,4 +13348,232 @@ body:has(.join-screen) {
     font-size: 10px;
     letter-spacing: 0.15em;
     margin-top: 50px;
+}
+
+/* =========================================================
+   LEADERBOARD
+========================================================= */
+
+.leaderboard-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.leaderboard-kicker {
+    color: #f4c430;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    margin-bottom: 8px;
+}
+
+.leaderboard-header h1 {
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 40px;
+    margin: 0 0 8px;
+}
+
+.leaderboard-header p {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    background: rgba(10, 15, 28, 0.6);
+}
+
+.leaderboard-row-top {
+    border-color: rgba(244, 196, 48, 0.3);
+    background: rgba(244, 196, 48, 0.05);
+}
+
+.leaderboard-rank {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.leaderboard-rank.rank-1 {
+    background: #f4c430;
+    color: #1c1400;
+}
+
+.leaderboard-rank.rank-2 {
+    background: #cbd5e1;
+    color: #1c1400;
+}
+
+.leaderboard-rank.rank-3 {
+    background: #c98a4b;
+    color: #1c1400;
+}
+
+.leaderboard-avatar {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.leaderboard-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.leaderboard-name {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.leaderboard-name strong {
+    color: #f8fafc;
+    font-size: 14px;
+}
+
+.leaderboard-status {
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+}
+
+.leaderboard-score {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.leaderboard-score strong {
+    color: #f4c430;
+    font-size: 18px;
+    font-family: "Rajdhani", sans-serif;
+}
+
+.leaderboard-score span {
+    color: #64748b;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+}
+
+.leaderboard-empty {
+    text-align: center;
+    color: #64748b;
+    padding: 60px 20px;
+    font-size: 13px;
+}
+
+/* =========================================================
+   RULES
+========================================================= */
+
+.rules-page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+
+.rules-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.rules-kicker {
+    color: #f4c430;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    margin-bottom: 8px;
+}
+
+.rules-header h1 {
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 38px;
+    margin: 0 0 8px;
+}
+
+.rules-header p {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.rules-card {
+    display: flex;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    background: rgba(10, 15, 28, 0.6);
+}
+
+.rules-card-number {
+    flex-shrink: 0;
+    color: #f4c430;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.rules-card h3 {
+    color: #f8fafc;
+    margin: 0 0 6px;
+    font-size: 15px;
+}
+
+.rules-card p {
+    color: #94a3b8;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.rules-footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #64748b;
+    font-style: italic;
+    font-size: 13px;
 }

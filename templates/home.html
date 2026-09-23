@@ -6,31 +6,53 @@ Who Stole the Money?
 
 {% block content %}
 
-<div class="home-screen">
+<div class="home-page">
 
-    <div class="home-content">
+    <!-- LOGO -->
+    <div class="logo">
 
-        <h1 class="home-title">
-            WHO STOLE THE MONEY?
+        <div class="logo-main">
+            WHO STOLE
+            <span class="logo-money">
+                THE MONEY?
+            </span>
+        </div>
+
+        <div class="logo-subtitle">
+            FRAUD INVESTIGATION GAME
+        </div>
+
+    </div>
+
+
+    <!-- CENTER -->
+
+    <main class="center-content">
+
+        <h1 class="title">
+            <span class="title-white">WHO STOLE</span>
+            <span class="title-yellow">THE MONEY?</span>
         </h1>
 
-        <p class="home-subtitle">
-            Access your investigation. Solve the case.
+        <div class="game-title">
+            FRAUD INVESTIGATION GAME
+        </div>
+
+        <p class="description">
+            AN INTERACTIVE INVESTIGATION EXPERIENCE<br>
+            INSPIRED BY REAL-WORLD FRAUD CASES.
         </p>
 
-        <div class="home-actions">
 
-            <a
-                href="/join"
-                class="home-button home-button-primary"
-            >
-                JOIN INVESTIGATION
+        <div class="buttons">
+
+            <a href="/join" class="game-button play-button">
+                PLAY GAME
+                <span class="button-arrow">→</span>
             </a>
 
-            <a
-                href="/host"
-                class="home-button home-button-secondary"
-            >
+            <a href="/host" class="game-button host-button">
+                <span class="host-icon">👥</span>
                 HOST GAME
             </a>
 
@@ -40,7 +62,60 @@ Who Stole the Money?
             🕵️ VIEW SUSPECTS →
         </a>
 
+    </main>
+
+
+    <!-- RIGHT TAGLINE -->
+
+    <div class="side-tagline">
+
+        <div class="side-line"></div>
+
+        <div class="side-text">
+            <span>INVESTIGATE</span>
+            <span>ANALYZE</span>
+            <span>CONNECT</span>
+            <span>SOLVE</span>
+        </div>
+
     </div>
+
+
+    <!-- BOTTOM WORDS -->
+
+    <div class="bottom-words">
+        KNOWLEDGE<br>
+        ANALYSIS<br>
+        TRUTH<br>
+        IMPACT
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="bottom-nav">
+
+        <a href="/home" class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div>HOME</div>
+        </a>
+
+        <a href="/suspects" class="nav-item">
+            <div class="nav-icon">📁</div>
+            <div>CASE FILES</div>
+        </a>
+
+        <a href="/leaderboard" class="nav-item">
+            <div class="nav-icon">📊</div>
+            <div>LEADERBOARD</div>
+        </a>
+
+        <a href="/rules" class="nav-item">
+            <div class="nav-icon">📄</div>
+            <div>RULES</div>
+        </a>
+
+    </nav>
 
 </div>
 

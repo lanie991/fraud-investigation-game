@@ -6,6 +6,8 @@ Round 5 — Final Investigation
 
 {% block content %}
 
+{% include "_case_sidebar.html" %}
+
 <div class="round5-page">
 
     <!-- =========================================
@@ -956,66 +958,70 @@ Round 5 — Final Investigation
                         Who stole the money?
                     </h3>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="q5"
-                            value="sarah"
-                            required
-                        >
+                    <div class="accusation-grid">
 
-                        <span>
-                            Sarah Mitchell
-                        </span>
-                    </label>
+                        <label class="accusation-card">
+                            <input
+                                type="radio"
+                                name="q5"
+                                value="sarah"
+                                required
+                            >
+                            <span class="accusation-photo">
+                                <img src="{{ url_for('static', filename='suspects/sarah_mitchell.jpg') }}" alt="Sarah Mitchell">
+                            </span>
+                            <span class="accusation-name">Sarah Mitchell</span>
+                        </label>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="q5"
-                            value="michael"
-                        >
+                        <label class="accusation-card">
+                            <input
+                                type="radio"
+                                name="q5"
+                                value="michael"
+                            >
+                            <span class="accusation-photo">
+                                <img src="{{ url_for('static', filename='suspects/michael_carter.jpg') }}" alt="Michael Carter">
+                            </span>
+                            <span class="accusation-name">Michael Carter</span>
+                        </label>
 
-                        <span>
-                            Michael Carter
-                        </span>
-                    </label>
+                        <label class="accusation-card">
+                            <input
+                                type="radio"
+                                name="q5"
+                                value="daniel"
+                            >
+                            <span class="accusation-photo">
+                                <img src="{{ url_for('static', filename='suspects/daniel_brooks.jpg') }}" alt="Daniel Brooks">
+                            </span>
+                            <span class="accusation-name">Daniel Brooks</span>
+                        </label>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="q5"
-                            value="daniel"
-                        >
+                        <label class="accusation-card">
+                            <input
+                                type="radio"
+                                name="q5"
+                                value="lauren"
+                            >
+                            <span class="accusation-photo">
+                                <img src="{{ url_for('static', filename='suspects/lauren_price.jpg') }}" alt="Lauren Price">
+                            </span>
+                            <span class="accusation-name">Lauren Price</span>
+                        </label>
 
-                        <span>
-                            Daniel Brooks
-                        </span>
-                    </label>
+                        <label class="accusation-card">
+                            <input
+                                type="radio"
+                                name="q5"
+                                value="marcus"
+                            >
+                            <span class="accusation-photo">
+                                <img src="{{ url_for('static', filename='suspects/marcus_reed.jpg') }}" alt="Marcus Reed">
+                            </span>
+                            <span class="accusation-name">Marcus Reed</span>
+                        </label>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="q5"
-                            value="lauren"
-                        >
-
-                        <span>
-                            Lauren Price
-                        </span>
-                    </label>
-
-                    <label>
-                        <input
-                            type="radio"
-                            name="q5"
-                            value="marcus"
-                        >
-
-                        <span>
-                            Marcus Reed
-                        </span>
-                    </label>
+                    </div>
 
                 </div>
 
