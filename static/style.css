@@ -2852,18 +2852,23 @@ body:has(.join-screen) {
 }
 
 body:has(.home-screen) {
-    background:
+    background-image:
         radial-gradient(
             ellipse 900px 600px at 50% 0%,
-            rgba(244, 196, 48, 0.1),
+            rgba(244, 196, 48, 0.06),
             transparent 60%
         ),
-        radial-gradient(
-            circle at 50% 55%,
-            rgba(79, 70, 229, 0.06),
-            transparent 45%
+        linear-gradient(
+            180deg,
+            rgba(3, 4, 8, 0.72),
+            rgba(3, 4, 8, 0.86) 60%,
+            #05060c 100%
         ),
-        #05060c;
+        url("/static/backgrounds/home_desk.webp");
+    background-position: center, center, center;
+    background-size: cover, cover, cover;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-color: #05060c;
 }
 
 body:has(.home-screen) .site-nav {
