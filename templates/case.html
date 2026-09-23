@@ -52,6 +52,17 @@ Case 1: The Missing Money — Who Stole the Money?
 
     <div class="case-page-map">
 
+        <svg class="case-page-path" viewBox="0 0 1300 560" preserveAspectRatio="none">
+            <path
+                d="M150,85 L358,343 L566,107 L800,365 L1034,208"
+                fill="none"
+                stroke="rgba(255,255,255,0.55)"
+                stroke-width="4"
+                stroke-linecap="round"
+                stroke-dasharray="2 16"
+            />
+        </svg>
+
         {% for room in case_rooms %}
         <div class="case-room case-room-{{ room.number }} {{ room.state }}">
 
