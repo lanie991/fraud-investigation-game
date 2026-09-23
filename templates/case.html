@@ -67,10 +67,16 @@ Case 1: The Missing Money — Who Stole the Money?
                     >
                 {% endif %}
 
-                <span class="case-room-icon">
-                    {% if room.state == 'locked' %}🔒{% else %}📍{% endif %}
-                </span>
+                {% if room.state == 'locked' %}
+                    <span class="case-room-icon">🔒</span>
+                {% elif not room.photo %}
+                    <span class="case-room-icon">📍</span>
+                {% endif %}
             </a>
+
+            {% if room.state == 'current' %}
+                <span class="case-room-pin">📍</span>
+            {% endif %}
 
             <div class="case-room-label">
                 <span class="case-room-number">{{ room.number }}</span>

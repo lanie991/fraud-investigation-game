@@ -241,9 +241,9 @@ def rules():
 def case():
     case_rooms = [
         {"number": 1, "name": "Crime Scene", "state": "current", "photo": "crime_scene.webp"},
-        {"number": 2, "name": "Evidence Room", "state": "locked", "photo": None},
-        {"number": 3, "name": "Digital Forensics", "state": "locked", "photo": None},
-        {"number": 4, "name": "Interview Room", "state": "locked", "photo": None},
+        {"number": 2, "name": "Evidence Room", "state": "locked", "photo": "evidence_room.webp"},
+        {"number": 3, "name": "Digital Forensics", "state": "locked", "photo": "digital_forensics.webp"},
+        {"number": 4, "name": "Interview Room", "state": "locked", "photo": "interview_room.webp"},
         {"number": 5, "name": "Final Analysis", "state": "locked", "photo": None},
     ]
     return render_template("case.html", case_rooms=case_rooms)
