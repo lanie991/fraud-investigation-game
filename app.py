@@ -240,11 +240,11 @@ def rules():
 @app.route("/case")
 def case():
     case_rooms = [
-        {"number": 1, "name": "Crime Scene", "state": "current"},
-        {"number": 2, "name": "Evidence Room", "state": "locked"},
-        {"number": 3, "name": "Digital Forensics", "state": "locked"},
-        {"number": 4, "name": "Interview Room", "state": "locked"},
-        {"number": 5, "name": "Final Analysis", "state": "locked"},
+        {"number": 1, "name": "Crime Scene", "state": "current", "photo": "crime_scene.webp"},
+        {"number": 2, "name": "Evidence Room", "state": "locked", "photo": None},
+        {"number": 3, "name": "Digital Forensics", "state": "locked", "photo": None},
+        {"number": 4, "name": "Interview Room", "state": "locked", "photo": None},
+        {"number": 5, "name": "Final Analysis", "state": "locked", "photo": None},
     ]
     return render_template("case.html", case_rooms=case_rooms)
 

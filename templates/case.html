@@ -59,6 +59,14 @@ Case 1: The Missing Money — Who Stole the Money?
                 href="{{ '/join' if room.state == 'current' else '#' }}"
                 class="case-room-hex"
             >
+                {% if room.photo %}
+                    <img
+                        class="case-room-photo"
+                        src="{{ url_for('static', filename='case-rooms/' + room.photo) }}"
+                        alt="{{ room.name }}"
+                    >
+                {% endif %}
+
                 <span class="case-room-icon">
                     {% if room.state == 'locked' %}🔒{% else %}📍{% endif %}
                 </span>
