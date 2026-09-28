@@ -1,0 +1,251 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Round {{ current_round }} — Forensic Elimination{% endblock %}
+
+{% block top_header %}
+<header class="fe-game-header">
+
+    <div class="fe-game-logo">
+        <img class="fe-game-logo-icon" src="{{ url_for('static', filename='images/brand-icon.webp') }}" alt="">
+        <div class="fe-game-logo-text-group">
+            <span class="fe-game-logo-text">FORENSIC ELIMINATION</span>
+            <span class="fe-game-logo-sub">KNOW &nbsp;|&nbsp; ANALYZE &nbsp;|&nbsp; OUTLAST</span>
+        </div>
+    </div>
+
+    <div class="fe-round-tracker">
+        {% for r in rounds %}
+        {% set is_final = r.difficulty == "FINAL" %}
+        <div class="fe-round-node {% if is_final %}final{% endif %} {% if r.round_number < current_round %}done{% elif r.round_number == current_round %}current{% endif %}">
+            <div class="fe-round-circle">{% if is_final %}&#127942;{% else %}{{ r.round_number }}{% endif %}</div>
+            <div class="fe-round-node-label">
+                <strong>{{ "FINAL" if is_final else "ROUND " ~ r.round_number }}</strong>
+                <span class="diff-{{ r.difficulty|lower }}">{{ "ROUND" if is_final else r.difficulty }}</span>
+            </div>
+        </div>
+        {% if not loop.last %}<div class="fe-round-connector"></div>{% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="fe-game-tagline">
+        <div class="line1">REAL KNOWLEDGE.<br>HIGHER STAKES.</div>
+        <div class="line2">THE LAST MIND STANDING WINS.</div>
+    </div>
+
+</header>
+{% endblock %}
+
+{% block content %}
+
+<div class="fe-game-body">
+
+    <div class="fe-card fe-players-panel">
+        <h2>PLAYERS ({{ players|length }})</h2>
+
+        <div id="fe-players-list">
+            {% for p in players %}
+            <div class="fe-player-status-row {{ 'me' if p['name'] == name else '' }} {{ 'eliminated' if p['status'] == 'eliminated' else '' }}">
+                <div class="fe-player-status-icon">
+                    {% if p['avatar'] in avatar_images %}
+                        {% if p['status'] == 'eliminated' %}
+                            &#10007;
+                        {% else %}
+                        <img src="{{ url_for('static', filename='avatars/' + avatar_images[p['avatar']]) }}" alt="">
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="fe-player-status-text">
+                    <strong>{{ p['name'] }}</strong>
+                    <span>{{ "ELIMINATED" if p['status'] == "eliminated" else "IN PLAY" }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="fe-quote-card">
+            &ldquo;EVIDENCE NEVER LIES.&rdquo;
+        </div>
+    </div>
+
+    <div class="fe-main-panel">
+
+        <div class="fe-round-badge-row">
+            <span class="fe-round-badge">{{ "FINAL ROUND" if question["difficulty"] == "FINAL" else "ROUND " ~ current_round }}</span>
+            <span class="fe-difficulty-pill {{ question['difficulty']|lower }}">
+                {{ question["difficulty"] }} &middot; {{ question["points"] }} POINTS
+            </span>
+            <span class="fe-remaining-text" id="fe-remaining-text">{{ players_remaining }} PLAYERS REMAINING</span>
+        </div>
+
+        <div class="fe-card fe-question-card">
+
+            <h1 class="fe-question-text">{{ question["text"] }}</h1>
+
+            <form method="POST" action="{{ url_for('elimination.play', name=name) }}" id="fe-question-form">
+                {% for display_letter, canonical_key, text in ordered_options %}
+                {% if canonical_key not in removed_options %}
+                <label class="fe-option">
+                    <input type="radio" name="answer" value="{{ canonical_key }}" required>
+                    <span class="fe-option-letter">{{ display_letter }}</span>
+                    <span>{{ text }}</span>
+                </label>
+                {% endif %}
+                {% endfor %}
+
+                <button type="submit" class="fe-btn fe-btn-gold fe-btn-block" style="margin-top:18px;">
+                    SUBMIT ANSWER
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="fe-card fe-side-panel">
+
+        <h2>TIMER</h2>
+        <div class="fe-timer-gauge-wrap">
+            <div class="fe-timer-gauge">
+                <svg width="110" height="110" viewBox="0 0 110 110">
+                    <circle class="fe-timer-gauge-track" cx="55" cy="55" r="48"></circle>
+                    <circle class="fe-timer-gauge-progress" id="fe-timer-ring" cx="55" cy="55" r="48"
+                            stroke-dasharray="301.6" stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="fe-timer-gauge-value" id="fe-timer-value">{{ "%02d"|format(remaining_seconds) }}</div>
+            </div>
+        </div>
+
+        {% if lifelines_enabled %}
+        <div class="fe-lifelines-panel">
+            <h2>LIFELINES</h2>
+            <div class="fe-lifelines-row">
+                <form method="POST" action="{{ url_for('elimination.use_fifty_fifty', name=name) }}">
+                    <button type="submit" class="fe-lifeline-item" {% if player["fifty_fifty_used"] %}disabled{% endif %}>
+                        <span class="fe-lifeline-icon">&#128065;</span>
+                        50/50
+                        <span class="fe-lifeline-count">
+                            {% if player["fifty_fifty_used"] %}(0 left){% else %}(1 left &middot; -3 PTS){% endif %}
+                        </span>
+                    </button>
+                </form>
+
+                <button type="button" class="fe-lifeline-item" id="fe-ask-team-btn" {% if player["ask_team_used"] %}disabled{% endif %}>
+                    <span class="fe-lifeline-icon">&#128101;</span>
+                    Ask the Team
+                    <span class="fe-lifeline-count">
+                        {% if player["ask_team_used"] %}(0 left){% else %}(1 left &middot; -3 PTS){% endif %}
+                    </span>
+                </button>
+
+                <form method="POST" action="{{ url_for('elimination.use_skip', name=name) }}">
+                    <button type="submit" class="fe-lifeline-item" {% if player["skip_used"] %}disabled{% endif %}>
+                        <span class="fe-lifeline-icon">&#8635;</span>
+                        Skip
+                        <span class="fe-lifeline-count">
+                            {% if player["skip_used"] %}(0 left){% else %}(1 left &middot; -3 PTS){% endif %}
+                        </span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="fe-ask-team-result" id="fe-ask-team-result"></div>
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const timerValue = document.getElementById("fe-timer-value");
+    const timerRing = document.getElementById("fe-timer-ring");
+    const form = document.getElementById("fe-question-form");
+    const timerUrl = "/timer/{{ name|urlencode }}";
+    const totalSeconds = {{ timer_seconds }};
+    const circumference = 301.6;
+    let submitted = false;
+
+    function pad(n) {
+        return String(Math.max(0, n)).padStart(2, "0");
+    }
+
+    function updateRing(remaining) {
+        const fraction = Math.max(0, Math.min(1, remaining / totalSeconds));
+        if (timerRing) {
+            timerRing.style.strokeDashoffset = String(circumference * (1 - fraction));
+            timerRing.classList.toggle("low", remaining <= 5);
+        }
+    }
+
+    updateRing({{ remaining_seconds }});
+
+    let lastTickedSecond = null;
+
+    function poll() {
+        fetch(timerUrl, { cache: "no-store" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (timerValue) {
+                    timerValue.textContent = pad(data.remaining_seconds);
+                }
+                updateRing(data.remaining_seconds);
+
+                if (window.FE_SFX && data.remaining_seconds > 0
+                        && data.remaining_seconds <= 5
+                        && data.remaining_seconds !== lastTickedSecond) {
+                    lastTickedSecond = data.remaining_seconds;
+                    FE_SFX.playTick();
+                }
+
+                if (data.closed && !submitted) {
+                    submitted = true;
+                    if (form) {
+                        form.submit();
+                    } else {
+                        window.location.reload();
+                    }
+                }
+            })
+            .catch(function () {});
+    }
+
+    poll();
+    setInterval(poll, 1000);
+
+    const remainingText = document.getElementById("fe-remaining-text");
+    function pollPlayers() {
+        fetch("/players-status", { cache: "no-store" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (remainingText) {
+                    remainingText.textContent = data.remaining + " PLAYERS REMAINING";
+                }
+            })
+            .catch(function () {});
+    }
+    setInterval(pollPlayers, 4000);
+
+    const askTeamBtn = document.getElementById("fe-ask-team-btn");
+    const askTeamResult = document.getElementById("fe-ask-team-result");
+    if (askTeamBtn) {
+        askTeamBtn.addEventListener("click", function () {
+            askTeamBtn.disabled = true;
+            fetch("/lifeline/ask-team/{{ name|urlencode }}", { method: "POST" })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (!askTeamResult || !data.percentages) return;
+                    let html = "";
+                    Object.keys(data.percentages).sort().forEach(function (letter) {
+                        html += "<div><span>" + letter + "</span><span>" + data.percentages[letter] + "%</span></div>";
+                    });
+                    askTeamResult.innerHTML = html || "<div>No responses yet.</div>";
+                    askTeamResult.classList.add("visible");
+                })
+                .catch(function () {});
+        });
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Answer Review — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page">
+
+    <div class="fe-kicker">CASE FILE</div>
+    <h1 class="fe-title">ANSWER REVIEW</h1>
+    <p class="fe-subtitle">Every question {{ name }} answered, round by round.</p>
+
+    {% if not reviewed %}
+    <div class="fe-card">
+        <p style="color:#94a3b8; margin:0;">No answers recorded yet.</p>
+    </div>
+    {% endif %}
+
+    {% for r in reviewed %}
+    <div class="fe-card fe-review-round">
+
+        <div class="fe-round-badge-row" style="margin-bottom:16px;">
+            <span class="fe-round-badge">ROUND {{ r.round_number }}</span>
+            <span class="fe-difficulty-pill {{ r.difficulty|lower }}">{{ r.difficulty }}</span>
+            {% if r.was_correct %}
+                <span class="fe-status-pill in" style="margin-left:auto;">+{{ r.points }} PTS</span>
+            {% else %}
+                <span class="fe-status-pill eliminated" style="margin-left:auto;">INCORRECT</span>
+            {% endif %}
+        </div>
+
+        <h2 style="margin:0 0 16px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:19px;">
+            {{ r.text }}
+        </h2>
+
+        {% for letter, option_text in r.options.items() %}
+        {% set is_correct_answer = letter == r.correct_answer %}
+        {% set is_player_answer = letter == r.player_answer %}
+        <div class="fe-review-option {{ 'correct' if is_correct_answer else '' }} {{ 'incorrect' if is_player_answer and not is_correct_answer else '' }}">
+            <span class="fe-option-letter">{{ letter }}</span>
+            <span>{{ option_text }}</span>
+            {% if is_correct_answer %}
+                <span class="fe-review-tag correct-tag">CORRECT ANSWER</span>
+            {% elif is_player_answer %}
+                <span class="fe-review-tag incorrect-tag">{{ name }}'S ANSWER</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        {% if not r.player_answer %}
+        <p style="color:#f87171; font-size:12px; margin:10px 0 0;">No answer submitted (time ran out).</p>
+        {% endif %}
+
+        <div class="fe-feedback-explanation" style="margin-top:16px;">
+            <strong>EXPLANATION</strong>
+            <p>{{ r.explanation }}</p>
+        </div>
+
+    </div>
+    {% endfor %}
+
+    <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold fe-btn-block" style="margin-top:10px;">
+        VIEW LEADERBOARD
+    </a>
+
+</div>
+
+{% endblock %}

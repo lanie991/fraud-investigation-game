@@ -1,0 +1,71 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Rules — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page">
+
+    <div class="fe-kicker">HOW TO PLAY</div>
+    <h1 class="fe-title">RULES</h1>
+    <p class="fe-subtitle">Know the rules. Outlast the field.</p>
+
+    <div class="fe-card">
+
+        <div class="fe-info-section">
+            <h2>Getting In</h2>
+            <p>
+                A host starts a game from the Host screen and receives a
+                4-character game PIN. Players join with that PIN, pick a
+                name and an avatar, and wait in the lobby until the host
+                starts the game.
+            </p>
+        </div>
+
+        <div class="fe-info-section">
+            <h2>Answering Questions</h2>
+            <p>
+                Once the game starts, each investigator moves through
+                three rounds at their own pace: Round 1 (Easy), Round 2
+                (Intermediate), and Round 3 (Hard). Every question has a
+                countdown timer -- run out of time and it counts as a
+                wrong answer.
+            </p>
+        </div>
+
+        <div class="fe-info-section">
+            <h2>Elimination</h2>
+            <p>
+                When Elimination is turned on, a single wrong answer
+                (or a missed timer) ends your investigation immediately.
+                When it's off, wrong answers simply earn no points and
+                you keep going.
+            </p>
+        </div>
+
+        <div class="fe-info-section">
+            <h2>Lifelines</h2>
+            <p>
+                Each investigator gets three lifelines, usable once each
+                per game: <strong>50/50</strong> removes two incorrect
+                options, <strong>Ask the Team</strong> reveals what
+                percentage of other players chose each answer, and
+                <strong>Skip</strong> moves you straight to the next
+                round. Using any lifeline costs <strong>3 points</strong>.
+            </p>
+        </div>
+
+        <div class="fe-info-section">
+            <h2>Winning</h2>
+            <p>
+                The last investigator standing -- or the highest score
+                once everyone has finished or been eliminated -- is
+                declared the winner on the Leaderboard.
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

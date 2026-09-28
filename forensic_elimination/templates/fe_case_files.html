@@ -1,0 +1,27 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Case Files — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page">
+
+    <div class="fe-kicker">ARCHIVE</div>
+    <h1 class="fe-title">CASE FILES</h1>
+    <p class="fe-subtitle">A preview of what you're up against, round by round.</p>
+
+    {% for r in rounds %}
+    <div class="fe-card" style="margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
+        <div>
+            <h2 style="margin:0 0 4px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:18px;">
+                {{ "FINAL ROUND" if r.difficulty == "FINAL" else "ROUND " ~ r.round_number }}
+            </h2>
+            <p style="color:#94a3b8; font-size:13px; margin:0;">{{ r.points }} points</p>
+        </div>
+        <span class="fe-difficulty-pill {{ r.difficulty|lower }}">{{ r.difficulty }}</span>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Case Closed — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-waiting-wrap">
+
+    <div class="fe-card fe-waiting-card">
+
+        <div class="fe-kicker">CASE CLOSED</div>
+        <h1 class="fe-title" style="margin-bottom:10px;">WELL INVESTIGATED</h1>
+
+        <p class="fe-subtitle" style="margin:0 auto 22px;">
+            You made it through every round without being eliminated.
+            Final standings will be confirmed once every investigator
+            has finished or been eliminated.
+        </p>
+
+        <div class="fe-winner-score">
+            <strong>{{ player["score"] }}</strong>
+            <span>YOUR SCORE</span>
+        </div>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold">
+                VIEW LEADERBOARD
+            </a>
+            <a href="{{ url_for('elimination.review', name=name) }}" class="fe-btn fe-btn-ghost">
+                REVIEW ANSWERS
+            </a>
+        </div>
+
+    </div>
+
+    <div class="fe-card" style="width:100%; max-width:460px;">
+        <h2 style="margin:0 0 14px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:16px;">
+            LIVE STANDINGS
+        </h2>
+        <div id="fe-spectate-board"></div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='elimination-spectate.js') }}"></script>
+
+{% endblock %}
