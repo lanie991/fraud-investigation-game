@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: forensic-elimination
+    runtime: python
+    plan: free
+    rootDir: forensic_elimination
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 8
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FE_HOST_PASSWORD
+        sync: false
