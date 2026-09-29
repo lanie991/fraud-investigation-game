@@ -854,7 +854,10 @@ def qr_png():
     img.save(buffer, format="PNG")
     buffer.seek(0)
 
-    return send_file(buffer, mimetype="image/png")
+    response = send_file(buffer, mimetype="image/png")
+    # The PIN changes on every reset, so never let a browser reuse an old code.
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @elimination_bp.route("/host/settings", methods=["POST"])
