@@ -106,15 +106,6 @@
 
     <div class="fe-card fe-side-panel">
 
-        {% if lives_enabled %}
-        <div class="fe-lives" aria-label="{{ player['lives'] }} of {{ max_lives }} lives left">
-            <h2>LIVES</h2>
-            <div class="fe-lives-hearts">
-                {% for i in range(max_lives) %}<span class="fe-heart {{ 'lost' if i >= player['lives'] else '' }}">&#10084;</span>{% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
         <h2>TIMER</h2>
         <div class="fe-timer-gauge-wrap">
             <div class="fe-timer-gauge">
@@ -126,6 +117,15 @@
                 <div class="fe-timer-gauge-value" id="fe-timer-value">{{ "%02d"|format(remaining_seconds) }}</div>
             </div>
         </div>
+
+        {% if lives_enabled %}
+        <div class="fe-lives" aria-label="{{ player['lives'] }} of {{ max_lives }} lives left">
+            <h2>LIVES</h2>
+            <div class="fe-lives-hearts">
+                {% for i in range(max_lives) %}<span class="fe-heart {{ 'lost' if i >= player['lives'] else '' }}">&#10084;</span>{% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
         {% if lifelines_enabled %}
         <div class="fe-lifelines-panel">

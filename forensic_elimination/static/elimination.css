@@ -2310,7 +2310,7 @@ body:has(.fe-hero) .fe-main {
 ========================================================= */
 
 .fe-lives {
-    margin-bottom: 18px;
+    margin-top: 18px;
 }
 
 .fe-lives-hearts {
@@ -2362,7 +2362,7 @@ body:has(.fe-hero) .fe-main {
 
 @media (max-width: 1000px) {
     .fe-lives {
-        margin-bottom: 0;
+        margin-top: 0;
         flex-shrink: 0;
     }
 
