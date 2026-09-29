@@ -13,8 +13,13 @@
 
         <p class="fe-subtitle" style="margin:0 auto 22px;">
             You made it through every round without being eliminated.
-            Final standings will be confirmed once every investigator
-            has finished or been eliminated.
+            {% if game_over %}
+            You finished <strong style="color:#facc15;">#{{ placement }}</strong>
+            of {{ player_count }} investigators.
+            {% else %}
+            The winner will be announced once every investigator has
+            finished or been eliminated.
+            {% endif %}
         </p>
 
         <div class="fe-winner-score">
@@ -37,7 +42,7 @@
         <h2 style="margin:0 0 14px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:16px;">
             LIVE STANDINGS
         </h2>
-        <div id="fe-spectate-board"></div>
+        <div id="fe-spectate-board" {% if not game_over %}data-reload-when-over="1"{% endif %}></div>
     </div>
 
 </div>

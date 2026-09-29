@@ -41,7 +41,14 @@ document.addEventListener("DOMContentLoaded", function () {
     function poll() {
         fetch("/leaderboard-data", { cache: "no-store" })
             .then(function (r) { return r.json(); })
-            .then(function (data) { render(data.players || []); })
+            .then(function (data) {
+                render(data.players || []);
+                // Finished players wait here; once everyone is done, reload
+                // so the winner sees the winner screen and others their place.
+                if (data.game_over && board.dataset.reloadWhenOver) {
+                    window.location.reload();
+                }
+            })
             .catch(function () {});
     }
 

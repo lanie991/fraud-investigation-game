@@ -21,7 +21,7 @@
             {% if correct %}
                 You survive to the next question!
             {% else %}
-                Correct Answer: <strong style="color:#f8fafc;">{{ question["correct"] }}</strong>
+                Correct Answer: <strong style="color:#f8fafc;">{{ correct_answer }}</strong>
             {% endif %}
         </div>
 
@@ -39,7 +39,7 @@
 
         <div class="fe-feedback-explanation">
             <strong>EXPLANATION</strong>
-            <p>{{ question["explanation"] }}</p>
+            <p>{{ question["explanation"]|allow_bold }}</p>
         </div>
 
         <form method="POST" action="{{ url_for('elimination.advance', name=name) }}">

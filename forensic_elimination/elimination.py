@@ -32,6 +32,8 @@ jsonify = flask.jsonify
 url_for = flask.url_for
 send_file = flask.send_file
 session = flask.session
+Markup = import_module("markupsafe").Markup
+escape = import_module("markupsafe").escape
 
 elimination_bp = Blueprint(
     "elimination",
@@ -119,6 +121,7 @@ def initialize_database():
             option_order TEXT,
             lives INTEGER DEFAULT 3,
             question_order TEXT,
+            finished_at TEXT,
             joined_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -152,6 +155,11 @@ def initialize_database():
     if "option_order" not in existing_columns:
         connection.execute(
             "ALTER TABLE fe_players ADD COLUMN option_order TEXT"
+        )
+
+    if "finished_at" not in existing_columns:
+        connection.execute(
+            "ALTER TABLE fe_players ADD COLUMN finished_at TEXT"
         )
 
     if "question_order" not in existing_columns:
@@ -223,7 +231,7 @@ QUESTION_BANK = {
         {
             "round_number": 1,
             "difficulty": "EASY",
-            "text": "Which of the following is a common fraud red flag",
+            "text": "Which of the following is a common fraud red flag?",
             "options": {
                 "A": "Strong internal controls",
                 "B": "Unexpected lifestyle changes",
@@ -275,7 +283,7 @@ QUESTION_BANK = {
         {
             "round_number": 1,
             "difficulty": "EASY",
-            "text": "Many large fraud continue for years because:",
+            "text": "Many large frauds continue for years because:",
             "options": {
                 "A": "Stakeholders consistently challenge management",
                 "B": "Trusted individuals exploit their credibility",
@@ -288,7 +296,7 @@ QUESTION_BANK = {
         {
             "round_number": 1,
             "difficulty": "EASY",
-            "text": "Which company claimed its technology could perform hunderds of blood tests from a tiny blood sample?",
+            "text": "Which company claimed its technology could perform hundreds of blood tests from a tiny blood sample?",
             "options": {
                 "A": "Medtronic",
                 "B": "Theranos",
@@ -306,7 +314,7 @@ QUESTION_BANK = {
                 "A": "Hidden taxes increase profits",
                 "B": "Fake invoices are submitted to customers",
                 "C": "Money from new investors is used to pay earlier investors",
-                "D": "Company assets are phyically stolen"
+                "D": "Company assets are physically stolen"
             },
             "correct": "C",
             "explanation": "The defining feature of a Ponzi scheme is that money from new investors is used to pay returns to earlier investors, creating the illusion of profitability."
@@ -319,9 +327,9 @@ QUESTION_BANK = {
             "text": "Which forensic principle is most important when handling original evidence?",
             "options": {
                 "A": "Modify the evidence before analysis",
-                "B": "Preserve the integrity of the orignal evidence",
+                "B": "Preserve the integrity of the original evidence",
                 "C": "Analyze the original device whenever possible",
-                "D": "Delete irrelvant files before acquistion"
+                "D": "Delete irrelevant files before acquisition"
             },
             "correct": "B",
             "explanation": "Preserving the integrity of original evidence is crucial in digital forensics to ensure its admissibility in court and to maintain the trustworthiness of the investigation."
@@ -373,10 +381,10 @@ QUESTION_BANK = {
                 "A": "They were always negative",
                 "B": "They were unusually consistent",
                 "C": "They followed the market exactly",
-                "D": "They were independantly verified by several firms"
+                "D": "They were independently verified by several firms"
             },
             "correct": "B",
-            "explanation": "Madoff's reported returns were suspicious becasue they were remarkably consistent and showed unusually little volatility, even during periods of significant market fluctuations"
+            "explanation": "Madoff's reported returns were suspicious because they were remarkably consistent and showed unusually little volatility, even during periods of significant market fluctuations."
         },
         {
             "round_number": 2,
@@ -389,12 +397,12 @@ QUESTION_BANK = {
                 "D": "$100 billion"
             },
             "correct": "C",
-            "explanation": "Approximately $11 million was involved, making it one of the largest accounting frauds in U.S. history."
+            "explanation": "Approximately $11 billion was involved, making it one of the largest accounting frauds in U.S. history."
         },
         {
             "round_number": 2,
             "difficulty": "INTERMEDIATE",
-            "text": "The 2002 Movie Catch me if you can is based on the real life story of what infamous fraudster?",
+            "text": "The 2002 movie Catch Me If You Can is based on the real-life story of what infamous fraudster?",
             "options": {
                 "A": "Barry Allen",
                 "B": "Frank Abagnale Jr.",
@@ -407,7 +415,7 @@ QUESTION_BANK = {
         {
             "round_number": 2,
             "difficulty": "INTERMEDIATE",
-            "text": "Which of the following is NOT a common fraud scheme prepetrated by hedge fund managers?",
+            "text": "Which of the following is NOT a common fraud scheme perpetrated by hedge fund managers?",
             "options": {
                 "A": "Late trading",
                 "B": "Insider trading",
@@ -415,16 +423,16 @@ QUESTION_BANK = {
                 "D": "Bid rigging"
             },
             "correct": "D",
-            "explanation": "Bid rigging is not typically associated with hedge fund fraud, as it involes maniuplating competitive bidding processes rather than misusing investor funds or assets."
+            "explanation": "Bid rigging is not typically associated with hedge fund fraud, as it involves manipulating competitive bidding processes rather than misusing investor funds or assets."
         }
     ],
     3: [
         {
             "round_number": 3,
             "difficulty": "HARD",
-            "text": "What verification failure was central to the Wirecard scandal involving bilions in reported cash?",
+            "text": "What verification failure was central to the Wirecard scandal involving billions in reported cash?",
             "options": {
-                "A": "Failure to indenpendently verify reported funds",
+                "A": "Failure to independently verify reported funds",
                 "B": "Failure to conduct employee background checks",
                 "C": "Failure to encrypt financial records",
                 "D": "Failure to separate payroll duties"
@@ -443,12 +451,12 @@ QUESTION_BANK = {
                 "D": "Inventor (Toaster)"
             },
             "correct": "B",
-            "explanation": "The alias 'Barry Allen'was a reference to The Flash, the fictional superhero whose civilian identity is Barry Allen."
+            "explanation": "The alias 'Barry Allen' was a reference to The Flash, the fictional superhero whose civilian identity is Barry Allen."
         },
         {
             "round_number": 3,
             "difficulty": "HARD",
-            "text": "What act Gunvor S.A. convicted on?",
+            "text": "Under which act was Gunvor S.A. convicted?",
             "options": {
                 "A": "Foreign Corrupt Practices Act",
                 "B": "Foreign Extortion Prevention Act",
@@ -456,15 +464,15 @@ QUESTION_BANK = {
                 "D": "Racketeer Influenced and Corrupt Organizations Act"
             },
             "correct": "A",
-            "explanation": "Gunvor S.A. was convicted under the <b> Foreign Corrupt Practices Act (FCPA) </b> for bribing foregin officals to secure business."
+            "explanation": "Gunvor S.A. was convicted under the <b>Foreign Corrupt Practices Act (FCPA)</b> for bribing foreign officials to secure business."
         },
         {
             "round_number": 3,
             "difficulty": "HARD",
-            "text": "'Which European bank helped Manuel Chang facilitate the $2 billion scheme?",
+            "text": "Which European bank helped Manuel Chang facilitate the $2 billion scheme?",
             "options": {
                 "A": "Deutsche Bank",
-                "B": "Credit Sussie",
+                "B": "Credit Suisse",
                 "C": "UBS",
                 "D": "Barclays"
             },
@@ -482,7 +490,7 @@ QUESTION_BANK = {
                 "D": "Litecoin"
             },
             "correct": "B",
-            "explanation": "The scheme invovled manipulating the price and trading activity of Hydro (HYDRO) crytocurrency for fraudulent profit."
+            "explanation": "The scheme involved manipulating the price and trading activity of Hydro (HYDRO) cryptocurrency for fraudulent profit."
         },
         {
             "round_number": 3,
@@ -500,7 +508,7 @@ QUESTION_BANK = {
         {
             "round_number": 3,
             "difficulty": "HARD",
-            "text": "What type of fraud did Hegestratos attempt to commit",
+            "text": "What type of fraud did Hegestratos attempt to commit?",
             "options": {
                 "A": "Insurance fraud",
                 "B": "Tax fraud",
@@ -513,7 +521,7 @@ QUESTION_BANK = {
         {
             "round_number": 3,
             "difficulty": "HARD",
-            "text": "Barry Minkow is a famous fraudster known for his ponzi scheme which used his cleaning and restoration comany ________ to attract investors.",
+            "text": "Barry Minkow is a famous fraudster known for his Ponzi scheme, which used his cleaning and restoration company ________ to attract investors.",
             "options": {
                 "A": "ZZZ Cleaning",
                 "B": "ABCD Best",
@@ -521,7 +529,7 @@ QUESTION_BANK = {
                 "D": "A2Z Cleaning and Restoration"
             },
             "correct": "C",
-            "explanation": "Minkow used ZZZZ Best to create the appearance of a successful business and attract investors through fraudulent financial claims"
+            "explanation": "Minkow used ZZZZ Best to create the appearance of a successful business and attract investors through fraudulent financial claims."
         }
     ]
 }
@@ -695,6 +703,14 @@ def host_required(view):
     return wrapped
 
 
+@elimination_bp.app_template_filter("allow_bold")
+def allow_bold(text):
+    """Escape question text but keep <b>...</b> so explanations can bold
+    key words."""
+    escaped = str(escape(text or ""))
+    return Markup(escaped.replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>"))
+
+
 def correct_counts(connection):
     """How many questions each player has answered correctly, by player id."""
     return {
@@ -706,41 +722,40 @@ def correct_counts(connection):
 
 
 def rank_players(connection):
-    """Players still in first, then most correct answers, then furthest along."""
+    """Players still in first, then most correct answers, then furthest
+    along, then whoever finished first."""
     players = connection.execute("SELECT * FROM fe_players").fetchall()
     correct = correct_counts(connection)
     players.sort(key=lambda p: (
         p["status"] == "eliminated",
         -correct.get(p["id"], 0),
         -p["question_index"],
+        p["finished_at"] is None,
+        p["finished_at"] or "",
         p["name"].lower()
     ))
     return players, correct
 
 
-def is_declared_winner(connection, player):
-    """Best-effort winner check under independent, per-player pacing.
+def game_is_over(players):
+    """True once nobody is still answering questions."""
+    return bool(players) and not any(
+        p["status"] == "in" and p["phase"] != "finished" for p in players
+    )
 
-    Since every player advances on their own clock instead of a single
-    host-driven round, we can only call someone the last investigator
-    standing once every other player has either been eliminated or has
-    also finished the game. There's no score to break ties with -- if
-    more than one player survives to the end, they're declared joint
-    winners.
-    """
+
+def is_declared_winner(connection, player):
+    """The single winner: once nobody is still playing, the surviving
+    investigator with the most correct answers. Ties go to whoever
+    finished first."""
     if player["status"] != "in" or player["phase"] != "finished":
         return False
 
-    others = connection.execute(
-        "SELECT * FROM fe_players WHERE id != ?", (player["id"],)
-    ).fetchall()
+    players, _ = rank_players(connection)
+    if not game_is_over(players):
+        return False
 
-    for other in others:
-        still_playing = other["status"] == "in" and other["phase"] != "finished"
-        if still_playing:
-            return False
-
-    return True
+    return players[0]["id"] == player["id"]
 
 
 # =========================================================
@@ -952,14 +967,24 @@ def join():
         pin = request.form.get("game_pin", "").strip().upper()
         avatar = request.form.get("avatar", "detective_black").strip()
 
+        existing = get_player(connection, name) if name else None
+
         if not name:
             error = "Enter your investigator name."
         elif pin != config["pin"]:
             error = "That game PIN doesn't match. Ask the host for the current PIN."
+        elif existing is not None and (
+                config["status"] != "lobby"
+                or session.get("fe_player_name") == name):
+            # Rejoin: a player whose tab closed or phone died comes back
+            # with the same name and PIN and carries on where they left off.
+            connection.close()
+            session["fe_player_name"] = name
+            return redirect(url_for("elimination.waiting", name=name))
+        elif existing is not None:
+            error = "That name is already taken this game. Try another."
         elif config["status"] != "lobby":
             error = "This game has already started. Ask the host to reset for a new game."
-        elif get_player(connection, name) is not None:
-            error = "That name is already taken this game. Try another."
         else:
             connection.execute(
                 """
@@ -970,6 +995,7 @@ def join():
             )
             connection.commit()
             connection.close()
+            session["fe_player_name"] = name
             return redirect(url_for("elimination.waiting", name=name))
 
     connection.close()
@@ -994,6 +1020,10 @@ def waiting(name):
     config = get_config(connection)
     connection.close()
 
+    if player["status"] == "eliminated":
+        return redirect(url_for("elimination.eliminated", name=name))
+    if player["phase"] == "finished":
+        return redirect(url_for("elimination.results", name=name))
     if config["status"] == "active" and player["phase"] == "question":
         return redirect(url_for("elimination.play", name=name))
 
@@ -1068,7 +1098,7 @@ def play(name):
 
     if player["question_index"] >= TOTAL_ROUNDS:
         connection.execute(
-            "UPDATE fe_players SET phase = 'finished' WHERE id = ?",
+            "UPDATE fe_players SET phase = 'finished', finished_at = COALESCE(finished_at, datetime('now')) WHERE id = ?",
             (player["id"],)
         )
         connection.commit()
@@ -1275,12 +1305,19 @@ def feedback(name):
     question = get_player_rounds(config, player)[player["question_index"]]
     connection.close()
 
+    # Options were shuffled on screen, so name the correct answer by the
+    # letter the player actually saw, plus its text.
+    order = (player["option_order"] or ",".join(question["options"].keys())).split(",")
+    shown_letter = "ABCDEFGH"[order.index(question["correct"])] if question["correct"] in order else question["correct"]
+    correct_answer = f'{shown_letter}. {question["options"][question["correct"]]}'
+
     return render_template(
         "fe_feedback.html",
         name=name,
         player=player,
         question=question,
         correct=bool(player["last_correct"]),
+        correct_answer=correct_answer,
         eliminated=(player["status"] == "eliminated"),
         lives_enabled=config["elimination_enabled"],
         max_lives=MAX_LIVES,
@@ -1309,10 +1346,11 @@ def advance(name):
         UPDATE fe_players
         SET question_index = ?, answered_current = 0, last_correct = NULL,
             phase_started_at = NULL, lifeline_removed = NULL, option_order = NULL,
-            phase = ?
+            phase = ?,
+            finished_at = CASE WHEN ? THEN datetime('now') ELSE finished_at END
         WHERE id = ?
         """,
-        (next_index, "finished" if finished else "question", player["id"])
+        (next_index, "finished" if finished else "question", finished, player["id"])
     )
 
     connection.commit()
@@ -1386,12 +1424,16 @@ def results(name):
         return redirect(url_for("elimination.eliminated", name=name))
 
     winner = is_declared_winner(connection, player)
-    correct = correct_counts(connection).get(player["id"], 0)
+    players, correct = rank_players(connection)
     connection.close()
+
+    game_over = game_is_over(players)
+    placement = next(i for i, p in enumerate(players, 1) if p["id"] == player["id"])
 
     return render_template(
         "fe_winner.html" if winner else "fe_results.html",
-        name=name, player=player, correct=correct,
+        name=name, player=player, correct=correct.get(player["id"], 0),
+        game_over=game_over, placement=placement, player_count=len(players),
         total_rounds=TOTAL_ROUNDS, active_nav="play"
     )
 
@@ -1446,7 +1488,7 @@ def leaderboard_data():
             "status": status
         })
 
-    return jsonify({"players": rows})
+    return jsonify({"players": rows, "game_over": game_is_over(players)})
 
 
 # =========================================================
