@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="fe-leaderboard-name">{{ player["name"] }}</div>
-                <div class="fe-leaderboard-score">{{ player["score"] }}</div>
+                <div class="fe-leaderboard-score">{{ [player["question_index"], total_rounds] | min }}/{{ total_rounds }}</div>
 
                 {% if player["status"] == "eliminated" %}
                     <span class="fe-status-pill eliminated">ELIMINATED</span>

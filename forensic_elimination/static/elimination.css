@@ -1003,10 +1003,38 @@ body:has(.fe-hero) .fe-main {
 }
 
 .fe-round-node.current .fe-round-circle {
-    background: #facc15;
     border-color: #facc15;
-    color: #0b0d14;
+    color: #facc15;
     box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.16);
+}
+
+/* One dot per question in the round; lights up once it's answered */
+.fe-round-dots {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+}
+
+.fe-round-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(148, 163, 184, 0.25);
+}
+
+.fe-round-dot.done {
+    background: #facc15;
+    box-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
+}
+
+.fe-round-dot.current {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px #facc15;
+    animation: fe-dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes fe-dot-pulse {
+    50% { box-shadow: inset 0 0 0 1px #facc15, 0 0 6px rgba(250, 204, 21, 0.7); }
 }
 
 .fe-round-node.current .fe-round-node-label strong {
@@ -2153,4 +2181,42 @@ body:has(.fe-hero) .fe-main {
     .fe-display-pin {
         font-size: 56px;
     }
+}
+
+/* =========================================================
+   ROUND CLEARED SCREEN
+========================================================= */
+
+.fe-round-cleared-card {
+    border-color: rgba(250, 204, 21, 0.35);
+}
+
+.fe-round-cleared-card .fe-feedback-icon {
+    background: rgba(250, 204, 21, 0.16);
+    color: #facc15;
+    font-size: 26px;
+}
+
+.fe-round-cleared-card .fe-feedback-title {
+    color: #facc15;
+}
+
+.fe-round-cleared-card .diff-easy { color: #4ade80; }
+.fe-round-cleared-card .diff-intermediate { color: #60a5fa; }
+.fe-round-cleared-card .diff-hard { color: #f87171; }
+.fe-round-cleared-card .diff-final { color: #facc15; }
+
+.fe-round-cleared-card a.fe-btn {
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.fe-round-cleared-card .fe-diff-word {
+    font-weight: 800;
+}
+
+.fe-round-cleared-next {
+    margin: 14px 0 22px;
+    color: #f8fafc;
+    font-size: 17px;
 }

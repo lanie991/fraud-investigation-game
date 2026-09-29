@@ -1,0 +1,41 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Round {{ cleared["round_number"] }} Cleared — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-feedback-wrap">
+
+    <div class="fe-card fe-feedback-card fe-round-cleared-card">
+
+        <div class="fe-feedback-icon">&#127942;</div>
+
+        <h1 class="fe-feedback-title">CONGRATS, {{ name|upper }}!</h1>
+
+        <div class="fe-feedback-points">
+            You got through the
+            <span class="fe-diff-word diff-{{ cleared['difficulty']|lower }}">{{ cleared["difficulty"] }}</span> round.
+        </div>
+
+        <p class="fe-round-cleared-next">
+            Let's see if you can get through
+            <span class="fe-diff-word diff-{{ upcoming['difficulty']|lower }}">{{ upcoming["difficulty"] }}</span>!
+        </p>
+
+        <a href="{{ url_for('elimination.play', name=name) }}" class="fe-btn fe-btn-gold fe-btn-block">
+            START ROUND {{ upcoming["round_number"] }}
+        </a>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='elimination-confetti.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.FE_CONFETTI && FE_CONFETTI.burst) { FE_CONFETTI.burst(); }
+    if (window.FE_SFX && FE_SFX.playCorrect) { FE_SFX.playCorrect(); }
+});
+</script>
+
+{% endblock %}

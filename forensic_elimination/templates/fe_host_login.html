@@ -1,0 +1,39 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Host Login — Forensic Elimination{% endblock %}
+
+{% block content %}
+
+<div class="fe-page fe-join-screen">
+
+    <div class="fe-card fe-join-card">
+
+        <h1>HOST LOGIN</h1>
+        <p class="fe-subtitle" style="margin-bottom:22px;">
+            Enter the host password to control this game.
+        </p>
+
+        {% if error %}
+        <div class="fe-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('elimination.host_login') }}">
+
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="fe-field">
+                <label for="password">HOST PASSWORD</label>
+                <input type="password" id="password" name="password" placeholder="Password" required autofocus>
+            </div>
+
+            <button type="submit" class="fe-btn fe-btn-gold fe-btn-block">
+                UNLOCK HOST CONTROLS &#8594;
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,8 +1,8 @@
-from importlib import import_module
+import os
 
-flask = import_module("flask")
+from flask import Flask
 
-Flask = flask.Flask
+from elimination import elimination_bp, initialize_database
 
 app = Flask(
     __name__,
@@ -10,16 +10,15 @@ app = Flask(
     static_url_path="/static"
 )
 
-from elimination import elimination_bp, initialize_database
+# Needed for the host-login session cookie. Set SECRET_KEY in the
+# environment for a real deployment; this random fallback is fine for
+# local play but will invalidate sessions on every restart.
+app.secret_key = os.environ.get("SECRET_KEY", os.urandom(24))
 
 app.register_blueprint(elimination_bp)
 
 initialize_database()
 
 
-# =========================================================
-# RUN APP
-# =========================================================
-
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(debug=True)

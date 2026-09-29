@@ -14,13 +14,16 @@
     </div>
 
     <div class="fe-round-tracker">
-        {% for r in rounds %}
+        {% for r in tracker %}
         {% set is_final = r.difficulty == "FINAL" %}
-        <div class="fe-round-node {% if is_final %}final{% endif %} {% if r.round_number < current_round %}done{% elif r.round_number == current_round %}current{% endif %}">
+        <div class="fe-round-node {% if is_final %}final{% endif %} {{ r.state }}">
             <div class="fe-round-circle">{% if is_final %}&#127942;{% else %}{{ r.round_number }}{% endif %}</div>
             <div class="fe-round-node-label">
                 <strong>{{ "FINAL" if is_final else "ROUND " ~ r.round_number }}</strong>
                 <span class="diff-{{ r.difficulty|lower }}">{{ "ROUND" if is_final else r.difficulty }}</span>
+            </div>
+            <div class="fe-round-dots">
+                {% for dot in r.dots %}<span class="fe-round-dot {{ dot }}"></span>{% endfor %}
             </div>
         </div>
         {% if not loop.last %}<div class="fe-round-connector"></div>{% endif %}
@@ -72,7 +75,7 @@
         <div class="fe-round-badge-row">
             <span class="fe-round-badge">{{ "FINAL ROUND" if question["difficulty"] == "FINAL" else "ROUND " ~ current_round }}</span>
             <span class="fe-difficulty-pill {{ question['difficulty']|lower }}">
-                {{ question["difficulty"] }} &middot; {{ question["points"] }} POINTS
+                {{ question["difficulty"] }}
             </span>
             <span class="fe-remaining-text" id="fe-remaining-text">{{ players_remaining }} PLAYERS REMAINING</span>
         </div>
@@ -124,7 +127,7 @@
                         <span class="fe-lifeline-icon">&#128065;</span>
                         50/50
                         <span class="fe-lifeline-count">
-                            {% if player["fifty_fifty_used"] %}(0 left){% else %}(1 left &middot; -3 PTS){% endif %}
+                            {% if player["fifty_fifty_used"] %}(0 left){% else %}(1 left){% endif %}
                         </span>
                     </button>
                 </form>
@@ -133,7 +136,7 @@
                     <span class="fe-lifeline-icon">&#128101;</span>
                     Ask the Team
                     <span class="fe-lifeline-count">
-                        {% if player["ask_team_used"] %}(0 left){% else %}(1 left &middot; -3 PTS){% endif %}
+                        {% if player["ask_team_used"] %}(0 left){% else %}(1 left){% endif %}
                     </span>
                 </button>
 
@@ -142,7 +145,7 @@
                         <span class="fe-lifeline-icon">&#8635;</span>
                         Skip
                         <span class="fe-lifeline-count">
-                            {% if player["skip_used"] %}(0 left){% else %}(1 left &middot; -3 PTS){% endif %}
+                            {% if player["skip_used"] %}(0 left){% else %}(1 left){% endif %}
                         </span>
                     </button>
                 </form>
@@ -162,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const timerRing = document.getElementById("fe-timer-ring");
     const form = document.getElementById("fe-question-form");
     const timerUrl = "/timer/{{ name|urlencode }}";
-    const totalSeconds = {{ timer_seconds }};
+    const totalSeconds = Number("{{ timer_seconds }}");
     const circumference = 301.6;
     let submitted = false;
 
@@ -178,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    updateRing({{ remaining_seconds }});
+    updateRing(Number("{{ remaining_seconds }}"));
 
     let lastTickedSecond = null;
 
@@ -234,15 +237,26 @@ document.addEventListener("DOMContentLoaded", function () {
             fetch("/lifeline/ask-team/{{ name|urlencode }}", { method: "POST" })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
+                    if (data.error) {
+                        askTeamBtn.disabled = false;
+                        return;
+                    }
                     if (!askTeamResult || !data.percentages) return;
+
                     let html = "";
-                    Object.keys(data.percentages).sort().forEach(function (letter) {
-                        html += "<div><span>" + letter + "</span><span>" + data.percentages[letter] + "%</span></div>";
-                    });
-                    askTeamResult.innerHTML = html || "<div>No responses yet.</div>";
+                    if (!data.responses) {
+                        html = "<div>No responses yet -- be the first to answer.</div>";
+                    } else {
+                        Object.keys(data.percentages).sort().forEach(function (letter) {
+                            html += "<div><span>" + letter + "</span><span>" + data.percentages[letter] + "%</span></div>";
+                        });
+                    }
+                    askTeamResult.innerHTML = html;
                     askTeamResult.classList.add("visible");
                 })
-                .catch(function () {});
+                .catch(function () {
+                    askTeamBtn.disabled = false;
+                });
         });
     }
 });

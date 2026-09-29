@@ -48,9 +48,9 @@
                     {% if player["status"] == "eliminated" %}
                         <span class="fe-status-pill eliminated">ELIMINATED</span>
                     {% elif player["phase"] == "finished" %}
-                        <span class="fe-status-pill winner">FINISHED &middot; {{ player["score"] }} PTS</span>
+                        <span class="fe-status-pill winner">FINISHED</span>
                     {% else %}
-                        <span class="fe-status-pill in">{{ player["score"] }} PTS</span>
+                        <span class="fe-status-pill in">{{ [player["question_index"], total_rounds] | min }}/{{ total_rounds }}</span>
                     {% endif %}
                     <form method="POST"
                           action="{{ url_for('elimination.host_kick', name=player['name']) }}"
@@ -125,7 +125,7 @@
         {% endif %}
 
         <form method="POST" action="{{ url_for('elimination.host_reset') }}"
-              onsubmit="return confirm('Reset the game? This removes every player and score.');">
+              onsubmit="return confirm('Reset the game? This removes every player and their progress.');">
             <button type="submit" class="fe-btn fe-btn-ghost">
                 &#8635; RESET GAME
             </button>
@@ -134,6 +134,12 @@
         <a href="{{ url_for('elimination.display') }}" target="_blank" class="fe-btn fe-btn-ghost">
             &#128250; OPEN BIG-SCREEN DISPLAY
         </a>
+
+        <form method="POST" action="{{ url_for('elimination.host_logout') }}">
+            <button type="submit" class="fe-btn fe-btn-ghost">
+                &#128274; LOG OUT
+            </button>
+        </form>
 
     </div>
 

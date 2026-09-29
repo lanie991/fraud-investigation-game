@@ -23,7 +23,7 @@
             <span class="fe-round-badge">ROUND {{ r.round_number }}</span>
             <span class="fe-difficulty-pill {{ r.difficulty|lower }}">{{ r.difficulty }}</span>
             {% if r.was_correct %}
-                <span class="fe-status-pill in" style="margin-left:auto;">+{{ r.points }} PTS</span>
+                <span class="fe-status-pill in" style="margin-left:auto;">CORRECT</span>
             {% else %}
                 <span class="fe-status-pill eliminated" style="margin-left:auto;">INCORRECT</span>
             {% endif %}

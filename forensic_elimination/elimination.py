@@ -1,20 +1,21 @@
 """
 FORENSIC ELIMINATION
-A standalone Kahoot-style, single-elimination fraud trivia game. It runs
-as its own app (see app.py in this folder), separate from the
-"Who Stole the Money?" investigation game.
+A standalone Kahoot-style, single-elimination fraud trivia game that
+runs alongside the existing "Who Stole the Money?" investigation game.
 
 Each player joins with a game PIN, then works through their own set of
 three rounds (Easy, Intermediate, Hard) at their own pace. A wrong
 answer eliminates them (when elimination is enabled).
 
-The sample questions below are PLACEHOLDER CONTENT. Replace the entries
-in ROUNDS with real content whenever it's ready -- the shape of each
-dict is all that matters to the rest of this file.
+Questions live in QUESTION_BANK, a pool per round -- add more entries to
+any round's list to grow the pool further. One question per round is
+drawn at random each time a game starts or is reset.
 """
 
+from functools import wraps
 from importlib import import_module
 import io
+import json
 import os
 import random
 import sqlite3
@@ -30,16 +31,21 @@ request = flask.request
 jsonify = flask.jsonify
 url_for = flask.url_for
 send_file = flask.send_file
+session = flask.session
 
 elimination_bp = Blueprint(
     "elimination",
     __name__
 )
 
-DATABASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "elimination_game.db")
+DATABASE = "elimination_game.db"
 
 DEFAULT_TIMER_SECONDS = 20
-LIFELINE_PENALTY = 3
+
+# The host password gates /host, /settings, and every host-control route
+# (start/kick/reset/settings). Set FE_HOST_PASSWORD in the environment to
+# override the default before deploying somewhere other players can reach.
+HOST_PASSWORD = os.environ.get("FE_HOST_PASSWORD", "forensics2024")
 
 AVATAR_IMAGES = {
     "detective_black": "detective.png",
@@ -77,22 +83,30 @@ def initialize_database():
             status TEXT NOT NULL DEFAULT 'lobby',
             timer_seconds INTEGER NOT NULL DEFAULT 20,
             elimination_enabled INTEGER NOT NULL DEFAULT 1,
-            lifelines_enabled INTEGER NOT NULL DEFAULT 1
+            lifelines_enabled INTEGER NOT NULL DEFAULT 1,
+            active_questions TEXT
         )
     """)
+
+    existing_config_columns = {
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(fe_config)")
+    }
+    if "active_questions" not in existing_config_columns:
+        connection.execute(
+            "ALTER TABLE fe_config ADD COLUMN active_questions TEXT"
+        )
 
     connection.execute("""
         CREATE TABLE IF NOT EXISTS fe_players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL UNIQUE,
             avatar TEXT DEFAULT 'detective_black',
-            score INTEGER DEFAULT 0,
             status TEXT DEFAULT 'in',
             phase TEXT DEFAULT 'lobby',
             question_index INTEGER DEFAULT 0,
             answered_current INTEGER DEFAULT 0,
             last_correct INTEGER,
-            last_points INTEGER DEFAULT 0,
             phase_started_at TEXT,
             fifty_fifty_used INTEGER DEFAULT 0,
             lifeline_removed TEXT,
@@ -149,8 +163,7 @@ def initialize_database():
             player_id INTEGER NOT NULL,
             round_number INTEGER NOT NULL,
             answer TEXT,
-            correct INTEGER NOT NULL,
-            points INTEGER NOT NULL DEFAULT 0
+            correct INTEGER NOT NULL
         )
     """)
 
@@ -162,10 +175,19 @@ def initialize_database():
         connection.execute(
             """
             INSERT INTO fe_config (id, pin, status, timer_seconds,
-                                    elimination_enabled, lifelines_enabled)
-            VALUES (1, ?, 'lobby', ?, 1, 1)
+                                    elimination_enabled, lifelines_enabled,
+                                    active_questions)
+            VALUES (1, ?, 'lobby', ?, 1, 1, ?)
             """,
-            (generate_pin(), DEFAULT_TIMER_SECONDS)
+            (generate_pin(), DEFAULT_TIMER_SECONDS, json.dumps(pick_active_questions()))
+        )
+    else:
+        connection.execute(
+            """
+            UPDATE fe_config SET active_questions = ?
+            WHERE id = 1 AND (active_questions IS NULL OR active_questions = '')
+            """,
+            (json.dumps(pick_active_questions()),)
         )
 
     connection.commit()
@@ -173,56 +195,376 @@ def initialize_database():
 
 
 # =========================================================
-# QUESTION BANK (PLACEHOLDER CONTENT -- REPLACE WHEN READY)
+# QUESTION BANK
 #
-# ROUNDS is played in order: Round 1 (Easy) -> Round 2 (Intermediate)
-# -> Round 3 (Hard). Each entry's shape is all that matters.
+# Three rounds are played in order: Round 1 (Easy) -> Round 2
+# (Intermediate) -> Round 3 (Hard). Every question in each round is
+# played, in the order listed (see pick_active_questions).
 # =========================================================
 
-ROUNDS = [
-    {
-        "round_number": 1,
-        "difficulty": "EASY",
-        "text": "Which of the following is a common red flag in financial fraud?",
-        "options": {
-            "A": "Consistent reconciliations",
-            "B": "Unusual transactions just below approval thresholds",
-            "C": "Complete documentation",
-            "D": "Regular internal audits"
+QUESTION_BANK = {
+    1: [
+        {
+            "round_number": 1,
+            "difficulty": "EASY",
+            "text": "Which of the following is a common fraud red flag",
+            "options": {
+                "A": "Strong internal controls",
+                "B": "Unexpected lifestyle changes",
+                "C": "Regular vacations",
+                "D": "Employee training"
+            },
+            "correct": "B",
+            "explanation": "Unexpected lifestyle changes can be a red flag for potential fraud."
         },
-        "correct": "B",
-        "explanation": "Unusual transactions just below approval thresholds may indicate an attempt to avoid additional review or scrutiny.",
-        "points": 10
-    },
-    {
-        "round_number": 2,
-        "difficulty": "INTERMEDIATE",
-        "text": "Which of the following best describes a hash value in digital forensics?",
-        "options": {
-            "A": "A file's unique digital fingerprint used to verify integrity",
-            "B": "A method used to encrypt deleted files",
-            "C": "A tool for recovering lost passwords",
-            "D": "A type of malware used to hide data"
+        {
+            "round_number": 1,
+            "difficulty": "EASY",
+            "text": "What is phishing?",
+            "options": {
+                "A": "A fishing business scam",
+                "B": "Theft of physical assets",
+                "C": "A fraudulent attempt to obtain sensitive information",
+                "D": "A type of audit"
+            },
+            "correct": "C",
+            "explanation": "Phishing is a fraudulent attempt to obtain sensitive information by disguising as a trustworthy entity in electronic communications."
         },
-        "correct": "A",
-        "explanation": "A hash value is a fixed-length fingerprint of a file's contents -- if the file changes at all, the hash changes, which is how investigators verify evidence hasn't been altered.",
-        "points": 20
-    },
-    {
-        "round_number": 3,
-        "difficulty": "HARD",
-        "text": "A payment is split into three smaller transactions, each just under the $10,000 reporting threshold. This is best described as:",
-        "options": {
-            "A": "Structuring",
-            "B": "Netting",
-            "C": "Amortization",
-            "D": "Reconciliation"
+        {
+            "round_number": 1,
+            "difficulty": "EASY",
+            "text": "Identity theft involves:",
+            "options": {
+                "A": "Creating duplicate invoices",
+                "B": "Using another person's personal information without permission",
+                "C": "Hacking a website",
+                "D": "Preparing an incorrect bank reconciliation"
+            },
+            "correct": "B",
+            "explanation": "Identity theft involves using another person's personal information without their permission."
         },
-        "correct": "A",
-        "explanation": "Structuring (or 'smurfing') deliberately breaks up transactions to stay under reporting thresholds and avoid detection.",
-        "points": 30
-    }
-]
+        {
+            "round_number": 1,
+            "difficulty": "EASY",
+            "text": "Embezzlement occurs when:",
+            "options": {
+                "A": "Someone steals funds entrusted to them",
+                "B": "A company overpays tax",
+                "C": "An employee works overtime",
+                "D": "An auditor makes an error"
+            },
+            "correct": "A",
+            "explanation": "Embezzlement occurs when someone steals funds entrusted to them."
+        },
+        {
+            "round_number": 1,
+            "difficulty": "EASY",
+            "text": "Many large fraud continue for years because:",
+            "options": {
+                "A": "Stakeholders consistently challenge management",
+                "B": "Trusted individuals exploit their credibility",
+                "C": "Regulators respond immediately",
+                "D": "Controls operate perfectly"
+            },
+            "correct": "B",
+            "explanation": "Many large fraud schemes continue for years because trusted individuals exploit their credibility to gain access to resources and manipulate systems without detection."
+        },
+        {
+            "round_number": 1,
+            "difficulty": "EASY",
+            "text": "Which company claimed its technology could perform hunderds of blood tests from a tiny blood sample?",
+            "options": {
+                "A": "Medtronic",
+                "B": "Theranos",
+                "C": "Pfizer",
+                "D": "Roche"
+            },
+            "correct": "B",
+            "explanation": "Theranos claimed its technology could perform hundreds of blood tests from a tiny blood sample, but the claims were later found to be false."
+        },
+        {
+            "round_number": 1,
+            "difficulty": "EASY",
+            "text": "What is the defining feature of a Ponzi scheme?",
+            "options": {
+                "A": "Hidden taxes increase profits",
+                "B": "Fake invoices are submitted to customers",
+                "C": "Money from new investors is used to pay earlier investors",
+                "D": "Company assets are phyically stolen"
+            },
+            "correct": "C",
+            "explanation": "The defining feature of a Ponzi scheme is that money from new investors is used to pay returns to earlier investors, creating the illusion of profitability."
+        }
+    ],
+    2: [
+        {
+            "round_number": 2,
+            "difficulty": "INTERMEDIATE",
+            "text": "Which forensic principle is most important when handling original evidence?",
+            "options": {
+                "A": "Modify the evidence before analysis",
+                "B": "Preserve the integrity of the orignal evidence",
+                "C": "Analyze the original device whenever possible",
+                "D": "Delete irrelvant files before acquistion"
+            },
+            "correct": "B",
+            "explanation": "Preserving the integrity of original evidence is crucial in digital forensics to ensure its admissibility in court and to maintain the trustworthiness of the investigation."
+        },
+        {
+            "round_number": 2,
+            "difficulty": "INTERMEDIATE",
+            "text": "What does MD5 hashing primarily provide in digital forensics?",
+            "options": {
+                "A": "Encryption",
+                "B": "Authentication of a user's identity",
+                "C": "A value used to verify data integrity",
+                "D": "Password recovery"
+            },
+            "correct": "C",
+            "explanation": "MD5 hashing provides a unique digital fingerprint for data, allowing investigators to verify that the data has not been altered."
+        },
+        {
+            "round_number": 2,
+            "difficulty": "INTERMEDIATE",
+            "text": "Which forensic tool is commonly associated with forensic disk imaging and evidence acquisition?",
+            "options": {
+                "A": "Encase Forensic",
+                "B": "FTK Imager",
+                "C": "Autopsy",
+                "D": "Cellebrite Physical Analyzer"
+            },
+            "correct": "B",
+            "explanation": "FTK Imager is a widely used tool for creating bit-for-bit copies of storage devices for digital forensics analysis."
+        },
+        {
+            "round_number": 2,
+            "difficulty": "INTERMEDIATE",
+            "text": "Which European payments company collapsed after €1.9 billion was reported missing?",
+            "options": {
+                "A": "Coinbase",
+                "B": "Wirecard",
+                "C": "Klarna",
+                "D": "Paypal"
+            },
+            "correct": "B",
+            "explanation": "Wirecard was a European payments company that collapsed after reporting a loss of €1.9 billion."
+        },
+        {
+            "round_number": 2,
+            "difficulty": "INTERMEDIATE",
+            "text": "What made Madoff's reported investment returns suspicious?",
+            "options": {
+                "A": "They were always negative",
+                "B": "They were unusually consistent",
+                "C": "They followed the market exactly",
+                "D": "They were independantly verified by several firms"
+            },
+            "correct": "B",
+            "explanation": "Madoff's reported returns were suspicious becasue they were remarkably consistent and showed unusually little volatility, even during periods of significant market fluctuations"
+        },
+        {
+            "round_number": 2,
+            "difficulty": "INTERMEDIATE",
+            "text": "Approximately how much was involved in the WorldCom accounting fraud?",
+            "options": {
+                "A": "$500 million",
+                "B": "$1 billion",
+                "C": "Over $10 billion",
+                "D": "$100 billion"
+            },
+            "correct": "C",
+            "explanation": "Approximately $11 million was involved, making it one of the largest accounting frauds in U.S. history."
+        },
+        {
+            "round_number": 2,
+            "difficulty": "INTERMEDIATE",
+            "text": "The 2002 Movie Catch me if you can is based on the real life story of what infamous fraudster?",
+            "options": {
+                "A": "Barry Allen",
+                "B": "Frank Abagnale Jr.",
+                "C": "Bernie Madoff",
+                "D": "Barry Minkow"
+            },
+            "correct": "B",
+            "explanation": "The film is based on Frank Abagnale Jr., who became known for impersonation and check fraud."
+        },
+        {
+            "round_number": 2,
+            "difficulty": "INTERMEDIATE",
+            "text": "Which of the following is NOT a common fraud scheme prepetrated by hedge fund managers?",
+            "options": {
+                "A": "Late trading",
+                "B": "Insider trading",
+                "C": "Overvaluation of portfolios",
+                "D": "Bid rigging"
+            },
+            "correct": "D",
+            "explanation": "Bid rigging is not typically associated with hedge fund fraud, as it involes maniuplating competitive bidding processes rather than misusing investor funds or assets."
+        }
+    ],
+    3: [
+        {
+            "round_number": 3,
+            "difficulty": "HARD",
+            "text": "What verification failure was central to the Wirecard scandal involving bilions in reported cash?",
+            "options": {
+                "A": "Failure to indenpendently verify reported funds",
+                "B": "Failure to conduct employee background checks",
+                "C": "Failure to encrypt financial records",
+                "D": "Failure to separate payroll duties"
+            },
+            "correct": "A",
+            "explanation": "The reported funds were not independently verified, allowing the company to claim billions in cash that did not actually exist."
+        },
+        {
+            "round_number": 3,
+            "difficulty": "HARD",
+            "text": "Frank Abagnale Jr. would frequently use aliases to commit check fraud and impersonate professionals such as pilots. One alias he used was Barry Allen, also known as?",
+            "options": {
+                "A": "Famous Baseball Player",
+                "B": "The Flash",
+                "C": "Actor",
+                "D": "Inventor (Toaster)"
+            },
+            "correct": "B",
+            "explanation": "The alias 'Barry Allen'was a reference to The Flash, the fictional superhero whose civilian identity is Barry Allen."
+        },
+        {
+            "round_number": 3,
+            "difficulty": "HARD",
+            "text": "What act Gunvor S.A. convicted on?",
+            "options": {
+                "A": "Foreign Corrupt Practices Act",
+                "B": "Foreign Extortion Prevention Act",
+                "C": "Travel Act",
+                "D": "Racketeer Influenced and Corrupt Organizations Act"
+            },
+            "correct": "A",
+            "explanation": "Gunvor S.A. was convicted under the <b> Foreign Corrupt Practices Act (FCPA) </b> for bribing foregin officals to secure business."
+        },
+        {
+            "round_number": 3,
+            "difficulty": "HARD",
+            "text": "'Which European bank helped Manuel Chang facilitate the $2 billion scheme?",
+            "options": {
+                "A": "Deutsche Bank",
+                "B": "Credit Sussie",
+                "C": "UBS",
+                "D": "Barclays"
+            },
+            "correct": "B",
+            "explanation": "Credit Suisse helped facilitate the transactions used in the $2 billion scheme involving hidden debts and corrupt payments."
+        },
+        {
+            "round_number": 3,
+            "difficulty": "HARD",
+            "text": "What cryptocurrency did Shane Hampton and his co-conspirators manipulate?",
+            "options": {
+                "A": "Ethereum",
+                "B": "HYDRO",
+                "C": "Solana",
+                "D": "Litecoin"
+            },
+            "correct": "B",
+            "explanation": "The scheme invovled manipulating the price and trading activity of Hydro (HYDRO) crytocurrency for fraudulent profit."
+        },
+        {
+            "round_number": 3,
+            "difficulty": "HARD",
+            "text": "Malware copies bank credentials and transmits them only after a specific condition occurs. Which pairing best describes it?",
+            "options": {
+                "A": "Keylogger + logic bomb",
+                "B": "Worm + ransomware",
+                "C": "Trojan + adware",
+                "D": "Botnet + spoofing"
+            },
+            "correct": "A",
+            "explanation": "A keylogger captures sensitive credentials, while a logic bomb triggers the transmission when a specific condition is met."
+        },
+        {
+            "round_number": 3,
+            "difficulty": "HARD",
+            "text": "What type of fraud did Hegestratos attempt to commit",
+            "options": {
+                "A": "Insurance fraud",
+                "B": "Tax fraud",
+                "C": "Securities fraud",
+                "D": "Identity fraud"
+            },
+            "correct": "A",
+            "explanation": "Hegestratos attempted insurance fraud by taking out a loan against his cargo and planning to sink the ship to avoid repayment."
+        },
+        {
+            "round_number": 3,
+            "difficulty": "HARD",
+            "text": "Barry Minkow is a famous fraudster known for his ponzi scheme which used his cleaning and restoration comany ________ to attract investors.",
+            "options": {
+                "A": "ZZZ Cleaning",
+                "B": "ABCD Best",
+                "C": "ZZZZ Best",
+                "D": "A2Z Cleaning and Restoration"
+            },
+            "correct": "C",
+            "explanation": "Minkow used ZZZZ Best to create the appearance of a successful business and attract investors through fraudulent financial claims"
+        }
+    ]
+}
+
+TOTAL_ROUNDS = sum(len(QUESTION_BANK[r]) for r in QUESTION_BANK)
+
+
+def pick_active_questions():
+    """Every question, round by round, in the order listed."""
+    return [q for round_number in sorted(QUESTION_BANK) for q in QUESTION_BANK[round_number]]
+
+
+def get_active_rounds(config):
+    """The three questions in play for the current game (same for every
+    player, drawn once when the game was created or last reset)."""
+    raw = config["active_questions"] if "active_questions" in config.keys() else None
+    if raw:
+        try:
+            return json.loads(raw)
+        except (TypeError, ValueError):
+            pass
+    return pick_active_questions()
+
+
+def build_round_tracker(active_rounds, question_index):
+    """One entry per round for the header tracker, each with one dot per
+    question. A dot lights up once that question has been answered; the
+    round circle fills in only when every question in it is done."""
+    tracker = []
+    for index, question in enumerate(active_rounds):
+        if not tracker or tracker[-1]["round_number"] != question["round_number"]:
+            tracker.append({
+                "round_number": question["round_number"],
+                "difficulty": question["difficulty"],
+                "dots": []
+            })
+        if index < question_index:
+            dot = "done"
+        elif index == question_index:
+            dot = "current"
+        else:
+            dot = ""
+        tracker[-1]["dots"].append(dot)
+
+    for entry in tracker:
+        if all(dot == "done" for dot in entry["dots"]):
+            entry["state"] = "done"
+        elif "current" in entry["dots"] or "done" in entry["dots"]:
+            entry["state"] = "current"
+        else:
+            entry["state"] = ""
+    return tracker
+
+
+def starts_new_round(active_rounds, question_index):
+    """True when question_index is the first question of a later round."""
+    return (0 < question_index < len(active_rounds)
+            and active_rounds[question_index]["round_number"]
+            != active_rounds[question_index - 1]["round_number"])
 
 
 # =========================================================
@@ -248,9 +590,8 @@ def players_remaining_count(connection):
 
 
 def grade_regular_answer(connection, player, config, answer):
-    round_data = ROUNDS[player["question_index"]]
+    round_data = get_active_rounds(config)[player["question_index"]]
     correct = 1 if answer == round_data["correct"] else 0
-    points = round_data["points"] if correct else 0
 
     new_status = player["status"]
     if not correct and config["elimination_enabled"]:
@@ -259,11 +600,11 @@ def grade_regular_answer(connection, player, config, answer):
     connection.execute(
         """
         UPDATE fe_players
-        SET score = score + ?, status = ?, answered_current = 1,
-            last_correct = ?, last_points = ?
+        SET status = ?, answered_current = 1,
+            last_correct = ?
         WHERE id = ?
         """,
-        (points, new_status, correct, points, player["id"])
+        (new_status, correct, player["id"])
     )
 
     if answer in round_data["options"]:
@@ -274,18 +615,27 @@ def grade_regular_answer(connection, player, config, answer):
             ON CONFLICT(round_number, option)
             DO UPDATE SET count = count + 1
             """,
-            (round_data["round_number"], answer)
+            (player["question_index"], answer)
         )
 
     connection.execute(
         """
-        INSERT INTO fe_answer_history (player_id, round_number, answer, correct, points)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO fe_answer_history (player_id, round_number, answer, correct)
+        VALUES (?, ?, ?, ?)
         """,
-        (player["id"], round_data["round_number"], answer, correct, points)
+        (player["id"], player["question_index"], answer, correct)
     )
 
     connection.commit()
+
+
+def host_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if not session.get("fe_is_host"):
+            return redirect(url_for("elimination.host_login", next=request.path))
+        return view(*args, **kwargs)
+    return wrapped
 
 
 def is_declared_winner(connection, player):
@@ -294,7 +644,9 @@ def is_declared_winner(connection, player):
     Since every player advances on their own clock instead of a single
     host-driven round, we can only call someone the last investigator
     standing once every other player has either been eliminated or has
-    also finished the game.
+    also finished the game. There's no score to break ties with -- if
+    more than one player survives to the end, they're declared joint
+    winners.
     """
     if player["status"] != "in" or player["phase"] != "finished":
         return False
@@ -303,19 +655,12 @@ def is_declared_winner(connection, player):
         "SELECT * FROM fe_players WHERE id != ?", (player["id"],)
     ).fetchall()
 
-    if not others:
-        return True
-
     for other in others:
         still_playing = other["status"] == "in" and other["phase"] != "finished"
         if still_playing:
             return False
 
-    top_score = max(
-        [player["score"]] + [o["score"] for o in others if o["status"] == "in"]
-    )
-
-    return player["score"] == top_score
+    return True
 
 
 # =========================================================
@@ -334,14 +679,16 @@ def rules():
 
 @elimination_bp.route("/case-files")
 def case_files():
+    preview_rounds = [QUESTION_BANK[round_number][0] for round_number in sorted(QUESTION_BANK)]
     return render_template(
         "fe_case_files.html",
-        rounds=ROUNDS,
+        rounds=preview_rounds,
         active_nav="case_files"
     )
 
 
 @elimination_bp.route("/settings")
+@host_required
 def settings():
     return redirect(url_for("elimination.host"))
 
@@ -350,7 +697,36 @@ def settings():
 # HOST
 # =========================================================
 
+@elimination_bp.route("/host-login", methods=["GET", "POST"])
+def host_login():
+    error = None
+
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        if password == HOST_PASSWORD:
+            session["fe_is_host"] = True
+            next_url = request.form.get("next", "")
+            if not next_url.startswith("/") or next_url.startswith("//"):
+                next_url = url_for("elimination.host")
+            return redirect(next_url)
+        error = "Incorrect host password."
+
+    return render_template(
+        "fe_host_login.html",
+        error=error,
+        next=request.args.get("next", ""),
+        active_nav="settings"
+    )
+
+
+@elimination_bp.route("/host-logout", methods=["POST"])
+def host_logout():
+    session.pop("fe_is_host", None)
+    return redirect(url_for("elimination.home"))
+
+
 @elimination_bp.route("/host")
+@host_required
 def host():
     connection = get_db()
     config = get_config(connection)
@@ -363,6 +739,7 @@ def host():
         "fe_host.html",
         config=config,
         players=players,
+        total_rounds=TOTAL_ROUNDS,
         avatar_images=AVATAR_IMAGES,
         active_nav="settings"
     )
@@ -385,6 +762,7 @@ def qr_png():
 
 
 @elimination_bp.route("/host/settings", methods=["POST"])
+@host_required
 def host_settings():
     connection = get_db()
     config = get_config(connection)
@@ -413,6 +791,7 @@ def host_settings():
 
 
 @elimination_bp.route("/host/start", methods=["POST"])
+@host_required
 def host_start():
     connection = get_db()
     config = get_config(connection)
@@ -436,6 +815,7 @@ def host_start():
 
 
 @elimination_bp.route("/host/kick/<name>", methods=["POST"])
+@host_required
 def host_kick(name):
     connection = get_db()
     player = get_player(connection, name)
@@ -450,14 +830,15 @@ def host_kick(name):
 
 
 @elimination_bp.route("/host/reset", methods=["POST"])
+@host_required
 def host_reset():
     connection = get_db()
     connection.execute("DELETE FROM fe_players")
     connection.execute("DELETE FROM fe_answer_tally")
     connection.execute("DELETE FROM fe_answer_history")
     connection.execute(
-        "UPDATE fe_config SET pin = ?, status = 'lobby' WHERE id = 1",
-        (generate_pin(),)
+        "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ? WHERE id = 1",
+        (generate_pin(), json.dumps(pick_active_questions()))
     )
     connection.commit()
     connection.close()
@@ -567,7 +948,7 @@ def players_status_json():
 
 
 # =========================================================
-# ROUNDS 1-5
+# PLAYING A ROUND
 # =========================================================
 
 @elimination_bp.route("/play/<name>", methods=["GET", "POST"])
@@ -593,7 +974,7 @@ def play(name):
         connection.close()
         return redirect(url_for("elimination.waiting", name=name))
 
-    if player["question_index"] >= len(ROUNDS):
+    if player["question_index"] >= TOTAL_ROUNDS:
         connection.execute(
             "UPDATE fe_players SET phase = 'finished' WHERE id = ?",
             (player["id"],)
@@ -601,6 +982,8 @@ def play(name):
         connection.commit()
         connection.close()
         return redirect(url_for("elimination.results", name=name))
+
+    active_rounds = get_active_rounds(config)
 
     if request.method == "POST":
         if not player["answered_current"]:
@@ -613,7 +996,7 @@ def play(name):
         connection.close()
         return redirect(url_for("elimination.feedback", name=name))
 
-    round_data = ROUNDS[player["question_index"]]
+    round_data = active_rounds[player["question_index"]]
 
     if not player["phase_started_at"]:
         shuffled_keys = list(round_data["options"].keys())
@@ -664,7 +1047,8 @@ def play(name):
         player=player,
         question=round_data,
         ordered_options=ordered_options,
-        rounds=ROUNDS,
+        rounds=active_rounds,
+        tracker=build_round_tracker(active_rounds, player["question_index"]),
         current_round=round_data["round_number"],
         timer_seconds=config["timer_seconds"],
         remaining_seconds=max(0, int(config["timer_seconds"] - elapsed)),
@@ -686,9 +1070,9 @@ def use_fifty_fifty(name):
     if (player is not None and config["lifelines_enabled"]
             and not player["fifty_fifty_used"] and player["phase"] == "question"
             and not player["answered_current"]
-            and player["question_index"] < len(ROUNDS)):
+            and player["question_index"] < TOTAL_ROUNDS):
 
-        round_data = ROUNDS[player["question_index"]]
+        round_data = get_active_rounds(config)[player["question_index"]]
         wrong_options = [key for key in round_data["options"] if key != round_data["correct"]]
         random.shuffle(wrong_options)
         removed = ",".join(wrong_options[:2])
@@ -696,11 +1080,10 @@ def use_fifty_fifty(name):
         connection.execute(
             """
             UPDATE fe_players
-            SET fifty_fifty_used = 1, lifeline_removed = ?,
-                score = MAX(0, score - ?)
+            SET fifty_fifty_used = 1, lifeline_removed = ?
             WHERE id = ?
             """,
-            (removed, LIFELINE_PENALTY, player["id"])
+            (removed, player["id"])
         )
         connection.commit()
 
@@ -717,22 +1100,26 @@ def use_skip(name):
     if (player is not None and config["lifelines_enabled"]
             and not player["skip_used"] and player["phase"] == "question"
             and not player["answered_current"]
-            and player["question_index"] < len(ROUNDS)):
+            and player["question_index"] < TOTAL_ROUNDS):
 
         next_index = player["question_index"] + 1
-        finished = next_index >= len(ROUNDS)
+        finished = next_index >= TOTAL_ROUNDS
 
         connection.execute(
             """
             UPDATE fe_players
             SET skip_used = 1, question_index = ?, answered_current = 0,
                 last_correct = NULL, phase_started_at = NULL, lifeline_removed = NULL, option_order = NULL,
-                phase = ?, score = MAX(0, score - ?)
+                phase = ?
             WHERE id = ?
             """,
-            (next_index, "finished" if finished else "question", LIFELINE_PENALTY, player["id"])
+            (next_index, "finished" if finished else "question", player["id"])
         )
         connection.commit()
+
+        if not finished and starts_new_round(get_active_rounds(config), next_index):
+            connection.close()
+            return redirect(url_for("elimination.round_cleared", name=name))
 
     connection.close()
     return redirect(url_for("elimination.play", name=name))
@@ -750,21 +1137,21 @@ def use_ask_team(name):
 
     if (not config["lifelines_enabled"] or player["ask_team_used"]
             or player["phase"] != "question" or player["answered_current"]
-            or player["question_index"] >= len(ROUNDS)):
+            or player["question_index"] >= TOTAL_ROUNDS):
         connection.close()
         return jsonify({"error": "unavailable"}), 400
 
-    round_data = ROUNDS[player["question_index"]]
+    round_data = get_active_rounds(config)[player["question_index"]]
 
     connection.execute(
-        "UPDATE fe_players SET ask_team_used = 1, score = MAX(0, score - ?) WHERE id = ?",
-        (LIFELINE_PENALTY, player["id"])
+        "UPDATE fe_players SET ask_team_used = 1 WHERE id = ?",
+        (player["id"],)
     )
     connection.commit()
 
     rows = connection.execute(
         "SELECT option, count FROM fe_answer_tally WHERE round_number = ?",
-        (round_data["round_number"],)
+        (player["question_index"],)
     ).fetchall()
     connection.close()
 
@@ -819,11 +1206,12 @@ def feedback(name):
         connection.close()
         return redirect(url_for("elimination.join"))
 
-    if not player["answered_current"] or player["question_index"] >= len(ROUNDS):
+    if not player["answered_current"] or player["question_index"] >= TOTAL_ROUNDS:
         connection.close()
         return redirect(url_for("elimination.play", name=name))
 
-    question = ROUNDS[player["question_index"]]
+    config = get_config(connection)
+    question = get_active_rounds(config)[player["question_index"]]
     connection.close()
 
     return render_template(
@@ -832,7 +1220,6 @@ def feedback(name):
         player=player,
         question=question,
         correct=bool(player["last_correct"]),
-        points=player["last_points"],
         eliminated=(player["status"] == "eliminated"),
         active_nav="play"
     )
@@ -852,7 +1239,7 @@ def advance(name):
         return redirect(url_for("elimination.eliminated", name=name))
 
     next_index = player["question_index"] + 1
-    finished = next_index >= len(ROUNDS)
+    finished = next_index >= TOTAL_ROUNDS
 
     connection.execute(
         """
@@ -866,11 +1253,42 @@ def advance(name):
     )
 
     connection.commit()
+    active_rounds = get_active_rounds(get_config(connection))
     connection.close()
 
     if finished:
         return redirect(url_for("elimination.results", name=name))
+    if starts_new_round(active_rounds, next_index):
+        return redirect(url_for("elimination.round_cleared", name=name))
     return redirect(url_for("elimination.play", name=name))
+
+
+@elimination_bp.route("/round-cleared/<name>")
+def round_cleared(name):
+    connection = get_db()
+    player = get_player(connection, name)
+
+    if player is None:
+        connection.close()
+        return redirect(url_for("elimination.join"))
+
+    active_rounds = get_active_rounds(get_config(connection))
+    connection.close()
+
+    index = player["question_index"]
+    if (player["status"] != "in" or player["phase"] != "question"
+            or player["answered_current"] or player["phase_started_at"]
+            or not starts_new_round(active_rounds, index)):
+        return redirect(url_for("elimination.play", name=name))
+
+    return render_template(
+        "fe_round_cleared.html",
+        name=name,
+        player=player,
+        cleared=active_rounds[index - 1],
+        upcoming=active_rounds[index],
+        active_nav="play"
+    )
 
 
 @elimination_bp.route("/eliminated/<name>")
@@ -886,7 +1304,7 @@ def eliminated(name):
         "fe_eliminated.html",
         name=name,
         player=player,
-        question_number=min(player["question_index"] + 1, len(ROUNDS)),
+        question_number=min(player["question_index"] + 1, TOTAL_ROUNDS),
         active_nav="play"
     )
 
@@ -908,9 +1326,15 @@ def results(name):
     connection.close()
 
     if winner:
-        return render_template("fe_winner.html", name=name, player=player, active_nav="play")
+        return render_template(
+            "fe_winner.html", name=name, player=player,
+            total_rounds=TOTAL_ROUNDS, active_nav="play"
+        )
 
-    return render_template("fe_results.html", name=name, player=player, active_nav="play")
+    return render_template(
+        "fe_results.html", name=name, player=player,
+        total_rounds=TOTAL_ROUNDS, active_nav="play"
+    )
 
 
 # =========================================================
@@ -921,7 +1345,7 @@ def results(name):
 def leaderboard():
     connection = get_db()
     players = connection.execute(
-        "SELECT * FROM fe_players ORDER BY score DESC, name ASC"
+        "SELECT * FROM fe_players ORDER BY (status = 'eliminated') ASC, question_index DESC, name ASC"
     ).fetchall()
 
     winners = {
@@ -933,6 +1357,7 @@ def leaderboard():
     return render_template(
         "fe_leaderboard.html",
         players=players,
+        total_rounds=TOTAL_ROUNDS,
         avatar_images=AVATAR_IMAGES,
         winners=winners,
         active_nav="leaderboard"
@@ -943,7 +1368,7 @@ def leaderboard():
 def leaderboard_data():
     connection = get_db()
     players = connection.execute(
-        "SELECT * FROM fe_players ORDER BY score DESC, name ASC"
+        "SELECT * FROM fe_players ORDER BY (status = 'eliminated') ASC, question_index DESC, name ASC"
     ).fetchall()
 
     winners = {p["name"] for p in players if is_declared_winner(connection, p)}
@@ -961,7 +1386,7 @@ def leaderboard_data():
         rows.append({
             "name": p["name"],
             "avatar": AVATAR_IMAGES.get(p["avatar"]),
-            "score": p["score"],
+            "progress": f"{min(p['question_index'], TOTAL_ROUNDS)}/{TOTAL_ROUNDS}",
             "status": status
         })
 
@@ -985,13 +1410,14 @@ def display_data():
     connection = get_db()
     config = get_config(connection)
     players = connection.execute(
-        "SELECT * FROM fe_players ORDER BY score DESC, name ASC"
+        "SELECT * FROM fe_players ORDER BY (status = 'eliminated') ASC, question_index DESC, name ASC"
     ).fetchall()
 
     winners = {p["name"] for p in players if is_declared_winner(connection, p)}
     connection.close()
 
-    round_counts = {r["round_number"]: 0 for r in ROUNDS}
+    active_rounds = get_active_rounds(config)
+    round_counts = {q["round_number"]: 0 for q in active_rounds}
     eliminated_count = 0
     finished_count = 0
 
@@ -1008,9 +1434,9 @@ def display_data():
         elif p["phase"] == "finished":
             status = "STILL IN"
             finished_count += 1
-        elif p["phase"] == "question" and p["question_index"] < len(ROUNDS):
+        elif p["phase"] == "question" and p["question_index"] < TOTAL_ROUNDS:
             status = "STILL IN"
-            round_number = ROUNDS[p["question_index"]]["round_number"]
+            round_number = active_rounds[p["question_index"]]["round_number"]
             round_counts[round_number] = round_counts.get(round_number, 0) + 1
         else:
             status = "STILL IN"
@@ -1018,7 +1444,7 @@ def display_data():
         rows.append({
             "name": p["name"],
             "avatar": AVATAR_IMAGES.get(p["avatar"]),
-            "score": p["score"],
+            "progress": f"{min(p['question_index'], TOTAL_ROUNDS)}/{TOTAL_ROUNDS}",
             "status": status,
             "round_number": round_number
         })
@@ -1046,6 +1472,7 @@ def review(name):
         connection.close()
         return redirect(url_for("elimination.join"))
 
+    config = get_config(connection)
     history_rows = connection.execute(
         """
         SELECT * FROM fe_answer_history
@@ -1056,23 +1483,22 @@ def review(name):
     ).fetchall()
     connection.close()
 
-    rounds_by_number = {r["round_number"]: r for r in ROUNDS}
+    active_rounds = get_active_rounds(config)
 
     reviewed = []
     for row in history_rows:
-        round_data = rounds_by_number.get(row["round_number"])
-        if round_data is None:
+        if row["round_number"] >= len(active_rounds):
             continue
+        round_data = active_rounds[row["round_number"]]
         reviewed.append({
-            "round_number": row["round_number"],
+            "round_number": round_data["round_number"],
             "difficulty": round_data["difficulty"],
             "text": round_data["text"],
             "options": round_data["options"],
             "correct_answer": round_data["correct"],
             "explanation": round_data["explanation"],
             "player_answer": row["answer"],
-            "was_correct": bool(row["correct"]),
-            "points": row["points"]
+            "was_correct": bool(row["correct"])
         })
 
     return render_template(

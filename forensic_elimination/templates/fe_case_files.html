@@ -16,7 +16,7 @@
             <h2 style="margin:0 0 4px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:18px;">
                 {{ "FINAL ROUND" if r.difficulty == "FINAL" else "ROUND " ~ r.round_number }}
             </h2>
-            <p style="color:#94a3b8; font-size:13px; margin:0;">{{ r.points }} points</p>
+            <p style="color:#94a3b8; font-size:13px; margin:0;">One wrong answer and you're out.</p>
         </div>
         <span class="fe-difficulty-pill {{ r.difficulty|lower }}">{{ r.difficulty }}</span>
     </div>

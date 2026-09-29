@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 + '<div class="fe-leaderboard-rank">' + (index + 1) + "</div>"
                 + '<div class="fe-player-avatar">' + avatarImg + "</div>"
                 + '<div class="fe-leaderboard-name">' + p.name + "</div>"
-                + '<div class="fe-leaderboard-score">' + p.score + "</div>"
+                + '<div class="fe-leaderboard-score">' + p.progress + "</div>"
                 + '<span class="fe-status-pill ' + statusClass(p.status) + '">' + p.status + "</span>"
                 + "</div>";
         });
