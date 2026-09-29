@@ -695,6 +695,29 @@ def host_required(view):
     return wrapped
 
 
+def correct_counts(connection):
+    """How many questions each player has answered correctly, by player id."""
+    return {
+        row["player_id"]: row["correct"]
+        for row in connection.execute(
+            "SELECT player_id, SUM(correct) AS correct FROM fe_answer_history GROUP BY player_id"
+        )
+    }
+
+
+def rank_players(connection):
+    """Players still in first, then most correct answers, then furthest along."""
+    players = connection.execute("SELECT * FROM fe_players").fetchall()
+    correct = correct_counts(connection)
+    players.sort(key=lambda p: (
+        p["status"] == "eliminated",
+        -correct.get(p["id"], 0),
+        -p["question_index"],
+        p["name"].lower()
+    ))
+    return players, correct
+
+
 def is_declared_winner(connection, player):
     """Best-effort winner check under independent, per-player pacing.
 
@@ -1363,16 +1386,12 @@ def results(name):
         return redirect(url_for("elimination.eliminated", name=name))
 
     winner = is_declared_winner(connection, player)
+    correct = correct_counts(connection).get(player["id"], 0)
     connection.close()
 
-    if winner:
-        return render_template(
-            "fe_winner.html", name=name, player=player,
-            total_rounds=TOTAL_ROUNDS, active_nav="play"
-        )
-
     return render_template(
-        "fe_results.html", name=name, player=player,
+        "fe_winner.html" if winner else "fe_results.html",
+        name=name, player=player, correct=correct,
         total_rounds=TOTAL_ROUNDS, active_nav="play"
     )
 
@@ -1384,9 +1403,7 @@ def results(name):
 @elimination_bp.route("/leaderboard")
 def leaderboard():
     connection = get_db()
-    players = connection.execute(
-        "SELECT * FROM fe_players ORDER BY (status = 'eliminated') ASC, question_index DESC, name ASC"
-    ).fetchall()
+    players, correct = rank_players(connection)
 
     winners = {
         p["name"] for p in players if is_declared_winner(connection, p)
@@ -1397,6 +1414,7 @@ def leaderboard():
     return render_template(
         "fe_leaderboard.html",
         players=players,
+        correct=correct,
         total_rounds=TOTAL_ROUNDS,
         avatar_images=AVATAR_IMAGES,
         winners=winners,
@@ -1407,9 +1425,7 @@ def leaderboard():
 @elimination_bp.route("/leaderboard-data")
 def leaderboard_data():
     connection = get_db()
-    players = connection.execute(
-        "SELECT * FROM fe_players ORDER BY (status = 'eliminated') ASC, question_index DESC, name ASC"
-    ).fetchall()
+    players, correct = rank_players(connection)
 
     winners = {p["name"] for p in players if is_declared_winner(connection, p)}
     connection.close()
@@ -1426,7 +1442,7 @@ def leaderboard_data():
         rows.append({
             "name": p["name"],
             "avatar": AVATAR_IMAGES.get(p["avatar"]),
-            "progress": f"{min(p['question_index'], TOTAL_ROUNDS)}/{TOTAL_ROUNDS}",
+            "progress": f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS} correct",
             "status": status
         })
 
@@ -1449,9 +1465,7 @@ def display():
 def display_data():
     connection = get_db()
     config = get_config(connection)
-    players = connection.execute(
-        "SELECT * FROM fe_players ORDER BY (status = 'eliminated') ASC, question_index DESC, name ASC"
-    ).fetchall()
+    players, correct = rank_players(connection)
 
     winners = {p["name"] for p in players if is_declared_winner(connection, p)}
     connection.close()
@@ -1484,7 +1498,7 @@ def display_data():
         rows.append({
             "name": p["name"],
             "avatar": AVATAR_IMAGES.get(p["avatar"]),
-            "progress": f"{min(p['question_index'], TOTAL_ROUNDS)}/{TOTAL_ROUNDS}",
+            "progress": f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS} correct",
             "status": status,
             "round_number": round_number
         })
