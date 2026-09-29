@@ -2320,15 +2320,28 @@ body:has(.fe-hero) .fe-main {
 }
 
 .fe-heart {
-    color: #ef4444;
-    font-size: 24px;
-    line-height: 1;
-    text-shadow: 0 0 10px rgba(239, 68, 68, 0.55);
+    width: 24px;
+    height: 24px;
+    fill: #ef4444;
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.55));
 }
 
 .fe-heart.lost {
-    color: #334155;
-    text-shadow: none;
+    fill: #334155;
+    filter: none;
+}
+
+/* The heart lost on this answer cracks and fades out on the feedback screen */
+.fe-heart.just-lost {
+    animation: fe-heart-break 0.9s ease-out both;
+}
+
+@keyframes fe-heart-break {
+    0%   { fill: #ef4444; transform: scale(1); }
+    25%  { fill: #ef4444; transform: scale(1.35) rotate(-8deg); }
+    45%  { transform: scale(1.1) rotate(8deg); }
+    65%  { transform: scale(1) rotate(-4deg); }
+    100% { fill: #334155; transform: scale(1) rotate(0); }
 }
 
 .fe-feedback-lives {
@@ -2355,9 +2368,14 @@ body:has(.fe-hero) .fe-main {
     margin-left: 6px;
 }
 
+.fe-host-lives .fe-lives-hearts {
+    gap: 2px;
+}
+
 .fe-host-lives .fe-heart {
-    font-size: 13px;
-    text-shadow: none;
+    width: 13px;
+    height: 13px;
+    filter: none;
 }
 
 @media (max-width: 1000px) {
@@ -2375,6 +2393,7 @@ body:has(.fe-hero) .fe-main {
     }
 
     .fe-side-panel .fe-heart {
-        font-size: 18px;
+        width: 20px;
+        height: 20px;
     }
 }

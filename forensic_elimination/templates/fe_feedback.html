@@ -1,4 +1,5 @@
 {% extends "fe_base.html" %}
+{% from "_hearts.html" import hearts %}
 
 {% block title %}{{ "Correct" if correct else "Incorrect" }} — Forensic Elimination{% endblock %}
 
@@ -26,9 +27,7 @@
 
         {% if lives_enabled and not correct %}
         <div class="fe-feedback-lives">
-            <div class="fe-lives-hearts">
-                {% for i in range(max_lives) %}<span class="fe-heart {{ 'lost' if i >= player['lives'] else '' }}">&#10084;</span>{% endfor %}
-            </div>
+            {{ hearts(player['lives'], max_lives, just_lost=True) }}
             {% if eliminated %}
                 <strong>OUT OF LIVES</strong> &mdash; you've been eliminated.
             {% else %}

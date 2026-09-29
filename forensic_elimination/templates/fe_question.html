@@ -1,4 +1,5 @@
 {% extends "fe_base.html" %}
+{% from "_hearts.html" import hearts %}
 
 {% block title %}Round {{ current_round }} — Forensic Elimination{% endblock %}
 
@@ -121,9 +122,7 @@
         {% if lives_enabled %}
         <div class="fe-lives" aria-label="{{ player['lives'] }} of {{ max_lives }} lives left">
             <h2>LIVES</h2>
-            <div class="fe-lives-hearts">
-                {% for i in range(max_lives) %}<span class="fe-heart {{ 'lost' if i >= player['lives'] else '' }}">&#10084;</span>{% endfor %}
-            </div>
+            {{ hearts(player['lives'], max_lives) }}
         </div>
         {% endif %}
 

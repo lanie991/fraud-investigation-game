@@ -22,6 +22,16 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 app.register_blueprint(elimination_bp)
 
+
+@app.url_defaults
+def bust_static_cache(endpoint, values):
+    """Add the file's modified time to static URLs so phones fetch the new
+    CSS/JS after an update instead of reusing an old cached copy."""
+    if endpoint == "static" and "filename" in values:
+        path = os.path.join(app.static_folder, values["filename"])
+        if os.path.isfile(path):
+            values["v"] = int(os.stat(path).st_mtime)
+
 initialize_database()
 
 

@@ -1,4 +1,5 @@
 {% extends "fe_base.html" %}
+{% from "_hearts.html" import hearts %}
 
 {% block title %}Host — Forensic Elimination{% endblock %}
 
@@ -53,7 +54,7 @@
                         <span class="fe-status-pill in">{{ [player["question_index"], total_rounds] | min }}/{{ total_rounds }}</span>
                     {% endif %}
                     {% if config['elimination_enabled'] and player["status"] != "eliminated" %}
-                        <span class="fe-host-lives" title="{{ player['lives'] }} lives left">{% for i in range(max_lives) %}<span class="fe-heart {{ 'lost' if i >= player['lives'] else '' }}">&#10084;</span>{% endfor %}</span>
+                        <span class="fe-host-lives" title="{{ player['lives'] }} lives left">{{ hearts(player['lives'], max_lives) }}</span>
                     {% endif %}
                     <form method="POST"
                           action="{{ url_for('elimination.host_kick', name=player['name']) }}"
