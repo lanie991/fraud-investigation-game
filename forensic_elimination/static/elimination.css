@@ -2220,3 +2220,87 @@ body:has(.fe-hero) .fe-main {
     color: #f8fafc;
     font-size: 17px;
 }
+
+/* =========================================================
+   QUESTION SCREEN ON PHONES
+   Timer + lifelines sit above the question in one compact
+   strip that stays pinned while the player scrolls.
+========================================================= */
+
+@media (max-width: 1000px) {
+    .fe-game-body {
+        padding: 12px 12px 90px;
+        gap: 12px;
+    }
+
+    .fe-side-panel {
+        order: 1;
+        position: sticky;
+        top: 8px;
+        z-index: 20;
+
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 12px;
+        background: rgba(11, 13, 20, 0.94);
+        backdrop-filter: blur(6px);
+    }
+
+    .fe-main-panel {
+        order: 2;
+    }
+
+    .fe-players-panel {
+        order: 3;
+    }
+
+    .fe-side-panel > h2,
+    .fe-lifelines-panel > h2 {
+        display: none;
+    }
+
+    .fe-timer-gauge-wrap {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .fe-timer-gauge,
+    .fe-timer-gauge svg {
+        width: 64px;
+        height: 64px;
+    }
+
+    .fe-timer-gauge-value {
+        font-size: 18px;
+    }
+
+    .fe-lifelines-panel {
+        flex: 1;
+        margin-top: 0;
+    }
+
+    .fe-lifeline-item {
+        font-size: 9px;
+    }
+
+    .fe-lifeline-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+
+    .fe-ask-team-result {
+        margin-top: 8px;
+    }
+
+    .fe-main-panel .fe-question-card {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    .fe-game-tagline {
+        display: none;
+    }
+}
