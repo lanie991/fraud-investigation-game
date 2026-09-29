@@ -24,6 +24,20 @@
             {% endif %}
         </div>
 
+        {% if lives_enabled and not correct %}
+        <div class="fe-feedback-lives">
+            <div class="fe-lives-hearts">
+                {% for i in range(max_lives) %}<span class="fe-heart {{ 'lost' if i >= player['lives'] else '' }}">&#10084;</span>{% endfor %}
+            </div>
+            {% if eliminated %}
+                <strong>OUT OF LIVES</strong> &mdash; you've been eliminated.
+            {% else %}
+                <strong>YOU LOST A LIFE!</strong>
+                {{ player["lives"] }} {{ "life" if player["lives"] == 1 else "lives" }} left.
+            {% endif %}
+        </div>
+        {% endif %}
+
         <div class="fe-feedback-explanation">
             <strong>EXPLANATION</strong>
             <p>{{ question["explanation"] }}</p>

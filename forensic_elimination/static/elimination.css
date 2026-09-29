@@ -2304,3 +2304,77 @@ body:has(.fe-hero) .fe-main {
         display: none;
     }
 }
+
+/* =========================================================
+   LIVES
+========================================================= */
+
+.fe-lives {
+    margin-bottom: 18px;
+}
+
+.fe-lives-hearts {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.fe-heart {
+    color: #ef4444;
+    font-size: 24px;
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.55);
+}
+
+.fe-heart.lost {
+    color: #334155;
+    text-shadow: none;
+}
+
+.fe-feedback-lives {
+    margin: 4px 0 18px;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #cbd5e1;
+    font-size: 14px;
+}
+
+.fe-feedback-lives .fe-lives-hearts {
+    margin-bottom: 8px;
+}
+
+.fe-feedback-lives strong {
+    color: #f87171;
+}
+
+.fe-host-lives {
+    display: inline-flex;
+    gap: 2px;
+    margin-left: 6px;
+}
+
+.fe-host-lives .fe-heart {
+    font-size: 13px;
+    text-shadow: none;
+}
+
+@media (max-width: 1000px) {
+    .fe-lives {
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+
+    .fe-lives > h2 {
+        display: none;
+    }
+
+    .fe-lives-hearts {
+        gap: 3px;
+    }
+
+    .fe-side-panel .fe-heart {
+        font-size: 18px;
+    }
+}

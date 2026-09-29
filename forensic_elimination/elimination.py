@@ -47,6 +47,10 @@ DEFAULT_TIMER_SECONDS = 20
 # override the default before deploying somewhere other players can reach.
 HOST_PASSWORD = os.environ.get("FE_HOST_PASSWORD", "forensics2024")
 
+# Wrong answers (or running out of time) cost a life; a player is
+# eliminated when they run out.
+MAX_LIVES = 3
+
 AVATAR_IMAGES = {
     "detective_black": "detective.png",
     "investigator_black": "investigator.png",
@@ -113,6 +117,7 @@ def initialize_database():
             skip_used INTEGER DEFAULT 0,
             ask_team_used INTEGER DEFAULT 0,
             option_order TEXT,
+            lives INTEGER DEFAULT 3,
             joined_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -146,6 +151,11 @@ def initialize_database():
     if "option_order" not in existing_columns:
         connection.execute(
             "ALTER TABLE fe_players ADD COLUMN option_order TEXT"
+        )
+
+    if "lives" not in existing_columns:
+        connection.execute(
+            f"ALTER TABLE fe_players ADD COLUMN lives INTEGER DEFAULT {MAX_LIVES}"
         )
 
     connection.execute("""
@@ -594,17 +604,20 @@ def grade_regular_answer(connection, player, config, answer):
     correct = 1 if answer == round_data["correct"] else 0
 
     new_status = player["status"]
+    lives = player["lives"]
     if not correct and config["elimination_enabled"]:
-        new_status = "eliminated"
+        lives = max(0, lives - 1)
+        if lives == 0:
+            new_status = "eliminated"
 
     connection.execute(
         """
         UPDATE fe_players
-        SET status = ?, answered_current = 1,
+        SET status = ?, lives = ?, answered_current = 1,
             last_correct = ?
         WHERE id = ?
         """,
-        (new_status, correct, player["id"])
+        (new_status, lives, correct, player["id"])
     )
 
     if answer in round_data["options"]:
@@ -740,6 +753,7 @@ def host():
         config=config,
         players=players,
         total_rounds=TOTAL_ROUNDS,
+        max_lives=MAX_LIVES,
         avatar_images=AVATAR_IMAGES,
         active_nav="settings"
     )
@@ -804,9 +818,10 @@ def host_start():
             """
             UPDATE fe_players
             SET phase = 'question', question_index = 0,
-                answered_current = 0, phase_started_at = NULL
+                answered_current = 0, phase_started_at = NULL, lives = ?
             WHERE phase = 'lobby'
-            """
+            """,
+            (MAX_LIVES,)
         )
         connection.commit()
 
@@ -1053,6 +1068,8 @@ def play(name):
         timer_seconds=config["timer_seconds"],
         remaining_seconds=max(0, int(config["timer_seconds"] - elapsed)),
         lifelines_enabled=config["lifelines_enabled"],
+        lives_enabled=config["elimination_enabled"],
+        max_lives=MAX_LIVES,
         removed_options=removed_options,
         players=players,
         players_remaining=remaining,
@@ -1086,40 +1103,6 @@ def use_fifty_fifty(name):
             (removed, player["id"])
         )
         connection.commit()
-
-    connection.close()
-    return redirect(url_for("elimination.play", name=name))
-
-
-@elimination_bp.route("/lifeline/skip/<name>", methods=["POST"])
-def use_skip(name):
-    connection = get_db()
-    player = get_player(connection, name)
-    config = get_config(connection)
-
-    if (player is not None and config["lifelines_enabled"]
-            and not player["skip_used"] and player["phase"] == "question"
-            and not player["answered_current"]
-            and player["question_index"] < TOTAL_ROUNDS):
-
-        next_index = player["question_index"] + 1
-        finished = next_index >= TOTAL_ROUNDS
-
-        connection.execute(
-            """
-            UPDATE fe_players
-            SET skip_used = 1, question_index = ?, answered_current = 0,
-                last_correct = NULL, phase_started_at = NULL, lifeline_removed = NULL, option_order = NULL,
-                phase = ?
-            WHERE id = ?
-            """,
-            (next_index, "finished" if finished else "question", player["id"])
-        )
-        connection.commit()
-
-        if not finished and starts_new_round(get_active_rounds(config), next_index):
-            connection.close()
-            return redirect(url_for("elimination.round_cleared", name=name))
 
     connection.close()
     return redirect(url_for("elimination.play", name=name))
@@ -1221,6 +1204,8 @@ def feedback(name):
         question=question,
         correct=bool(player["last_correct"]),
         eliminated=(player["status"] == "eliminated"),
+        lives_enabled=config["elimination_enabled"],
+        max_lives=MAX_LIVES,
         active_nav="play"
     )
 

@@ -106,6 +106,15 @@
 
     <div class="fe-card fe-side-panel">
 
+        {% if lives_enabled %}
+        <div class="fe-lives" aria-label="{{ player['lives'] }} of {{ max_lives }} lives left">
+            <h2>LIVES</h2>
+            <div class="fe-lives-hearts">
+                {% for i in range(max_lives) %}<span class="fe-heart {{ 'lost' if i >= player['lives'] else '' }}">&#10084;</span>{% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <h2>TIMER</h2>
         <div class="fe-timer-gauge-wrap">
             <div class="fe-timer-gauge">
@@ -140,15 +149,6 @@
                     </span>
                 </button>
 
-                <form method="POST" action="{{ url_for('elimination.use_skip', name=name) }}">
-                    <button type="submit" class="fe-lifeline-item" {% if player["skip_used"] %}disabled{% endif %}>
-                        <span class="fe-lifeline-icon">&#8635;</span>
-                        Skip
-                        <span class="fe-lifeline-count">
-                            {% if player["skip_used"] %}(0 left){% else %}(1 left){% endif %}
-                        </span>
-                    </button>
-                </form>
             </div>
 
             <div class="fe-ask-team-result" id="fe-ask-team-result"></div>
