@@ -118,6 +118,7 @@ def initialize_database():
             ask_team_used INTEGER DEFAULT 0,
             option_order TEXT,
             lives INTEGER DEFAULT 3,
+            question_order TEXT,
             joined_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -151,6 +152,11 @@ def initialize_database():
     if "option_order" not in existing_columns:
         connection.execute(
             "ALTER TABLE fe_players ADD COLUMN option_order TEXT"
+        )
+
+    if "question_order" not in existing_columns:
+        connection.execute(
+            "ALTER TABLE fe_players ADD COLUMN question_order TEXT"
         )
 
     if "lives" not in existing_columns:
@@ -540,6 +546,43 @@ def get_active_rounds(config):
     return pick_active_questions()
 
 
+def shuffled_question_order(active_rounds):
+    """A random order of every question for one player. Rounds stay in
+    order (Easy -> Intermediate -> Hard); only the questions inside each
+    round are mixed, so players sitting together see different ones."""
+    order = []
+    round_ids = []
+    for index, question in enumerate(active_rounds):
+        if round_ids and active_rounds[round_ids[-1]]["round_number"] != question["round_number"]:
+            random.shuffle(round_ids)
+            order.extend(round_ids)
+            round_ids = []
+        round_ids.append(index)
+    random.shuffle(round_ids)
+    order.extend(round_ids)
+    return order
+
+
+def player_question_ids(config, player):
+    """This player's questions, as positions in the game's question list."""
+    total = len(get_active_rounds(config))
+    raw = player["question_order"] if "question_order" in player.keys() else None
+    if raw:
+        try:
+            order = json.loads(raw)
+            if sorted(order) == list(range(total)):
+                return order
+        except (TypeError, ValueError):
+            pass
+    return list(range(total))
+
+
+def get_player_rounds(config, player):
+    """This player's questions in the order they will be asked."""
+    active_rounds = get_active_rounds(config)
+    return [active_rounds[i] for i in player_question_ids(config, player)]
+
+
 def build_round_tracker(active_rounds, question_index):
     """One entry per round for the header tracker, each with one dot per
     question. A dot lights up once that question has been answered; the
@@ -600,7 +643,8 @@ def players_remaining_count(connection):
 
 
 def grade_regular_answer(connection, player, config, answer):
-    round_data = get_active_rounds(config)[player["question_index"]]
+    question_id = player_question_ids(config, player)[player["question_index"]]
+    round_data = get_active_rounds(config)[question_id]
     correct = 1 if answer == round_data["correct"] else 0
 
     new_status = player["status"]
@@ -628,7 +672,7 @@ def grade_regular_answer(connection, player, config, answer):
             ON CONFLICT(round_number, option)
             DO UPDATE SET count = count + 1
             """,
-            (player["question_index"], answer)
+            (question_id, answer)
         )
 
     connection.execute(
@@ -636,7 +680,7 @@ def grade_regular_answer(connection, player, config, answer):
         INSERT INTO fe_answer_history (player_id, round_number, answer, correct)
         VALUES (?, ?, ?, ?)
         """,
-        (player["id"], player["question_index"], answer, correct)
+        (player["id"], question_id, answer, correct)
     )
 
     connection.commit()
@@ -823,6 +867,16 @@ def host_start():
             """,
             (MAX_LIVES,)
         )
+
+        # Every player gets their own shuffle of the questions in each round.
+        active_rounds = get_active_rounds(config)
+        for row in connection.execute(
+            "SELECT id FROM fe_players WHERE phase = 'question'"
+        ).fetchall():
+            connection.execute(
+                "UPDATE fe_players SET question_order = ? WHERE id = ?",
+                (json.dumps(shuffled_question_order(active_rounds)), row["id"])
+            )
         connection.commit()
 
     connection.close()
@@ -998,7 +1052,7 @@ def play(name):
         connection.close()
         return redirect(url_for("elimination.results", name=name))
 
-    active_rounds = get_active_rounds(config)
+    active_rounds = get_player_rounds(config, player)
 
     if request.method == "POST":
         if not player["answered_current"]:
@@ -1089,7 +1143,7 @@ def use_fifty_fifty(name):
             and not player["answered_current"]
             and player["question_index"] < TOTAL_ROUNDS):
 
-        round_data = get_active_rounds(config)[player["question_index"]]
+        round_data = get_player_rounds(config, player)[player["question_index"]]
         wrong_options = [key for key in round_data["options"] if key != round_data["correct"]]
         random.shuffle(wrong_options)
         removed = ",".join(wrong_options[:2])
@@ -1124,7 +1178,8 @@ def use_ask_team(name):
         connection.close()
         return jsonify({"error": "unavailable"}), 400
 
-    round_data = get_active_rounds(config)[player["question_index"]]
+    question_id = player_question_ids(config, player)[player["question_index"]]
+    round_data = get_active_rounds(config)[question_id]
 
     connection.execute(
         "UPDATE fe_players SET ask_team_used = 1 WHERE id = ?",
@@ -1134,7 +1189,7 @@ def use_ask_team(name):
 
     rows = connection.execute(
         "SELECT option, count FROM fe_answer_tally WHERE round_number = ?",
-        (player["question_index"],)
+        (question_id,)
     ).fetchall()
     connection.close()
 
@@ -1194,7 +1249,7 @@ def feedback(name):
         return redirect(url_for("elimination.play", name=name))
 
     config = get_config(connection)
-    question = get_active_rounds(config)[player["question_index"]]
+    question = get_player_rounds(config, player)[player["question_index"]]
     connection.close()
 
     return render_template(
@@ -1238,7 +1293,7 @@ def advance(name):
     )
 
     connection.commit()
-    active_rounds = get_active_rounds(get_config(connection))
+    active_rounds = get_player_rounds(get_config(connection), player)
     connection.close()
 
     if finished:
@@ -1257,7 +1312,7 @@ def round_cleared(name):
         connection.close()
         return redirect(url_for("elimination.join"))
 
-    active_rounds = get_active_rounds(get_config(connection))
+    active_rounds = get_player_rounds(get_config(connection), player)
     connection.close()
 
     index = player["question_index"]
@@ -1462,7 +1517,7 @@ def review(name):
         """
         SELECT * FROM fe_answer_history
         WHERE player_id = ?
-        ORDER BY round_number ASC
+        ORDER BY rowid ASC
         """,
         (player["id"],)
     ).fetchall()
