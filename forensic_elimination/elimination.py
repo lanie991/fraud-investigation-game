@@ -91,7 +91,8 @@ def initialize_database():
             elimination_enabled INTEGER NOT NULL DEFAULT 1,
             lifelines_enabled INTEGER NOT NULL DEFAULT 1,
             active_questions TEXT,
-            released_round INTEGER DEFAULT 1
+            released_round INTEGER DEFAULT 1,
+            winner_revealed INTEGER DEFAULT 0
         )
     """)
 
@@ -99,6 +100,11 @@ def initialize_database():
         row["name"]
         for row in connection.execute("PRAGMA table_info(fe_config)")
     }
+    if "winner_revealed" not in existing_config_columns:
+        connection.execute(
+            "ALTER TABLE fe_config ADD COLUMN winner_revealed INTEGER DEFAULT 0"
+        )
+
     if "released_round" not in existing_config_columns:
         connection.execute(
             "ALTER TABLE fe_config ADD COLUMN released_round INTEGER DEFAULT 1"
@@ -677,7 +683,9 @@ def round_progress(connection, config):
     if config["status"] != "active":
         phase = "lobby"
     elif game_is_over(players):
-        phase = "finished"
+        # The last round's answers show first; the host then reveals the winner.
+        revealed = config["winner_revealed"] if "winner_revealed" in config.keys() else 0
+        phase = "winner" if revealed else "finished"
     elif complete and later:
         phase = "intermission"
     else:
@@ -983,7 +991,7 @@ def host_start():
 
     if config["status"] == "lobby":
         connection.execute(
-            "UPDATE fe_config SET status = 'active', released_round = ? WHERE id = 1",
+            "UPDATE fe_config SET status = 'active', released_round = ?, winner_revealed = 0 WHERE id = 1",
             (first_round_number(get_active_rounds(config)),)
         )
         connection.execute(
@@ -1034,7 +1042,7 @@ def host_reset():
     connection.execute("DELETE FROM fe_answer_tally")
     connection.execute("DELETE FROM fe_answer_history")
     connection.execute(
-        "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ?, released_round = 1 WHERE id = 1",
+        "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ?, released_round = 1, winner_revealed = 0 WHERE id = 1",
         (generate_pin(), json.dumps(pick_active_questions()))
     )
     connection.commit()
@@ -1525,6 +1533,22 @@ def host_next_round():
             "UPDATE fe_config SET released_round = ? WHERE id = 1",
             (progress["next_round"],)
         )
+        connection.commit()
+    connection.close()
+
+    if request.headers.get("X-Requested-With") == "fetch":
+        return jsonify({"ok": True})
+    return redirect(url_for("elimination.host"))
+
+
+@elimination_bp.route("/host/show-winner", methods=["POST"])
+@host_required
+def host_show_winner():
+    """Switch the big screen from the last round's answers to the winner."""
+    connection = get_db()
+    config = get_config(connection)
+    if round_progress(connection, config)["phase"] == "finished":
+        connection.execute("UPDATE fe_config SET winner_revealed = 1 WHERE id = 1")
         connection.commit()
     connection.close()
 

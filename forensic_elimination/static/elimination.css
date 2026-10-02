@@ -2622,3 +2622,53 @@ body:has(.fe-hero) .fe-main {
 .fe-display-stage.split .fe-display-review-head {
     margin-bottom: 10px;
 }
+
+/* =========================================================
+   BIG SCREEN: WINNER (standings back in the middle)
+========================================================= */
+
+.fe-display-winner {
+    max-width: 720px;
+    margin: 0 auto 26px;
+    padding: 26px 20px 22px;
+    border-radius: 18px;
+    border: 1px solid rgba(250, 204, 21, 0.45);
+    background: radial-gradient(circle at 50% 0%, rgba(250, 204, 21, 0.2), rgba(13, 18, 32, 0.9) 70%);
+    box-shadow: 0 0 40px rgba(250, 204, 21, 0.18);
+}
+
+.fe-display-winner[hidden] {
+    display: none;
+}
+
+.fe-display-winner-trophy {
+    font-size: 64px;
+    line-height: 1;
+    margin-bottom: 8px;
+    animation: fe-trophy-pop 0.8s ease-out both;
+}
+
+.fe-display-winner-name {
+    margin-top: 6px;
+    color: #facc15;
+    font-family: "Rajdhani", sans-serif;
+    font-weight: 800;
+    font-size: 64px;
+    line-height: 1.05;
+    letter-spacing: 0.04em;
+}
+
+.fe-display-winner-score {
+    margin-top: 6px;
+    color: #f8fafc;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+@keyframes fe-trophy-pop {
+    0% { transform: scale(0.3); opacity: 0; }
+    70% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); }
+}

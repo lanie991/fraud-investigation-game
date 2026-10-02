@@ -123,7 +123,11 @@
             </button>
         </form>
         {% else %}
-        {% if progress["next_round"] %}
+        {% if progress["phase"] == "finished" %}
+        <form method="POST" action="{{ url_for('elimination.host_show_winner') }}">
+            <button type="submit" class="fe-btn fe-btn-gold">&#127942; SHOW WINNER ON BIG SCREEN</button>
+        </form>
+        {% elif progress["next_round"] and progress["phase"] != "winner" %}
         <form method="POST" action="{{ url_for('elimination.host_next_round') }}"
               {% if not progress["complete"] %}onsubmit="return confirm('Not everyone has finished Round {{ progress['round'] }} yet. Start Round {{ progress['next_round'] }} anyway?');"{% endif %}>
             <button type="submit" class="fe-btn fe-btn-gold">

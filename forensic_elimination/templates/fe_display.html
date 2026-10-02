@@ -57,7 +57,13 @@
             <div class="fe-display-stage" id="fe-display-stage">
 
                 <div class="fe-display-standings">
-                    <div class="fe-display-label">LIVE STANDINGS</div>
+                    <div class="fe-display-winner" id="fe-display-winner" hidden>
+                        <div class="fe-display-winner-trophy">&#127942;</div>
+                        <div class="fe-display-label">WINNER</div>
+                        <div class="fe-display-winner-name" id="fe-winner-name"></div>
+                        <div class="fe-display-winner-score" id="fe-winner-score"></div>
+                    </div>
+                    <div class="fe-display-label" id="fe-standings-label">LIVE STANDINGS</div>
                     <div class="fe-display-board" id="fe-display-board"></div>
                 </div>
 
@@ -78,6 +84,7 @@
 
     </div>
 
+    <script src="{{ url_for('static', filename='elimination-confetti.js') }}"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function () {
         const lobbyView = document.getElementById("fe-display-lobby");
@@ -108,6 +115,7 @@
             statsRow.hidden = showReview;
             displayEl.classList.toggle("wide", showReview);
             reviewEl.hidden = !showReview;
+            renderWinner(data);
             if (!showReview || !data.review) {
                 lastReviewKey = "";
                 return;
@@ -115,8 +123,15 @@
 
             const review = data.review;
             const next = data.progress.next_round;
-            nextRoundBtn.hidden = !(data.is_host && data.phase === "intermission" && next);
-            nextRoundBtn.textContent = "\u25B6 START ROUND " + (next || "");
+            if (data.phase === "finished") {
+                nextRoundBtn.hidden = !data.is_host;
+                nextRoundBtn.textContent = "\uD83C\uDFC6 SHOW WINNER";
+                nextRoundBtn.dataset.action = "{{ url_for('elimination.host_show_winner') }}";
+            } else {
+                nextRoundBtn.hidden = !(data.is_host && next);
+                nextRoundBtn.textContent = "\u25B6 START ROUND " + (next || "");
+                nextRoundBtn.dataset.action = "{{ url_for('elimination.host_next_round') }}";
+            }
 
             // Only redraw the cards when something changed, so the screen doesn't flicker.
             const key = JSON.stringify(review) + data.phase;
@@ -140,9 +155,35 @@
             reviewGrid.innerHTML = html;
         }
 
+        // Once everyone's done the last round and the host reveals it, the
+        // standings move back to the middle under a winner banner.
+        const winnerEl = document.getElementById("fe-display-winner");
+        const winnerName = document.getElementById("fe-winner-name");
+        const winnerScore = document.getElementById("fe-winner-score");
+        const standingsLabel = document.getElementById("fe-standings-label");
+        let celebrated = false;
+
+        function renderWinner(data) {
+            const show = data.phase === "winner";
+            winnerEl.hidden = !show;
+            standingsLabel.textContent = show ? "FINAL STANDINGS" : "LIVE STANDINGS";
+            if (data.phase === "winner") statsRow.hidden = true;
+            if (!show) {
+                celebrated = false;
+                return;
+            }
+            const winner = data.players.find(function (p) { return p.status === "WINNER"; });
+            winnerName.textContent = winner ? winner.name : "No survivors";
+            winnerScore.textContent = winner ? winner.progress : "Every investigator was eliminated";
+            if (!celebrated && winner) {
+                celebrated = true;
+                if (window.FE_CONFETTI) FE_CONFETTI.burst(6000);
+            }
+        }
+
         nextRoundBtn.addEventListener("click", function () {
             nextRoundBtn.disabled = true;
-            fetch("{{ url_for('elimination.host_next_round') }}", {
+            fetch(nextRoundBtn.dataset.action || "{{ url_for('elimination.host_next_round') }}", {
                 method: "POST",
                 headers: { "X-Requested-With": "fetch" }
             })
