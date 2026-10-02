@@ -1,6 +1,6 @@
 {% extends "fe_base.html" %}
 
-{% block title %}Round {{ current_round }} — Forensic Elimination{% endblock %}
+{% block title %}Round {{ current_round }} — Fraud Files{% endblock %}
 
 {% block top_header %}
 <header class="fe-game-header">
@@ -8,8 +8,8 @@
     <div class="fe-game-logo">
         <img class="fe-game-logo-icon" src="{{ url_for('static', filename='images/brand-icon.webp') }}" alt="">
         <div class="fe-game-logo-text-group">
-            <span class="fe-game-logo-text">FORENSIC ELIMINATION</span>
-            <span class="fe-game-logo-sub">KNOW &nbsp;|&nbsp; ANALYZE &nbsp;|&nbsp; OUTLAST</span>
+            <span class="fe-game-logo-text">FRAUD FILES</span>
+            <span class="fe-game-logo-sub">KNOW &nbsp;|&nbsp; ANALYZE &nbsp;|&nbsp; SOLVE</span>
         </div>
     </div>
 
@@ -31,8 +31,8 @@
     </div>
 
     <div class="fe-game-tagline">
-        <div class="line1">REAL KNOWLEDGE.<br>HIGHER STAKES.</div>
-        <div class="line2">THE LAST MIND STANDING WINS.</div>
+        <div class="line1">REAL CASES.<br>REAL FRAUD.</div>
+        <div class="line2">THE SHARPEST MIND WINS.</div>
     </div>
 
 </header>
@@ -59,7 +59,7 @@
                 </div>
                 <div class="fe-player-status-text">
                     <strong>{{ p['name'] }}</strong>
-                    <span>{{ "ELIMINATED" if p['status'] == "eliminated" else "IN PLAY" }}</span>
+                    <span>IN PLAY</span>
                 </div>
             </div>
             {% endfor %}

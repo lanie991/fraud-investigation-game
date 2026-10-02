@@ -1,6 +1,6 @@
-# Forensic Elimination
+# Fraud Files
 
-A standalone Kahoot-style, single-elimination fraud trivia game, separate
+A standalone Kahoot-style fraud trivia game (formerly Forensic Elimination), separate
 from "Who Stole the Money?" (the app in the repo root).
 
 ## Run it

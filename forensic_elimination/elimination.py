@@ -1,5 +1,5 @@
 """
-FORENSIC ELIMINATION
+FRAUD FILES (formerly Forensic Elimination)
 A standalone Kahoot-style fraud trivia game that runs alongside the
 existing "Who Stole the Money?" investigation game.
 
