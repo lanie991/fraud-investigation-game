@@ -58,8 +58,8 @@
 
                 <div class="fe-display-standings">
                     <div class="fe-display-winner" id="fe-display-winner" hidden>
-                        <div class="fe-display-winner-trophy">&#127942;</div>
-                        <div class="fe-display-label">WINNER</div>
+                        <div class="fe-display-winner-trophy" id="fe-winner-trophy">&#127942;</div>
+                        <div class="fe-display-label" id="fe-winner-label">WINNER</div>
                         <div class="fe-display-winner-name" id="fe-winner-name"></div>
                         <div class="fe-display-winner-score" id="fe-winner-score"></div>
                     </div>
@@ -174,6 +174,9 @@
             }
             const winner = data.players.find(function (p) { return p.status === "WINNER"; });
             winnerName.textContent = winner ? winner.name : "No survivors";
+            // Everyone was eliminated: no trophy, and it's game over rather than a win.
+            document.getElementById("fe-winner-trophy").hidden = !winner;
+            document.getElementById("fe-winner-label").textContent = winner ? "WINNER" : "GAME OVER";
             winnerScore.textContent = winner ? winner.progress : "Every investigator was eliminated";
             if (!celebrated && winner) {
                 celebrated = true;
