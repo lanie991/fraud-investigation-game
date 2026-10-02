@@ -13,7 +13,12 @@
 
         <p class="fe-subtitle" style="margin:0 auto 22px;">
             You made it through every round without being eliminated.
-            {% if game_over %}
+            {% if deciding and in_tie %}
+            <strong style="color:#facc15;">You're tied for first!</strong>
+            Stay on this screen &mdash; sudden death decides the winner.
+            {% elif deciding %}
+            There's a tie for first place. Sudden death will decide the winner.
+            {% elif game_over %}
             You finished <strong style="color:#facc15;">#{{ placement }}</strong>
             of {{ player_count }} investigators.
             {% else %}
@@ -42,7 +47,7 @@
         <h2 style="margin:0 0 14px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:16px;">
             LIVE STANDINGS
         </h2>
-        <div id="fe-spectate-board" {% if not game_over %}data-reload-when-over="1"{% endif %}></div>
+        <div id="fe-spectate-board" {% if not game_over %}data-reload-when-over="1"{% endif %} data-sd-status="{{ sd_status }}"></div>
     </div>
 
 </div>

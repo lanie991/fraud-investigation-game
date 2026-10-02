@@ -48,6 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.game_over && board.dataset.reloadWhenOver) {
                     window.location.reload();
                 }
+                // Sudden death started or finished: reload so tied players are
+                // sent to it and everyone sees the final result.
+                if (board.dataset.sdStatus !== undefined
+                        && (data.sd_status || "") !== board.dataset.sdStatus) {
+                    window.location.reload();
+                }
             })
             .catch(function () {});
     }
