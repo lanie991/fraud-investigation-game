@@ -22,7 +22,16 @@
             <span class="fe-diff-word diff-{{ upcoming['difficulty']|lower }}">{{ upcoming["difficulty"] }}</span>!
         </p>
 
-        <a href="{{ url_for('elimination.play', name=name) }}" class="fe-btn fe-btn-gold fe-btn-block">
+        <div id="fe-round-wait" class="fe-round-wait" {% if released %}hidden{% endif %}>
+            <div class="fe-round-wait-spinner" aria-hidden="true"></div>
+            <strong>Waiting for everyone to finish this round&hellip;</strong>
+            <span><span id="fe-round-wait-done">{{ progress["done"] }}</span> of
+            <span id="fe-round-wait-total">{{ progress["survivors"] }}</span> investigators done.
+            Check the big screen for the answers!</span>
+        </div>
+
+        <a id="fe-round-start" href="{{ url_for('elimination.play', name=name) }}"
+           class="fe-btn fe-btn-gold fe-btn-block" {% if not released %}hidden{% endif %}>
             START ROUND {{ upcoming["round_number"] }}
         </a>
 
@@ -35,6 +44,27 @@
 document.addEventListener("DOMContentLoaded", function () {
     if (window.FE_CONFETTI && FE_CONFETTI.burst) { FE_CONFETTI.burst(); }
     if (window.FE_SFX && FE_SFX.playCorrect) { FE_SFX.playCorrect(); }
+
+    {% if not released %}
+    // Wait here until the host opens the next round, then go straight in
+    // so everyone starts together.
+    const doneEl = document.getElementById("fe-round-wait-done");
+    const totalEl = document.getElementById("fe-round-wait-total");
+    const timer = setInterval(function () {
+        fetch("{{ url_for('elimination.round_status', name=name) }}", { cache: "no-store" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.released) {
+                    clearInterval(timer);
+                    window.location.href = "{{ url_for('elimination.play', name=name) }}";
+                    return;
+                }
+                doneEl.textContent = data.done;
+                totalEl.textContent = data.survivors;
+            })
+            .catch(function () {});
+    }, 2500);
+    {% endif %}
 });
 </script>
 

@@ -123,7 +123,16 @@
             </button>
         </form>
         {% else %}
-        <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold">
+        {% if progress["next_round"] %}
+        <form method="POST" action="{{ url_for('elimination.host_next_round') }}"
+              {% if not progress["complete"] %}onsubmit="return confirm('Not everyone has finished Round {{ progress['round'] }} yet. Start Round {{ progress['next_round'] }} anyway?');"{% endif %}>
+            <button type="submit" class="fe-btn fe-btn-gold">
+                &#9654; START ROUND {{ progress["next_round"] }}
+                <span style="opacity:0.7;">({{ progress["done"] }}/{{ progress["survivors"] }} done)</span>
+            </button>
+        </form>
+        {% endif %}
+        <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn {{ 'fe-btn-ghost' if progress['next_round'] else 'fe-btn-gold' }}">
             VIEW LEADERBOARD
         </a>
         {% endif %}

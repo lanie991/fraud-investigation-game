@@ -90,7 +90,8 @@ def initialize_database():
             timer_seconds INTEGER NOT NULL DEFAULT 20,
             elimination_enabled INTEGER NOT NULL DEFAULT 1,
             lifelines_enabled INTEGER NOT NULL DEFAULT 1,
-            active_questions TEXT
+            active_questions TEXT,
+            released_round INTEGER DEFAULT 1
         )
     """)
 
@@ -98,6 +99,11 @@ def initialize_database():
         row["name"]
         for row in connection.execute("PRAGMA table_info(fe_config)")
     }
+    if "released_round" not in existing_config_columns:
+        connection.execute(
+            "ALTER TABLE fe_config ADD COLUMN released_round INTEGER DEFAULT 1"
+        )
+
     if "active_questions" not in existing_config_columns:
         connection.execute(
             "ALTER TABLE fe_config ADD COLUMN active_questions TEXT"
@@ -628,6 +634,96 @@ def starts_new_round(active_rounds, question_index):
             != active_rounds[question_index - 1]["round_number"])
 
 
+def round_numbers(active_rounds):
+    """The game's round numbers in play order, e.g. [1, 2, 3]."""
+    numbers = []
+    for question in active_rounds:
+        if question["round_number"] not in numbers:
+            numbers.append(question["round_number"])
+    return numbers
+
+
+def first_round_number(active_rounds):
+    numbers = round_numbers(active_rounds)
+    return numbers[0] if numbers else 1
+
+
+def released_round(config, active_rounds):
+    """The latest round players are allowed to play. Players who finish a
+    round wait for the host to release the next one, so everyone can go
+    over the answers together on the big screen."""
+    value = config["released_round"] if "released_round" in config.keys() else None
+    return value or first_round_number(active_rounds)
+
+
+def round_progress(connection, config):
+    """Where the game is: which round is open, how many survivors have
+    finished it, and whether the big screen should show the intermission."""
+    active_rounds = get_active_rounds(config)
+    numbers = round_numbers(active_rounds)
+    current = released_round(config, active_rounds)
+    players = connection.execute("SELECT * FROM fe_players").fetchall()
+    survivors = [p for p in players if p["status"] == "in"]
+
+    def past_current_round(p):
+        if p["phase"] == "finished" or p["question_index"] >= len(active_rounds):
+            return True
+        return active_rounds[p["question_index"]]["round_number"] > current
+
+    done = sum(1 for p in survivors if past_current_round(p))
+    complete = bool(survivors) and done == len(survivors)
+    later = [n for n in numbers if n > current]
+
+    if config["status"] != "active":
+        phase = "lobby"
+    elif game_is_over(players):
+        phase = "finished"
+    elif complete and later:
+        phase = "intermission"
+    else:
+        phase = "playing"
+
+    return {
+        "phase": phase,
+        "round": current,
+        "next_round": later[0] if later else None,
+        "done": done,
+        "survivors": len(survivors),
+        "complete": complete,
+    }
+
+
+def round_review(connection, config, round_number):
+    """Every question in a round with its correct answer and how many
+    players got it right, for the intermission screen."""
+    active_rounds = get_active_rounds(config)
+    stats = {
+        row["question_id"]: (row["answered"], row["right"])
+        for row in connection.execute(
+            """
+            SELECT round_number AS question_id, COUNT(*) AS answered,
+                   SUM(correct) AS right
+            FROM fe_answer_history GROUP BY round_number
+            """
+        )
+    }
+    questions = []
+    for question_id, question in enumerate(active_rounds):
+        if question["round_number"] != round_number:
+            continue
+        answered, right = stats.get(question_id, (0, 0))
+        questions.append({
+            "text": question["text"],
+            "answer": question["options"][question["correct"]],
+            "explanation": str(allow_bold(question.get("explanation", ""))),
+            "percent_correct": round(100 * (right or 0) / answered) if answered else None,
+        })
+    difficulty = next(
+        (q["difficulty"] for q in active_rounds if q["round_number"] == round_number), ""
+    )
+    return {"round_number": round_number, "difficulty": difficulty, "questions": questions}
+
+
 # =========================================================
 # HELPERS
 # =========================================================
@@ -828,11 +924,13 @@ def host():
     players = connection.execute(
         "SELECT * FROM fe_players ORDER BY joined_at"
     ).fetchall()
+    progress = round_progress(connection, config)
     connection.close()
 
     return render_template(
         "fe_host.html",
         config=config,
+        progress=progress,
         players=players,
         total_rounds=TOTAL_ROUNDS,
         max_lives=MAX_LIVES,
@@ -897,7 +995,8 @@ def host_start():
 
     if config["status"] == "lobby":
         connection.execute(
-            "UPDATE fe_config SET status = 'active' WHERE id = 1"
+            "UPDATE fe_config SET status = 'active', released_round = ? WHERE id = 1",
+            (first_round_number(get_active_rounds(config)),)
         )
         connection.execute(
             """
@@ -947,7 +1046,7 @@ def host_reset():
     connection.execute("DELETE FROM fe_answer_tally")
     connection.execute("DELETE FROM fe_answer_history")
     connection.execute(
-        "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ? WHERE id = 1",
+        "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ?, released_round = 1 WHERE id = 1",
         (generate_pin(), json.dumps(pick_active_questions()))
     )
     connection.commit()
@@ -1109,6 +1208,11 @@ def play(name):
         return redirect(url_for("elimination.results", name=name))
 
     active_rounds = get_player_rounds(config, player)
+
+    if (active_rounds[player["question_index"]]["round_number"]
+            > released_round(config, active_rounds)):
+        connection.close()
+        return redirect(url_for("elimination.round_cleared", name=name))
 
     if request.method == "POST":
         if not player["answered_current"]:
@@ -1376,7 +1480,9 @@ def round_cleared(name):
         connection.close()
         return redirect(url_for("elimination.join"))
 
-    active_rounds = get_player_rounds(get_config(connection), player)
+    config = get_config(connection)
+    active_rounds = get_player_rounds(config, player)
+    progress = round_progress(connection, config)
     connection.close()
 
     index = player["question_index"]
@@ -1391,8 +1497,52 @@ def round_cleared(name):
         player=player,
         cleared=active_rounds[index - 1],
         upcoming=active_rounds[index],
+        released=active_rounds[index]["round_number"] <= released_round(config, active_rounds),
+        progress=progress,
         active_nav="play"
     )
+
+
+@elimination_bp.route("/round-status/<name>")
+def round_status(name):
+    """Polled by the round-cleared screen while a player waits."""
+    connection = get_db()
+    player = get_player(connection, name)
+    if player is None:
+        connection.close()
+        return jsonify({"released": True})
+
+    config = get_config(connection)
+    active_rounds = get_player_rounds(config, player)
+    progress = round_progress(connection, config)
+    connection.close()
+
+    index = min(player["question_index"], len(active_rounds) - 1)
+    return jsonify({
+        "released": active_rounds[index]["round_number"] <= released_round(config, active_rounds),
+        "done": progress["done"],
+        "survivors": progress["survivors"],
+    })
+
+
+@elimination_bp.route("/host/next-round", methods=["POST"])
+@host_required
+def host_next_round():
+    """Open the next round for everyone waiting at the round-cleared screen."""
+    connection = get_db()
+    config = get_config(connection)
+    progress = round_progress(connection, config)
+    if config["status"] == "active" and progress["next_round"]:
+        connection.execute(
+            "UPDATE fe_config SET released_round = ? WHERE id = 1",
+            (progress["next_round"],)
+        )
+        connection.commit()
+    connection.close()
+
+    if request.headers.get("X-Requested-With") == "fetch":
+        return jsonify({"ok": True})
+    return redirect(url_for("elimination.host"))
 
 
 @elimination_bp.route("/eliminated/<name>")
@@ -1517,8 +1667,10 @@ def display_data():
 
     active_rounds = get_active_rounds(config)
     round_counts = {q["round_number"]: 0 for q in active_rounds}
+    open_round = released_round(config, active_rounds)
     eliminated_count = 0
     finished_count = 0
+    waiting_count = 0
 
     rows = []
     for p in players:
@@ -1536,7 +1688,13 @@ def display_data():
         elif p["phase"] == "question" and p["question_index"] < TOTAL_ROUNDS:
             status = "STILL IN"
             round_number = active_rounds[p["question_index"]]["round_number"]
-            round_counts[round_number] = round_counts.get(round_number, 0) + 1
+            if round_number > open_round:
+                # Done with the open round, waiting for the next to start.
+                status = "WAITING"
+                waiting_count += 1
+                round_number = None
+            else:
+                round_counts[round_number] = round_counts.get(round_number, 0) + 1
         else:
             status = "STILL IN"
 
@@ -1548,13 +1706,25 @@ def display_data():
             "round_number": round_number
         })
 
+    review_connection = get_db()
+    progress = round_progress(review_connection, config)
+    review = None
+    if progress["phase"] in ("intermission", "finished"):
+        review = round_review(review_connection, config, progress["round"])
+    review_connection.close()
+
     return jsonify({
+        "phase": progress["phase"],
+        "progress": progress,
+        "review": review,
+        "is_host": bool(session.get("fe_is_host")),
         "game_status": config["status"],
         "pin": config["pin"],
         "players": rows,
         "round_counts": round_counts,
         "eliminated_count": eliminated_count,
-        "finished_count": finished_count
+        "finished_count": finished_count,
+        "waiting_count": waiting_count
     })
 
 

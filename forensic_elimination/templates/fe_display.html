@@ -20,7 +20,7 @@
 
 <body class="fe-body">
 
-    <div class="fe-display">
+    <div class="fe-display" id="fe-display">
 
         <div class="fe-display-logo">
             <img class="fe-display-logo-icon" src="{{ url_for('static', filename='images/brand-icon.webp') }}" alt="">
@@ -52,8 +52,27 @@
 
             <div class="fe-display-stats-row" id="fe-display-stats-row"></div>
 
-            <div class="fe-display-label" style="margin-top:26px;">LIVE STANDINGS</div>
-            <div class="fe-display-board" id="fe-display-board"></div>
+            <!-- During a round the standings sit in the middle; at an
+                 intermission they move left and the round's answers show. -->
+            <div class="fe-display-stage" id="fe-display-stage">
+
+                <div class="fe-display-standings">
+                    <div class="fe-display-label">LIVE STANDINGS</div>
+                    <div class="fe-display-board" id="fe-display-board"></div>
+                </div>
+
+                <div class="fe-display-review" id="fe-display-review" hidden>
+                    <div class="fe-display-review-head">
+                        <div>
+                            <div class="fe-display-label" id="fe-review-kicker">INTERMISSION</div>
+                            <h2 class="fe-display-review-title" id="fe-review-title"></h2>
+                        </div>
+                        <button type="button" class="fe-btn fe-btn-gold" id="fe-next-round-btn" hidden></button>
+                    </div>
+                    <div class="fe-display-review-grid" id="fe-review-grid"></div>
+                </div>
+
+            </div>
 
         </div>
 
@@ -68,6 +87,72 @@
         const playersGrid = document.getElementById("fe-display-players-grid");
         const statsRow = document.getElementById("fe-display-stats-row");
         const board = document.getElementById("fe-display-board");
+        const displayEl = document.getElementById("fe-display");
+        const stage = document.getElementById("fe-display-stage");
+        const reviewEl = document.getElementById("fe-display-review");
+        const reviewKicker = document.getElementById("fe-review-kicker");
+        const reviewTitle = document.getElementById("fe-review-title");
+        const reviewGrid = document.getElementById("fe-review-grid");
+        const nextRoundBtn = document.getElementById("fe-next-round-btn");
+        let lastReviewKey = "";
+
+        function esc(text) {
+            const div = document.createElement("div");
+            div.textContent = text == null ? "" : String(text);
+            return div.innerHTML;
+        }
+
+        function renderReview(data) {
+            const showReview = data.phase === "intermission" || data.phase === "finished";
+            stage.classList.toggle("split", showReview);
+            statsRow.hidden = showReview;
+            displayEl.classList.toggle("wide", showReview);
+            reviewEl.hidden = !showReview;
+            if (!showReview || !data.review) {
+                lastReviewKey = "";
+                return;
+            }
+
+            const review = data.review;
+            const next = data.progress.next_round;
+            nextRoundBtn.hidden = !(data.is_host && data.phase === "intermission" && next);
+            nextRoundBtn.textContent = "\u25B6 START ROUND " + (next || "");
+
+            // Only redraw the cards when something changed, so the screen doesn't flicker.
+            const key = JSON.stringify(review) + data.phase;
+            if (key === lastReviewKey) return;
+            lastReviewKey = key;
+
+            reviewKicker.textContent = data.phase === "finished" ? "GAME OVER" : "INTERMISSION";
+            reviewTitle.innerHTML = "ROUND " + esc(review.round_number)
+                + ' <span class="diff-' + esc(String(review.difficulty).toLowerCase()) + '">'
+                + esc(review.difficulty) + "</span> ANSWERS";
+
+            let html = "";
+            review.questions.forEach(function (q, i) {
+                const pct = q.percent_correct === null
+                    ? "No answers"
+                    : q.percent_correct + "% got it right";
+                html += '<div class="fe-review-card">'
+                    + '<div class="fe-review-card-num">Q' + (i + 1) + "</div>"
+                    + '<div class="fe-review-card-q">' + esc(q.text) + "</div>"
+                    + '<div class="fe-review-card-a">&#10003; ' + esc(q.answer) + "</div>"
+                    + (q.explanation ? '<div class="fe-review-card-x">' + q.explanation + "</div>" : "")
+                    + '<div class="fe-review-card-pct">' + pct + "</div>"
+                    + "</div>";
+            });
+            reviewGrid.innerHTML = html;
+        }
+
+        nextRoundBtn.addEventListener("click", function () {
+            nextRoundBtn.disabled = true;
+            fetch("{{ url_for('elimination.host_next_round') }}", {
+                method: "POST",
+                headers: { "X-Requested-With": "fetch" }
+            })
+                .then(function () { poll(); })
+                .finally(function () { nextRoundBtn.disabled = false; });
+        });
 
         function statusClass(status) {
             if (status === "ELIMINATED") return "eliminated";
@@ -83,7 +168,7 @@
                 const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
                 html += '<div class="fe-display-player-chip">'
                     + '<div class="fe-display-player-avatar">' + avatarImg + "</div>"
-                    + "<div>" + p.name + "</div>"
+                    + "<div>" + esc(p.name) + "</div>"
                     + "</div>";
             });
             playersGrid.innerHTML = html;
@@ -97,6 +182,10 @@
                     + '<span>ON ROUND ' + roundNum + '</span>'
                     + '</div>';
             });
+            if (data.waiting_count) {
+                statsHtml += '<div class="fe-display-stat">'
+                    + '<strong>' + data.waiting_count + '</strong><span>WAITING</span></div>';
+            }
             statsHtml += '<div class="fe-display-stat">'
                 + '<strong>' + data.finished_count + '</strong><span>FINISHED</span></div>';
             statsHtml += '<div class="fe-display-stat eliminated">'
@@ -112,7 +201,7 @@
                     boardHtml += '<div class="fe-leaderboard-row fe-display-row">'
                         + '<div class="fe-leaderboard-rank">' + (index + 1) + "</div>"
                         + '<div class="fe-player-avatar">' + avatarImg + "</div>"
-                        + '<div class="fe-leaderboard-name">' + p.name + "</div>"
+                        + '<div class="fe-leaderboard-name">' + esc(p.name) + "</div>"
                         + '<div class="fe-leaderboard-score">' + p.progress + "</div>"
                         + '<span class="fe-status-pill ' + statusClass(p.status) + '">' + p.status + "</span>"
                         + "</div>";
@@ -143,6 +232,7 @@
                         lobbyView.style.display = "none";
                         activeView.style.display = "block";
                         renderActive(data);
+                        renderReview(data);
                     }
                 })
                 .catch(function () {});
