@@ -694,29 +694,17 @@ def round_progress(connection, config):
 
 
 def round_review(connection, config, round_number):
-    """Every question in a round with its correct answer and how many
-    players got it right, for the intermission screen."""
+    """Every question in a round with its correct answer, for the
+    intermission screen."""
     active_rounds = get_active_rounds(config)
-    stats = {
-        row["question_id"]: (row["answered"], row["right"])
-        for row in connection.execute(
-            """
-            SELECT round_number AS question_id, COUNT(*) AS answered,
-                   SUM(correct) AS right
-            FROM fe_answer_history GROUP BY round_number
-            """
-        )
-    }
     questions = []
-    for question_id, question in enumerate(active_rounds):
+    for question in active_rounds:
         if question["round_number"] != round_number:
             continue
-        answered, right = stats.get(question_id, (0, 0))
         questions.append({
             "text": question["text"],
             "answer": question["options"][question["correct"]],
             "explanation": str(allow_bold(question.get("explanation", ""))),
-            "percent_correct": round(100 * (right or 0) / answered) if answered else None,
         })
     difficulty = next(
         (q["difficulty"] for q in active_rounds if q["round_number"] == round_number), ""

@@ -130,15 +130,11 @@
 
             let html = "";
             review.questions.forEach(function (q, i) {
-                const pct = q.percent_correct === null
-                    ? "No answers"
-                    : q.percent_correct + "% got it right";
                 html += '<div class="fe-review-card">'
                     + '<div class="fe-review-card-num">Q' + (i + 1) + "</div>"
                     + '<div class="fe-review-card-q">' + esc(q.text) + "</div>"
                     + '<div class="fe-review-card-a">&#10003; ' + esc(q.answer) + "</div>"
                     + (q.explanation ? '<div class="fe-review-card-x">' + q.explanation + "</div>" : "")
-                    + '<div class="fe-review-card-pct">' + pct + "</div>"
                     + "</div>";
             });
             reviewGrid.innerHTML = html;

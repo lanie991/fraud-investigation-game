@@ -2555,15 +2555,6 @@ body:has(.fe-hero) .fe-main {
     color: #e2e8f0;
 }
 
-.fe-review-card-pct {
-    margin-top: 8px;
-    color: #facc15;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
 
 @media (max-width: 1100px) {
     .fe-display-stage.split {
@@ -2623,9 +2614,6 @@ body:has(.fe-hero) .fe-main {
     line-height: 1.35;
 }
 
-.fe-display-stage.split .fe-review-card-pct {
-    margin-top: 4px;
-}
 
 .fe-display-stage.split .fe-display-review-title {
     font-size: 28px;
