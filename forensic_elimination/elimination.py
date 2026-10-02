@@ -903,13 +903,20 @@ def sudden_death_rank(player):
     return (distance, seconds)
 
 
+def winner_pool(players):
+    """Who can win: the survivors, or if nobody survived, everyone (the
+    most correct answers still wins)."""
+    survivors = [p for p in players if p["status"] == "in"]
+    return survivors or list(players)
+
+
 def top_tied(players, correct):
-    """Survivors level on the most correct answers, if two or more are."""
-    survivors = [p for p in players if p["status"] == "in" and p["phase"] == "finished"]
-    if len(survivors) < 2:
+    """Players level on the most correct answers, if two or more are."""
+    pool = winner_pool(players)
+    if len(pool) < 2:
         return []
-    best = max(correct.get(p["id"], 0) for p in survivors)
-    tied = [p for p in survivors if correct.get(p["id"], 0) == best]
+    best = max(correct.get(p["id"], 0) for p in pool)
+    tied = [p for p in pool if correct.get(p["id"], 0) == best]
     return tied if len(tied) >= 2 else []
 
 
@@ -938,14 +945,13 @@ def sudden_death_state(connection, config):
 
 
 def is_declared_winner(connection, player):
-    """The single winner: once nobody is still playing, the surviving
-    investigator with the most correct answers. A tie for first is
-    settled by sudden death."""
-    if player["status"] != "in" or player["phase"] != "finished":
-        return False
-
+    """The single winner: once nobody is still playing, the player with
+    the most correct answers (a survivor if anyone survived, otherwise
+    whoever got furthest). A tie for first is settled by sudden death."""
     players, correct = rank_players(connection)
     if not game_is_over(players):
+        return False
+    if player["id"] not in {p["id"] for p in winner_pool(players)}:
         return False
 
     if top_tied(players, correct):
@@ -1682,6 +1688,7 @@ def sudden_death(name):
     if not player["in_sudden_death"]:
         connection.close()
         return redirect(url_for("elimination.results", name=name))
+    # results() forwards eliminated players to their own screen.
 
     config = get_config(connection)
     status, seconds_left = sudden_death_state(connection, config)
@@ -1747,16 +1754,48 @@ def host_show_winner():
 def eliminated(name):
     connection = get_db()
     player = get_player(connection, name)
-    connection.close()
 
     if player is None:
+        connection.close()
         return redirect(url_for("elimination.join"))
+
+    config = get_config(connection)
+    sd_status, _ = sudden_death_state(connection, config)
+    if sd_status == "active" and player["in_sudden_death"] and player["sd_seconds"] is None:
+        connection.close()
+        return redirect(url_for("elimination.sudden_death", name=name))
+
+    # If nobody survives, the most correct answers still wins.
+    winner = is_declared_winner(connection, player)
+    players, correct = rank_players(connection)
+    tied_names = [p["name"] for p in top_tied(players, correct)]
+    active_rounds = get_player_rounds(config, player)
+    connection.close()
+
+    game_over = game_is_over(players)
+    placement = next(i for i, p in enumerate(players, 1) if p["id"] == player["id"])
+    index = min(player["question_index"], len(active_rounds) - 1)
+
+    if winner:
+        return render_template(
+            "fe_winner.html", name=name, player=player,
+            correct=correct.get(player["id"], 0),
+            total_rounds=TOTAL_ROUNDS, active_nav="play"
+        )
 
     return render_template(
         "fe_eliminated.html",
         name=name,
         player=player,
-        question_number=min(player["question_index"] + 1, TOTAL_ROUNDS),
+        round_number=active_rounds[index]["round_number"],
+        correct=correct.get(player["id"], 0),
+        total_rounds=TOTAL_ROUNDS,
+        game_over=game_over,
+        placement=placement,
+        player_count=len(players),
+        deciding=game_over and bool(tied_names) and sd_status != "done",
+        in_tie=name in tied_names,
+        sd_status=sd_status or "",
         active_nav="play"
     )
 
@@ -1835,10 +1874,10 @@ def leaderboard_data():
 
     rows = []
     for p in players:
-        if p["status"] == "eliminated":
-            status = "ELIMINATED"
-        elif p["name"] in winners:
+        if p["name"] in winners:
             status = "WINNER"
+        elif p["status"] == "eliminated":
+            status = "ELIMINATED"
         else:
             status = "STILL IN"
 
@@ -1891,12 +1930,15 @@ def display_data():
     for p in players:
         round_number = None
 
-        if p["status"] == "eliminated":
+        if p["name"] in winners:
+            status = "WINNER"
+            if p["status"] == "eliminated":
+                eliminated_count += 1
+            else:
+                finished_count += 1
+        elif p["status"] == "eliminated":
             status = "ELIMINATED"
             eliminated_count += 1
-        elif p["name"] in winners:
-            status = "WINNER"
-            finished_count += 1
         elif p["phase"] == "finished":
             status = "STILL IN"
             finished_count += 1
