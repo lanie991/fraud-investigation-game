@@ -11,6 +11,18 @@
         <div class="fe-sd-kicker">&#9889; SUDDEN DEATH &#9889;</div>
         <h1 class="fe-sd-title">You're tied for first!</h1>
 
+        {% if waiting %}
+        <div class="fe-sd-waiting">
+            <div class="fe-round-wait-spinner" aria-hidden="true"></div>
+            <strong>Get ready&hellip;</strong>
+            <span>
+                {% if rivals %}You're level with <b>{{ rivals|join(", ") }}</b>.{% endif %}
+                One question decides the winner. When the host starts sudden
+                death it appears here &mdash; you'll have {{ total_seconds }}
+                seconds to type your answer.
+            </span>
+        </div>
+        {% else %}
         <div class="fe-sd-timer" id="fe-sd-timer">{{ seconds_left }}</div>
 
         <p class="fe-sd-question">{{ question }}</p>
@@ -28,12 +40,25 @@
         </form>
         <p class="fe-sd-hint">Closest answer wins. If it's a tie, the fastest wins.</p>
         {% endif %}
+        {% endif %}
 
     </div>
 
 </div>
 
 <script>
+{% if waiting %}
+// Waiting room: check every 2 seconds and open the question as soon as
+// the host starts sudden death.
+setInterval(function () {
+    fetch("{{ url_for('elimination.sudden_death_status', name=name) }}", { cache: "no-store" })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (data.status) window.location.reload();
+        })
+        .catch(function () {});
+}, 2000);
+{% else %}
 document.addEventListener("DOMContentLoaded", function () {
     const timerEl = document.getElementById("fe-sd-timer");
     const form = document.getElementById("fe-sd-form");
@@ -70,6 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(function () {});
     }, 2000);
 });
+{% endif %}
 </script>
 
 {% endblock %}

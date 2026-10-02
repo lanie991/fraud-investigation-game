@@ -920,6 +920,14 @@ def top_tied(players, correct):
     return tied if len(tied) >= 2 else []
 
 
+def tied_player_names(connection):
+    """Names tied for first once everyone is done (empty otherwise)."""
+    players, correct = rank_players(connection)
+    if not game_is_over(players):
+        return []
+    return [p["name"] for p in top_tied(players, correct)]
+
+
 def sudden_death_state(connection, config):
     """(status, seconds_left). Closes sudden death once every tied player
     has answered or the time is up."""
@@ -1685,13 +1693,26 @@ def sudden_death(name):
     if player is None:
         connection.close()
         return redirect(url_for("elimination.join"))
-    if not player["in_sudden_death"]:
-        connection.close()
-        return redirect(url_for("elimination.results", name=name))
-    # results() forwards eliminated players to their own screen.
-
     config = get_config(connection)
     status, seconds_left = sudden_death_state(connection, config)
+
+    if not player["in_sudden_death"]:
+        # Tied for first but the host hasn't started sudden death yet:
+        # wait here, and the question appears as soon as it starts.
+        tied_names = tied_player_names(connection) if status is None else []
+        waiting = name in tied_names
+        connection.close()
+        if waiting:
+            return render_template(
+                "fe_sudden_death.html",
+                name=name,
+                waiting=True,
+                rivals=[n for n in tied_names if n != name],
+                total_seconds=SUDDEN_DEATH_SECONDS,
+                active_nav="play"
+            )
+        # results() forwards eliminated players to their own screen.
+        return redirect(url_for("elimination.results", name=name))
 
     if request.method == "POST":
         if status == "active" and player["sd_seconds"] is None:
@@ -1715,6 +1736,7 @@ def sudden_death(name):
     return render_template(
         "fe_sudden_death.html",
         name=name,
+        waiting=False,
         question=SUDDEN_DEATH["text"],
         answered=player["sd_seconds"] is not None,
         answer=player["sd_answer"],
@@ -1761,7 +1783,8 @@ def eliminated(name):
 
     config = get_config(connection)
     sd_status, _ = sudden_death_state(connection, config)
-    if sd_status == "active" and player["in_sudden_death"] and player["sd_seconds"] is None:
+    if ((sd_status == "active" and player["in_sudden_death"] and player["sd_seconds"] is None)
+            or (sd_status is None and name in tied_player_names(connection))):
         connection.close()
         return redirect(url_for("elimination.sudden_death", name=name))
 
@@ -1815,7 +1838,8 @@ def results(name):
 
     config = get_config(connection)
     sd_status, _ = sudden_death_state(connection, config)
-    if sd_status == "active" and player["in_sudden_death"] and player["sd_seconds"] is None:
+    if ((sd_status == "active" and player["in_sudden_death"] and player["sd_seconds"] is None)
+            or (sd_status is None and name in tied_player_names(connection))):
         connection.close()
         return redirect(url_for("elimination.sudden_death", name=name))
 

@@ -2913,3 +2913,25 @@ body:has(.fe-hero) .fe-main {
     font-size: 12px;
     font-weight: 700;
 }
+
+.fe-sd-waiting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 16px;
+    border-radius: 12px;
+    border: 1px dashed rgba(250, 204, 21, 0.45);
+    color: #cbd5e1;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.fe-sd-waiting strong {
+    color: #facc15;
+    font-size: 20px;
+}
+
+.fe-sd-waiting b {
+    color: #f8fafc;
+}
