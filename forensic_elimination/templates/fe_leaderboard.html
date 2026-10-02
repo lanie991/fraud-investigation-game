@@ -24,14 +24,14 @@
                 </div>
 
                 <div class="fe-leaderboard-name">{{ player["name"] }}</div>
-                <div class="fe-leaderboard-score">{{ correct.get(player["id"], 0) }}/{{ total_rounds }} correct</div>
+                <div class="fe-leaderboard-score">{{ player["score"] or 0 }} pts</div>
 
-                {% if player["status"] == "eliminated" %}
-                    <span class="fe-status-pill eliminated">ELIMINATED</span>
-                {% elif player["name"] in winners %}
+                {% if player["name"] in winners %}
                     <span class="fe-status-pill winner">WINNER</span>
+                {% elif player["phase"] == "finished" %}
+                    <span class="fe-status-pill in">FINISHED</span>
                 {% else %}
-                    <span class="fe-status-pill in">STILL IN</span>
+                    <span class="fe-status-pill in">PLAYING</span>
                 {% endif %}
             </div>
             {% endfor %}

@@ -1,5 +1,4 @@
 {% extends "fe_base.html" %}
-{% from "_hearts.html" import hearts %}
 
 {% block title %}{{ "Correct" if correct else "Incorrect" }} — Forensic Elimination{% endblock %}
 
@@ -17,25 +16,17 @@
             {{ "CORRECT!" if correct else "INCORRECT" }}
         </h1>
 
-        <div class="fe-feedback-points">
-            {% if correct %}
-                You survive to the next question!
-            {% else %}
-                Correct Answer: <strong style="color:#f8fafc;">{{ correct_answer }}</strong>
-            {% endif %}
+        <div class="fe-feedback-gain {{ 'plus' if points > 0 else '' }}">
+            {{ "+" if points > 0 else "" }}{{ points }} {{ "point" if points == 1 else "points" }}
         </div>
 
-        {% if lives_enabled and not correct %}
-        <div class="fe-feedback-lives">
-            {{ hearts(player['lives'], max_lives, just_lost=True) }}
-            {% if eliminated %}
-                <strong>OUT OF LIVES</strong> &mdash; you've been eliminated.
-            {% else %}
-                <strong>YOU LOST A LIFE!</strong>
-                {{ player["lives"] }} {{ "life" if player["lives"] == 1 else "lives" }} left.
-            {% endif %}
+        {% if not correct %}
+        <div class="fe-feedback-points">
+            Correct Answer: <strong style="color:#f8fafc;">{{ correct_answer }}</strong>
         </div>
         {% endif %}
+
+        <div class="fe-feedback-total">Your score: <strong>{{ player["score"] or 0 }}</strong></div>
 
         <div class="fe-feedback-explanation">
             <strong>EXPLANATION</strong>
@@ -44,7 +35,7 @@
 
         <form method="POST" action="{{ url_for('elimination.advance', name=name) }}">
             <button type="submit" class="fe-btn fe-btn-gold fe-btn-block">
-                {% if eliminated %}SEE RESULT{% else %}NEXT QUESTION{% endif %}
+                NEXT QUESTION
             </button>
         </form>
 

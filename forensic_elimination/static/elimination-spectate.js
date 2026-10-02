@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!board) return;
 
     function statusClass(status) {
-        if (status === "ELIMINATED") return "eliminated";
         if (status === "WINNER") return "winner";
         return "in";
     }
@@ -46,12 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Finished players wait here; once everyone is done, reload
                 // so the winner sees the winner screen and others their place.
                 if (data.game_over && board.dataset.reloadWhenOver) {
-                    window.location.reload();
-                }
-                // Sudden death started or finished: reload so tied players are
-                // sent to it and everyone sees the final result.
-                if (board.dataset.sdStatus !== undefined
-                        && (data.sd_status || "") !== board.dataset.sdStatus) {
                     window.location.reload();
                 }
             })

@@ -2306,134 +2306,6 @@ body:has(.fe-hero) .fe-main {
 }
 
 /* =========================================================
-   LIVES
-========================================================= */
-
-.fe-lives {
-    margin-top: 18px;
-}
-
-.fe-lives-hearts {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-}
-
-.fe-heart {
-    width: 24px;
-    height: 24px;
-    fill: #ef4444;
-    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.55));
-}
-
-.fe-heart.lost {
-    fill: #334155;
-    filter: none;
-}
-
-/* The heart lost on this answer cracks and fades out on the feedback screen */
-.fe-heart.just-lost {
-    animation: fe-heart-break 0.9s ease-out both;
-}
-
-@keyframes fe-heart-break {
-    0%   { fill: #ef4444; transform: scale(1); }
-    25%  { fill: #ef4444; transform: scale(1.35) rotate(-8deg); }
-    45%  { transform: scale(1.1) rotate(8deg); }
-    65%  { transform: scale(1) rotate(-4deg); }
-    100% { fill: #334155; transform: scale(1) rotate(0); }
-}
-
-.fe-feedback-lives {
-    margin: 4px 0 18px;
-    padding: 12px;
-    border-radius: 10px;
-    background: rgba(239, 68, 68, 0.08);
-    border: 1px solid rgba(239, 68, 68, 0.25);
-    color: #cbd5e1;
-    font-size: 14px;
-}
-
-.fe-feedback-lives .fe-lives-hearts {
-    margin-bottom: 8px;
-}
-
-.fe-feedback-lives strong {
-    color: #f87171;
-}
-
-.fe-host-lives {
-    display: inline-flex;
-    gap: 2px;
-    margin-left: 6px;
-}
-
-.fe-host-lives .fe-lives-hearts {
-    gap: 2px;
-}
-
-.fe-host-lives .fe-heart {
-    width: 13px;
-    height: 13px;
-    filter: none;
-}
-
-@media (max-width: 1000px) {
-    .fe-lives {
-        margin-top: 0;
-        flex-shrink: 0;
-    }
-
-    .fe-lives > h2 {
-        display: none;
-    }
-
-    .fe-lives-hearts {
-        gap: 3px;
-    }
-
-    .fe-side-panel .fe-heart {
-        width: 20px;
-        height: 20px;
-    }
-}
-
-.fe-round-wait {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px dashed rgba(250, 204, 21, 0.35);
-    color: #cbd5e1;
-    font-size: 14px;
-}
-
-.fe-round-wait[hidden],
-.fe-round-cleared-card a.fe-btn[hidden] {
-    display: none;
-}
-
-.fe-round-wait strong {
-    color: #f8fafc;
-    font-size: 16px;
-}
-
-.fe-round-wait-spinner {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 3px solid rgba(250, 204, 21, 0.2);
-    border-top-color: #facc15;
-    animation: fe-spin 0.9s linear infinite;
-}
-
-@keyframes fe-spin {
-    to { transform: rotate(360deg); }
-}
-
-/* =========================================================
    BIG SCREEN: INTERMISSION (answers + standings on the left)
 ========================================================= */
 
@@ -2673,265 +2545,80 @@ body:has(.fe-hero) .fe-main {
     100% { transform: scale(1); }
 }
 
-.fe-display-winner-trophy[hidden] {
-    display: none;
-}
+
+
 
 /* =========================================================
-   SUDDEN DEATH (player screen)
+   SCORE
 ========================================================= */
 
-.fe-sd-card {
-    border-color: rgba(250, 204, 21, 0.45);
-    box-shadow: 0 0 40px rgba(250, 204, 21, 0.15);
-}
-
-.fe-sd-kicker {
-    color: #facc15;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-}
-
-.fe-sd-title {
-    margin: 6px 0 14px;
-    color: #f8fafc;
-    font-family: "Rajdhani", sans-serif;
-    font-weight: 800;
-    font-size: 30px;
-}
-
-.fe-sd-timer {
-    width: 82px;
-    height: 82px;
-    margin: 0 auto 16px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 5px solid #2563eb;
-    color: #f8fafc;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 30px;
-    font-weight: 700;
-}
-
-.fe-sd-timer.low {
-    border-color: #ef4444;
-    color: #f87171;
-}
-
-.fe-sd-question {
-    margin: 0 0 18px;
-    color: #f8fafc;
-    font-size: 17px;
-    font-weight: 600;
-    line-height: 1.45;
-}
-
-.fe-sd-input {
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 12px;
-    padding: 16px;
-    border-radius: 12px;
-    border: 2px solid rgba(250, 204, 21, 0.5);
-    background: rgba(13, 18, 32, 0.9);
-    color: #f8fafc;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 26px;
-    font-weight: 700;
+.fe-score {
+    margin-top: 18px;
     text-align: center;
 }
 
-.fe-sd-input:focus {
-    outline: none;
-    border-color: #facc15;
-}
-
-.fe-sd-hint {
-    margin: 12px 0 0;
-    color: #94a3b8;
-    font-size: 13px;
-}
-
-.fe-sd-locked {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px dashed rgba(250, 204, 21, 0.45);
-    color: #cbd5e1;
-}
-
-.fe-sd-locked strong {
-    color: #facc15;
-    font-size: 20px;
-}
-
-/* =========================================================
-   BIG SCREEN: SUDDEN DEATH
-========================================================= */
-
-.fe-display-sd {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 28px 30px;
-    border-radius: 18px;
-    border: 1px solid rgba(250, 204, 21, 0.45);
-    background: radial-gradient(circle at 50% 0%, rgba(250, 204, 21, 0.14), rgba(13, 18, 32, 0.92) 70%);
-    box-shadow: 0 0 40px rgba(250, 204, 21, 0.15);
-}
-
-.fe-display-sd[hidden],
-.fe-display-sd [hidden],
-.fe-display-board[hidden],
-.fe-display-standings > .fe-display-label[hidden] {
-    display: none;
-}
-
-.fe-display-sd-head {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.fe-display-sd-kicker {
+.fe-score-value {
     color: #facc15;
     font-family: "Rajdhani", sans-serif;
-    font-weight: 800;
-    font-size: 44px;
-    letter-spacing: 0.08em;
-}
-
-.fe-display-sd-question {
-    margin: 16px auto 18px;
-    max-width: 820px;
-    color: #f8fafc;
-    font-size: 26px;
-    font-weight: 700;
-    line-height: 1.4;
-}
-
-.fe-display-sd-timer {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 7px solid #2563eb;
-    color: #f8fafc;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 46px;
-    font-weight: 700;
-}
-
-.fe-display-sd-timer.low {
-    border-color: #ef4444;
-    color: #f87171;
-}
-
-.fe-display-sd-answer {
-    margin: 0 0 20px;
-    color: #cbd5e1;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-}
-
-.fe-display-sd-answer strong {
-    color: #4ade80;
-    font-size: 54px;
-    margin-left: 8px;
-}
-
-.fe-display-sd-players {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
-}
-
-.fe-display-sd-player {
-    min-width: 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 14px 18px;
-    border-radius: 14px;
-    border: 1px solid rgba(96, 165, 250, 0.25);
-    background: rgba(13, 18, 32, 0.85);
-}
-
-.fe-display-sd-player.best {
-    border-color: #facc15;
-    box-shadow: 0 0 24px rgba(250, 204, 21, 0.35);
-}
-
-.fe-display-sd-player strong {
-    color: #f8fafc;
-    font-size: 22px;
-}
-
-.fe-display-sd-player .ok {
-    color: #4ade80;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.fe-display-sd-player .wait {
-    color: #94a3b8;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.fe-display-sd-player .guess {
-    color: #f87171;
-    font-family: "Rajdhani", sans-serif;
-    font-size: 40px;
+    font-size: 34px;
     font-weight: 800;
     line-height: 1;
 }
 
-.fe-display-sd-player .guess.exact {
-    color: #4ade80;
-}
-
-.fe-display-sd-player .secs {
+.fe-score-value span {
     color: #94a3b8;
     font-family: "JetBrains Mono", monospace;
     font-size: 12px;
     font-weight: 700;
 }
 
-.fe-sd-waiting {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 20px 16px;
-    border-radius: 12px;
-    border: 1px dashed rgba(250, 204, 21, 0.45);
+.fe-feedback-gain {
+    margin: 2px 0 10px;
+    color: #94a3b8;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.fe-feedback-gain.plus {
+    color: #4ade80;
+}
+
+.fe-feedback-total {
+    margin: 0 0 18px;
     color: #cbd5e1;
-    font-size: 15px;
-    line-height: 1.5;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
-.fe-sd-waiting strong {
+.fe-feedback-total strong {
     color: #facc15;
-    font-size: 20px;
+    font-size: 16px;
 }
 
-.fe-sd-waiting b {
-    color: #f8fafc;
+.fe-host-score {
+    min-width: 60px;
+    color: #facc15;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+}
+
+@media (max-width: 1000px) {
+    .fe-score {
+        margin-top: 0;
+        flex-shrink: 0;
+    }
+
+    .fe-score > h2 {
+        display: none;
+    }
+
+    .fe-score-value {
+        font-size: 26px;
+    }
 }

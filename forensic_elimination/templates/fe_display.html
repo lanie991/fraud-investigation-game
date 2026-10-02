@@ -57,16 +57,6 @@
             <div class="fe-display-stage" id="fe-display-stage">
 
                 <div class="fe-display-standings">
-                    <div class="fe-display-sd" id="fe-display-sd" hidden>
-                        <div class="fe-display-sd-head">
-                            <div class="fe-display-sd-kicker">&#9889; SUDDEN DEATH &#9889;</div>
-                            <button type="button" class="fe-btn fe-btn-gold" id="fe-sd-btn" hidden>&#127942; SHOW WINNER</button>
-                        </div>
-                        <div class="fe-display-sd-question" id="fe-sd-question"></div>
-                        <div class="fe-display-sd-timer" id="fe-sd-timer"></div>
-                        <div class="fe-display-sd-answer" id="fe-sd-answer" hidden></div>
-                        <div class="fe-display-sd-players" id="fe-sd-players"></div>
-                    </div>
                     <div class="fe-display-winner" id="fe-display-winner" hidden>
                         <div class="fe-display-winner-trophy" id="fe-winner-trophy">&#127942;</div>
                         <div class="fe-display-label" id="fe-winner-label">WINNER</div>
@@ -133,12 +123,7 @@
 
             const review = data.review;
             const next = data.progress.next_round;
-            const tied = (data.progress.tied || []);
-            if (data.phase === "finished" && tied.length) {
-                nextRoundBtn.hidden = !data.is_host;
-                nextRoundBtn.textContent = "\u26A1 START SUDDEN DEATH";
-                nextRoundBtn.dataset.action = "{{ url_for('elimination.host_sudden_death') }}";
-            } else if (data.phase === "finished") {
+            if (data.phase === "finished") {
                 nextRoundBtn.hidden = !data.is_host;
                 nextRoundBtn.textContent = "\uD83C\uDFC6 SHOW WINNER";
                 nextRoundBtn.dataset.action = "{{ url_for('elimination.host_show_winner') }}";
@@ -149,12 +134,11 @@
             }
 
             // Only redraw the cards when something changed, so the screen doesn't flicker.
-            const key = JSON.stringify(review) + data.phase + tied.join(",");
+            const key = JSON.stringify(review) + data.phase;
             if (key === lastReviewKey) return;
             lastReviewKey = key;
 
-            reviewKicker.textContent = data.phase !== "finished" ? "INTERMISSION"
-                : tied.length ? "TIE FOR FIRST: " + tied.join(" & ").toUpperCase() : "GAME OVER";
+            reviewKicker.textContent = data.phase === "finished" ? "GAME OVER" : "INTERMISSION";
             reviewTitle.innerHTML = "ROUND " + esc(review.round_number)
                 + ' <span class="diff-' + esc(String(review.difficulty).toLowerCase()) + '">'
                 + esc(review.difficulty) + "</span> ANSWERS";
@@ -179,69 +163,6 @@
         const standingsLabel = document.getElementById("fe-standings-label");
         let celebrated = false;
 
-        // Tiebreaker: question + countdown while it runs, then the answer
-        // and everyone's guesses (best first) before the winner is shown.
-        const sdEl = document.getElementById("fe-display-sd");
-        const sdBtn = document.getElementById("fe-sd-btn");
-        let sdTimerLocal = null;
-
-        function renderSudden(data) {
-            const sd = data.sudden_death;
-            const show = (data.phase === "sudden_death" || data.phase === "sudden_death_result") && sd;
-            sdEl.hidden = !show;
-            if (show) statsRow.hidden = true;
-            document.querySelector(".fe-display-standings > .fe-display-label").hidden = !!show;
-            board.hidden = !!show;
-            clearInterval(sdTimerLocal);
-            if (!show) return;
-
-            const running = data.phase === "sudden_death";
-            document.getElementById("fe-sd-question").textContent = sd.question;
-
-            const timerEl = document.getElementById("fe-sd-timer");
-            timerEl.hidden = !running;
-            if (running) {
-                let left = sd.seconds_left;
-                timerEl.textContent = left;
-                timerEl.classList.toggle("low", left <= 5);
-                sdTimerLocal = setInterval(function () {
-                    left = Math.max(0, left - 1);
-                    timerEl.textContent = left;
-                    timerEl.classList.toggle("low", left <= 5);
-                }, 1000);
-            }
-
-            const answerEl = document.getElementById("fe-sd-answer");
-            answerEl.hidden = running;
-            answerEl.innerHTML = running ? "" : "ANSWER: <strong>" + esc(sd.answer) + "</strong>";
-
-            let html = "";
-            sd.players.forEach(function (p, i) {
-                let detail;
-                if (running) {
-                    detail = p.answered ? '<span class="ok">&#10003; LOCKED IN</span>' : '<span class="wait">THINKING&hellip;</span>';
-                } else {
-                    detail = '<span class="guess ' + (p.exact ? "exact" : "") + '">' + esc(p.guess) + "</span>"
-                        + (p.seconds !== null ? '<span class="secs">' + Number(p.seconds).toFixed(1) + "s</span>" : '<span class="secs">no answer</span>');
-                }
-                html += '<div class="fe-display-sd-player ' + (!running && i === 0 ? "best" : "") + '">'
-                    + "<strong>" + esc(p.name) + "</strong>" + detail + "</div>";
-            });
-            document.getElementById("fe-sd-players").innerHTML = html;
-
-            sdBtn.hidden = !(data.is_host && !running);
-        }
-
-        sdBtn.addEventListener("click", function () {
-            sdBtn.disabled = true;
-            fetch("{{ url_for('elimination.host_show_winner') }}", {
-                method: "POST",
-                headers: { "X-Requested-With": "fetch" }
-            })
-                .then(function () { poll(); })
-                .finally(function () { sdBtn.disabled = false; });
-        });
-
         function renderWinner(data) {
             const show = data.phase === "winner";
             winnerEl.hidden = !show;
@@ -252,15 +173,8 @@
                 return;
             }
             const winner = data.players.find(function (p) { return p.status === "WINNER"; });
-            winnerName.textContent = winner ? winner.name : "No survivors";
-            // Everyone was eliminated: no trophy, and it's game over rather than a win.
-            document.getElementById("fe-winner-trophy").hidden = !winner;
-            document.getElementById("fe-winner-label").textContent = winner ? "WINNER" : "GAME OVER";
-            const wonTiebreak = data.sudden_death && winner
-                && data.sudden_death.players.length && data.sudden_death.players[0].name === winner.name;
-            winnerScore.textContent = winner
-                ? winner.progress + (wonTiebreak ? " \u00B7 won sudden death" : "")
-                : "Every investigator was eliminated";
+            winnerName.textContent = winner ? winner.name : "";
+            winnerScore.textContent = winner ? winner.progress + " \u00B7 " + winner.correct : "";
             if (!celebrated && winner) {
                 celebrated = true;
                 if (window.FE_CONFETTI) FE_CONFETTI.burst(6000);
@@ -278,7 +192,6 @@
         });
 
         function statusClass(status) {
-            if (status === "ELIMINATED") return "eliminated";
             if (status === "WINNER") return "winner";
             return "in";
         }
@@ -311,8 +224,6 @@
             }
             statsHtml += '<div class="fe-display-stat">'
                 + '<strong>' + data.finished_count + '</strong><span>FINISHED</span></div>';
-            statsHtml += '<div class="fe-display-stat eliminated">'
-                + '<strong>' + data.eliminated_count + '</strong><span>ELIMINATED</span></div>';
             statsRow.innerHTML = statsHtml;
 
             let boardHtml = "";
@@ -356,7 +267,6 @@
                         activeView.style.display = "block";
                         renderActive(data);
                         renderReview(data);
-                        renderSudden(data);
                     }
                 })
                 .catch(function () {});

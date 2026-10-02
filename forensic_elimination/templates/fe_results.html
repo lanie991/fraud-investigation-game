@@ -12,24 +12,18 @@
         <h1 class="fe-title" style="margin-bottom:10px;">WELL INVESTIGATED</h1>
 
         <p class="fe-subtitle" style="margin:0 auto 22px;">
-            You made it through every round without being eliminated.
-            {% if deciding and in_tie %}
-            <strong style="color:#facc15;">You're tied for first!</strong>
-            Stay on this screen &mdash; sudden death decides the winner.
-            {% elif deciding %}
-            There's a tie for first place. Sudden death will decide the winner.
-            {% elif game_over %}
+            You made it through all three rounds.
+            {% if game_over %}
             You finished <strong style="color:#facc15;">#{{ placement }}</strong>
             of {{ player_count }} investigators.
             {% else %}
-            The winner will be announced once every investigator has
-            finished or been eliminated.
+            The winner will be announced once every investigator has finished.
             {% endif %}
         </p>
 
         <div class="fe-winner-score">
-            <strong>{{ correct }}/{{ total_rounds }}</strong>
-            <span>QUESTIONS CORRECT</span>
+            <strong>{{ score }} PTS</strong>
+            <span>{{ correct }}/{{ total_rounds }} QUESTIONS CORRECT</span>
         </div>
 
         <div style="display:flex; gap:12px; flex-wrap:wrap;">
@@ -47,7 +41,7 @@
         <h2 style="margin:0 0 14px; color:#f8fafc; font-family:'Rajdhani',sans-serif; font-size:16px;">
             LIVE STANDINGS
         </h2>
-        <div id="fe-spectate-board" {% if not game_over %}data-reload-when-over="1"{% endif %} data-sd-status="{{ sd_status }}"></div>
+        <div id="fe-spectate-board" {% if not game_over %}data-reload-when-over="1"{% endif %}></div>
     </div>
 
 </div>

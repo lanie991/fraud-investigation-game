@@ -12,18 +12,13 @@
 
         <h1 class="fe-winner-title">CONGRATULATIONS!</h1>
         <p class="fe-winner-sub">
-            {% if player["status"] == "eliminated" %}
-            NOBODY SURVIVED &mdash; BUT YOU GOT THE MOST RIGHT!<br>
-            Knowledge. Analysis. Strategy. You went the furthest.
-            {% else %}
-            YOU ARE THE LAST INVESTIGATOR STANDING!<br>
-            Knowledge. Analysis. Strategy. You outlasted them all.
-            {% endif %}
+            YOU TOP THE LEADERBOARD!<br>
+            Knowledge. Analysis. Strategy. You outscored them all.
         </p>
 
         <div class="fe-winner-score">
-            <strong>{{ correct }}/{{ total_rounds }}</strong>
-            <span>QUESTIONS CORRECT</span>
+            <strong>{{ player["score"] or 0 }} PTS</strong>
+            <span>{{ correct }}/{{ total_rounds }} QUESTIONS CORRECT</span>
         </div>
 
         <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">

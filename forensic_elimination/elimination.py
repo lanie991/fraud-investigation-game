@@ -1,15 +1,15 @@
 """
 FORENSIC ELIMINATION
-A standalone Kahoot-style, single-elimination fraud trivia game that
-runs alongside the existing "Who Stole the Money?" investigation game.
+A standalone Kahoot-style fraud trivia game that runs alongside the
+existing "Who Stole the Money?" investigation game.
 
-Each player joins with a game PIN, then works through their own set of
-three rounds (Easy, Intermediate, Hard) at their own pace. A wrong
-answer eliminates them (when elimination is enabled).
+Each player joins with a game PIN and plays all three rounds (Easy,
+Intermediate, Hard). A correct answer scores 5 points, a wrong one 0,
+and each lifeline costs 1 point. Players wait between rounds so the
+answers can be reviewed on the big screen; the highest score wins.
 
-Questions live in QUESTION_BANK, a pool per round -- add more entries to
-any round's list to grow the pool further. One question per round is
-drawn at random each time a game starts or is reset.
+Questions live in QUESTION_BANK, a list per round. Every question is
+played, each player getting their own shuffle within each round.
 """
 
 from functools import wraps
@@ -50,24 +50,10 @@ DEFAULT_TIMER_SECONDS = 20
 # override the default before deploying somewhere other players can reach.
 HOST_PASSWORD = os.environ.get("FE_HOST_PASSWORD", "forensics2024")
 
-# Wrong answers (or running out of time) cost a life; a player is
-# eliminated when they run out.
-MAX_LIVES = 3
-
-# Tiebreaker: if two or more survivors finish level on correct answers,
-# only they play this question. They type the answer (no options). An
-# exact answer wins, the fastest exact answer if several get it; if
-# nobody gets it exactly, the closest guess wins.
-SUDDEN_DEATH = {
-    "text": (
-        "In 2018 Welshman Jeffery Bevan was jailed for stealing and laundering "
-        "$2.4 million from the Bermuda government. He was able to do so making "
-        "payments to himself before transferring the money to the UK. How many "
-        "bogus payments did he make to himself?"
-    ),
-    "answer": 52,
-}
-SUDDEN_DEATH_SECONDS = 30
+# Scoring: everyone plays every round.
+POINTS_CORRECT = 5
+POINTS_WRONG = 0
+LIFELINE_COST = 1
 
 AVATAR_IMAGES = {
     "detective_black": "detective.png",
@@ -108,9 +94,7 @@ def initialize_database():
             lifelines_enabled INTEGER NOT NULL DEFAULT 1,
             active_questions TEXT,
             released_round INTEGER DEFAULT 1,
-            winner_revealed INTEGER DEFAULT 0,
-            sudden_death_status TEXT,
-            sudden_death_started_at TEXT
+            winner_revealed INTEGER DEFAULT 0
         )
     """)
 
@@ -118,10 +102,6 @@ def initialize_database():
         row["name"]
         for row in connection.execute("PRAGMA table_info(fe_config)")
     }
-    for column in ("sudden_death_status", "sudden_death_started_at"):
-        if column not in existing_config_columns:
-            connection.execute(f"ALTER TABLE fe_config ADD COLUMN {column} TEXT")
-
     if "winner_revealed" not in existing_config_columns:
         connection.execute(
             "ALTER TABLE fe_config ADD COLUMN winner_revealed INTEGER DEFAULT 0"
@@ -153,12 +133,9 @@ def initialize_database():
             skip_used INTEGER DEFAULT 0,
             ask_team_used INTEGER DEFAULT 0,
             option_order TEXT,
-            lives INTEGER DEFAULT 3,
+            score INTEGER DEFAULT 0,
             question_order TEXT,
             finished_at TEXT,
-            in_sudden_death INTEGER DEFAULT 0,
-            sd_answer TEXT,
-            sd_seconds REAL,
             joined_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -194,15 +171,6 @@ def initialize_database():
             "ALTER TABLE fe_players ADD COLUMN option_order TEXT"
         )
 
-    if "in_sudden_death" not in existing_columns:
-        connection.execute(
-            "ALTER TABLE fe_players ADD COLUMN in_sudden_death INTEGER DEFAULT 0"
-        )
-    if "sd_answer" not in existing_columns:
-        connection.execute("ALTER TABLE fe_players ADD COLUMN sd_answer TEXT")
-    if "sd_seconds" not in existing_columns:
-        connection.execute("ALTER TABLE fe_players ADD COLUMN sd_seconds REAL")
-
     if "finished_at" not in existing_columns:
         connection.execute(
             "ALTER TABLE fe_players ADD COLUMN finished_at TEXT"
@@ -213,9 +181,9 @@ def initialize_database():
             "ALTER TABLE fe_players ADD COLUMN question_order TEXT"
         )
 
-    if "lives" not in existing_columns:
+    if "score" not in existing_columns:
         connection.execute(
-            f"ALTER TABLE fe_players ADD COLUMN lives INTEGER DEFAULT {MAX_LIVES}"
+            "ALTER TABLE fe_players ADD COLUMN score INTEGER DEFAULT 0"
         )
 
     connection.execute("""
@@ -717,18 +685,9 @@ def round_progress(connection, config):
     if config["status"] != "active":
         phase = "lobby"
     elif game_is_over(players):
-        # The last round's answers show first. A tie for first goes to
-        # sudden death; then the host reveals the winner.
+        # The last round's answers show first; the host then reveals the winner.
         revealed = config["winner_revealed"] if "winner_revealed" in config.keys() else 0
-        sd_status, _ = sudden_death_state(connection, config)
-        if revealed:
-            phase = "winner"
-        elif sd_status == "active":
-            phase = "sudden_death"
-        elif sd_status == "done":
-            phase = "sudden_death_result"
-        else:
-            phase = "finished"
+        phase = "winner" if revealed else "finished"
     elif complete and later:
         phase = "intermission"
     else:
@@ -741,8 +700,6 @@ def round_progress(connection, config):
         "done": done,
         "survivors": len(survivors),
         "complete": complete,
-        "tied": [p["name"] for p in top_tied(players, correct_counts(connection))]
-        if phase == "finished" else [],
     }
 
 
@@ -791,22 +748,15 @@ def grade_regular_answer(connection, player, config, answer):
     question_id = player_question_ids(config, player)[player["question_index"]]
     round_data = get_active_rounds(config)[question_id]
     correct = 1 if answer == round_data["correct"] else 0
-
-    new_status = player["status"]
-    lives = player["lives"]
-    if not correct and config["elimination_enabled"]:
-        lives = max(0, lives - 1)
-        if lives == 0:
-            new_status = "eliminated"
+    points = POINTS_CORRECT if correct else POINTS_WRONG
 
     connection.execute(
         """
         UPDATE fe_players
-        SET status = ?, lives = ?, answered_current = 1,
-            last_correct = ?
+        SET score = score + ?, answered_current = 1, last_correct = ?
         WHERE id = ?
         """,
-        (new_status, lives, correct, player["id"])
+        (points, correct, player["id"])
     )
 
     if answer in round_data["options"]:
@@ -858,15 +808,19 @@ def correct_counts(connection):
     }
 
 
+def score_label(player):
+    points = player["score"] or 0
+    return f"{points} pt" if abs(points) == 1 else f"{points} pts"
+
+
 def rank_players(connection):
-    """Players still in first, then most correct answers, then furthest
-    along, then whoever finished first."""
+    """Highest score first; ties go to most correct answers, then whoever
+    got furthest, then whoever finished first."""
     players = connection.execute("SELECT * FROM fe_players").fetchall()
     correct = correct_counts(connection)
     players.sort(key=lambda p: (
-        p["status"] == "eliminated",
+        -(p["score"] or 0),
         -correct.get(p["id"], 0),
-        sudden_death_rank(p),
         -p["question_index"],
         p["finished_at"] is None,
         p["finished_at"] or "",
@@ -882,91 +836,12 @@ def game_is_over(players):
     )
 
 
-def parse_guess(text):
-    """The number in a typed sudden-death answer ("52", "52 payments", "1,000")."""
-    match = re.search(r"-?\d[\d,]*", text or "")
-    if not match:
-        return None
-    try:
-        return int(match.group(0).replace(",", ""))
-    except ValueError:
-        return None
-
-
-def sudden_death_rank(player):
-    """Sort key among tied players: exact/closest answer first, then fastest."""
-    if not player["in_sudden_death"]:
-        return (float("inf"), float("inf"))
-    guess = parse_guess(player["sd_answer"])
-    distance = abs(guess - SUDDEN_DEATH["answer"]) if guess is not None else float("inf")
-    seconds = player["sd_seconds"] if player["sd_seconds"] is not None else float("inf")
-    return (distance, seconds)
-
-
-def winner_pool(players):
-    """Who can win: the survivors, or if nobody survived, everyone (the
-    most correct answers still wins)."""
-    survivors = [p for p in players if p["status"] == "in"]
-    return survivors or list(players)
-
-
-def top_tied(players, correct):
-    """Players level on the most correct answers, if two or more are."""
-    pool = winner_pool(players)
-    if len(pool) < 2:
-        return []
-    best = max(correct.get(p["id"], 0) for p in pool)
-    tied = [p for p in pool if correct.get(p["id"], 0) == best]
-    return tied if len(tied) >= 2 else []
-
-
-def tied_player_names(connection):
-    """Names tied for first once everyone is done (empty otherwise)."""
-    players, correct = rank_players(connection)
-    if not game_is_over(players):
-        return []
-    return [p["name"] for p in top_tied(players, correct)]
-
-
-def sudden_death_state(connection, config):
-    """(status, seconds_left). Closes sudden death once every tied player
-    has answered or the time is up."""
-    status = config["sudden_death_status"] if "sudden_death_status" in config.keys() else None
-    if status != "active":
-        return status, 0
-
-    elapsed = connection.execute(
-        "SELECT (julianday('now') - julianday(?)) * 86400 AS s",
-        (config["sudden_death_started_at"],)
-    ).fetchone()["s"] or 0
-    waiting = connection.execute(
-        "SELECT COUNT(*) AS c FROM fe_players WHERE in_sudden_death = 1 AND sd_seconds IS NULL"
-    ).fetchone()["c"]
-
-    # A couple of seconds' grace so an answer sent at 0 still counts.
-    if waiting == 0 or elapsed >= SUDDEN_DEATH_SECONDS + 2:
-        connection.execute("UPDATE fe_config SET sudden_death_status = 'done' WHERE id = 1")
-        connection.commit()
-        return "done", 0
-
-    return "active", max(0, int(SUDDEN_DEATH_SECONDS - elapsed + 0.999))
-
-
 def is_declared_winner(connection, player):
-    """The single winner: once nobody is still playing, the player with
-    the most correct answers (a survivor if anyone survived, otherwise
-    whoever got furthest). A tie for first is settled by sudden death."""
-    players, correct = rank_players(connection)
+    """The single winner: once everyone has finished, the highest score
+    (ties: most correct answers, then whoever finished first)."""
+    players, _ = rank_players(connection)
     if not game_is_over(players):
         return False
-    if player["id"] not in {p["id"] for p in winner_pool(players)}:
-        return False
-
-    if top_tied(players, correct):
-        status, _ = sudden_death_state(connection, get_config(connection))
-        if status != "done":
-            return False
-
     return players[0]["id"] == player["id"]
 
 
@@ -1049,7 +924,6 @@ def host():
         progress=progress,
         players=players,
         total_rounds=TOTAL_ROUNDS,
-        max_lives=MAX_LIVES,
         avatar_images=AVATAR_IMAGES,
         active_nav="settings"
     )
@@ -1086,16 +960,15 @@ def host_settings():
         except ValueError:
             timer_seconds = DEFAULT_TIMER_SECONDS
 
-        elimination_enabled = 1 if request.form.get("elimination_enabled") == "on" else 0
         lifelines_enabled = 1 if request.form.get("lifelines_enabled") == "on" else 0
 
         connection.execute(
             """
             UPDATE fe_config
-            SET timer_seconds = ?, elimination_enabled = ?, lifelines_enabled = ?
+            SET timer_seconds = ?, lifelines_enabled = ?
             WHERE id = 1
             """,
-            (timer_seconds, elimination_enabled, lifelines_enabled)
+            (timer_seconds, lifelines_enabled)
         )
         connection.commit()
 
@@ -1111,17 +984,16 @@ def host_start():
 
     if config["status"] == "lobby":
         connection.execute(
-            "UPDATE fe_config SET status = 'active', released_round = ?, winner_revealed = 0, sudden_death_status = NULL, sudden_death_started_at = NULL WHERE id = 1",
+            "UPDATE fe_config SET status = 'active', released_round = ?, winner_revealed = 0 WHERE id = 1",
             (first_round_number(get_active_rounds(config)),)
         )
         connection.execute(
             """
             UPDATE fe_players
             SET phase = 'question', question_index = 0,
-                answered_current = 0, phase_started_at = NULL, lives = ?
+                answered_current = 0, phase_started_at = NULL, score = 0
             WHERE phase = 'lobby'
-            """,
-            (MAX_LIVES,)
+            """
         )
 
         # Every player gets their own shuffle of the questions in each round.
@@ -1162,7 +1034,7 @@ def host_reset():
     connection.execute("DELETE FROM fe_answer_tally")
     connection.execute("DELETE FROM fe_answer_history")
     connection.execute(
-        "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ?, released_round = 1, winner_revealed = 0, sudden_death_status = NULL, sudden_death_started_at = NULL WHERE id = 1",
+        "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ?, released_round = 1, winner_revealed = 0 WHERE id = 1",
         (generate_pin(), json.dumps(pick_active_questions()))
     )
     connection.commit()
@@ -1398,8 +1270,7 @@ def play(name):
         timer_seconds=config["timer_seconds"],
         remaining_seconds=max(0, int(config["timer_seconds"] - elapsed)),
         lifelines_enabled=config["lifelines_enabled"],
-        lives_enabled=config["elimination_enabled"],
-        max_lives=MAX_LIVES,
+        lifeline_cost=LIFELINE_COST,
         removed_options=removed_options,
         players=players,
         players_remaining=remaining,
@@ -1427,10 +1298,10 @@ def use_fifty_fifty(name):
         connection.execute(
             """
             UPDATE fe_players
-            SET fifty_fifty_used = 1, lifeline_removed = ?
+            SET fifty_fifty_used = 1, lifeline_removed = ?, score = score - ?
             WHERE id = ?
             """,
-            (removed, player["id"])
+            (removed, LIFELINE_COST, player["id"])
         )
         connection.commit()
 
@@ -1458,8 +1329,8 @@ def use_ask_team(name):
     round_data = get_active_rounds(config)[question_id]
 
     connection.execute(
-        "UPDATE fe_players SET ask_team_used = 1 WHERE id = ?",
-        (player["id"],)
+        "UPDATE fe_players SET ask_team_used = 1, score = score - ? WHERE id = ?",
+        (LIFELINE_COST, player["id"])
     )
     connection.commit()
 
@@ -1542,8 +1413,7 @@ def feedback(name):
         correct=bool(player["last_correct"]),
         correct_answer=correct_answer,
         eliminated=(player["status"] == "eliminated"),
-        lives_enabled=config["elimination_enabled"],
-        max_lives=MAX_LIVES,
+        points=POINTS_CORRECT if player["last_correct"] else POINTS_WRONG,
         active_nav="play"
     )
 
@@ -1661,100 +1531,6 @@ def host_next_round():
     return redirect(url_for("elimination.host"))
 
 
-@elimination_bp.route("/host/sudden-death", methods=["POST"])
-@host_required
-def host_sudden_death():
-    """Start the tiebreaker for the players level on first place."""
-    connection = get_db()
-    config = get_config(connection)
-    progress = round_progress(connection, config)
-    if progress["phase"] == "finished" and progress["tied"]:
-        players, correct = rank_players(connection)
-        for p in top_tied(players, correct):
-            connection.execute(
-                "UPDATE fe_players SET in_sudden_death = 1, sd_answer = NULL, sd_seconds = NULL WHERE id = ?",
-                (p["id"],)
-            )
-        connection.execute(
-            "UPDATE fe_config SET sudden_death_status = 'active', sudden_death_started_at = datetime('now') WHERE id = 1"
-        )
-        connection.commit()
-    connection.close()
-
-    if request.headers.get("X-Requested-With") == "fetch":
-        return jsonify({"ok": True})
-    return redirect(url_for("elimination.host"))
-
-
-@elimination_bp.route("/sudden-death/<name>", methods=["GET", "POST"])
-def sudden_death(name):
-    connection = get_db()
-    player = get_player(connection, name)
-    if player is None:
-        connection.close()
-        return redirect(url_for("elimination.join"))
-    config = get_config(connection)
-    status, seconds_left = sudden_death_state(connection, config)
-
-    if not player["in_sudden_death"]:
-        # Tied for first but the host hasn't started sudden death yet:
-        # wait here, and the question appears as soon as it starts.
-        tied_names = tied_player_names(connection) if status is None else []
-        waiting = name in tied_names
-        connection.close()
-        if waiting:
-            return render_template(
-                "fe_sudden_death.html",
-                name=name,
-                waiting=True,
-                rivals=[n for n in tied_names if n != name],
-                total_seconds=SUDDEN_DEATH_SECONDS,
-                active_nav="play"
-            )
-        # results() forwards eliminated players to their own screen.
-        return redirect(url_for("elimination.results", name=name))
-
-    if request.method == "POST":
-        if status == "active" and player["sd_seconds"] is None:
-            elapsed = connection.execute(
-                "SELECT (julianday('now') - julianday(?)) * 86400 AS s",
-                (config["sudden_death_started_at"],)
-            ).fetchone()["s"]
-            answer = (request.form.get("answer") or "").strip()[:40]
-            connection.execute(
-                "UPDATE fe_players SET sd_answer = ?, sd_seconds = ? WHERE id = ?",
-                (answer, round(elapsed, 2), player["id"])
-            )
-            connection.commit()
-        connection.close()
-        return redirect(url_for("elimination.sudden_death", name=name))
-
-    connection.close()
-    if status != "active":
-        return redirect(url_for("elimination.results", name=name))
-
-    return render_template(
-        "fe_sudden_death.html",
-        name=name,
-        waiting=False,
-        question=SUDDEN_DEATH["text"],
-        answered=player["sd_seconds"] is not None,
-        answer=player["sd_answer"],
-        seconds_left=seconds_left,
-        total_seconds=SUDDEN_DEATH_SECONDS,
-        active_nav="play"
-    )
-
-
-@elimination_bp.route("/sudden-death-status/<name>")
-def sudden_death_status(name):
-    connection = get_db()
-    config = get_config(connection)
-    status, seconds_left = sudden_death_state(connection, config)
-    connection.close()
-    return jsonify({"status": status, "seconds_left": seconds_left})
-
-
 @elimination_bp.route("/host/show-winner", methods=["POST"])
 @host_required
 def host_show_winner():
@@ -1762,7 +1538,7 @@ def host_show_winner():
     connection = get_db()
     config = get_config(connection)
     progress = round_progress(connection, config)
-    if (progress["phase"] == "finished" and not progress["tied"]) or progress["phase"] == "sudden_death_result":
+    if progress["phase"] == "finished":
         connection.execute("UPDATE fe_config SET winner_revealed = 1 WHERE id = 1")
         connection.commit()
     connection.close()
@@ -1774,53 +1550,9 @@ def host_show_winner():
 
 @elimination_bp.route("/eliminated/<name>")
 def eliminated(name):
-    connection = get_db()
-    player = get_player(connection, name)
-
-    if player is None:
-        connection.close()
-        return redirect(url_for("elimination.join"))
-
-    config = get_config(connection)
-    sd_status, _ = sudden_death_state(connection, config)
-    if ((sd_status == "active" and player["in_sudden_death"] and player["sd_seconds"] is None)
-            or (sd_status is None and name in tied_player_names(connection))):
-        connection.close()
-        return redirect(url_for("elimination.sudden_death", name=name))
-
-    # If nobody survives, the most correct answers still wins.
-    winner = is_declared_winner(connection, player)
-    players, correct = rank_players(connection)
-    tied_names = [p["name"] for p in top_tied(players, correct)]
-    active_rounds = get_player_rounds(config, player)
-    connection.close()
-
-    game_over = game_is_over(players)
-    placement = next(i for i, p in enumerate(players, 1) if p["id"] == player["id"])
-    index = min(player["question_index"], len(active_rounds) - 1)
-
-    if winner:
-        return render_template(
-            "fe_winner.html", name=name, player=player,
-            correct=correct.get(player["id"], 0),
-            total_rounds=TOTAL_ROUNDS, active_nav="play"
-        )
-
-    return render_template(
-        "fe_eliminated.html",
-        name=name,
-        player=player,
-        round_number=active_rounds[index]["round_number"],
-        correct=correct.get(player["id"], 0),
-        total_rounds=TOTAL_ROUNDS,
-        game_over=game_over,
-        placement=placement,
-        player_count=len(players),
-        deciding=game_over and bool(tied_names) and sd_status != "done",
-        in_tie=name in tied_names,
-        sd_status=sd_status or "",
-        active_nav="play"
-    )
+    """Nobody is eliminated any more (everyone plays every round); old
+    links land on the results screen."""
+    return redirect(url_for("elimination.results", name=name))
 
 
 @elimination_bp.route("/results/<name>")
@@ -1832,32 +1564,18 @@ def results(name):
         connection.close()
         return redirect(url_for("elimination.join"))
 
-    if player["status"] == "eliminated":
-        connection.close()
-        return redirect(url_for("elimination.eliminated", name=name))
-
-    config = get_config(connection)
-    sd_status, _ = sudden_death_state(connection, config)
-    if ((sd_status == "active" and player["in_sudden_death"] and player["sd_seconds"] is None)
-            or (sd_status is None and name in tied_player_names(connection))):
-        connection.close()
-        return redirect(url_for("elimination.sudden_death", name=name))
-
     winner = is_declared_winner(connection, player)
     players, correct = rank_players(connection)
-    tied_names = [p["name"] for p in top_tied(players, correct)]
     connection.close()
 
     game_over = game_is_over(players)
     placement = next(i for i, p in enumerate(players, 1) if p["id"] == player["id"])
-    # First place is still being decided (tie, sudden death not finished).
-    deciding = game_over and bool(tied_names) and sd_status != "done"
 
     return render_template(
         "fe_winner.html" if winner else "fe_results.html",
         name=name, player=player, correct=correct.get(player["id"], 0),
+        score=player["score"] or 0,
         game_over=game_over, placement=placement, player_count=len(players),
-        deciding=deciding, in_tie=name in tied_names, sd_status=sd_status or "",
         total_rounds=TOTAL_ROUNDS, active_nav="play"
     )
 
@@ -1900,26 +1618,19 @@ def leaderboard_data():
     for p in players:
         if p["name"] in winners:
             status = "WINNER"
-        elif p["status"] == "eliminated":
-            status = "ELIMINATED"
+        elif p["phase"] == "finished":
+            status = "FINISHED"
         else:
-            status = "STILL IN"
+            status = "PLAYING"
 
         rows.append({
             "name": p["name"],
             "avatar": AVATAR_IMAGES.get(p["avatar"]),
-            "progress": f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS} correct",
+            "progress": score_label(p),
             "status": status
         })
 
-    sd_connection = get_db()
-    sd_status, _ = sudden_death_state(sd_connection, get_config(sd_connection))
-    sd_connection.close()
-    return jsonify({
-        "players": rows,
-        "game_over": game_is_over(players),
-        "sd_status": sd_status or ""
-    })
+    return jsonify({"players": rows, "game_over": game_is_over(players)})
 
 
 # =========================================================
@@ -1946,7 +1657,6 @@ def display_data():
     active_rounds = get_active_rounds(config)
     round_counts = {q["round_number"]: 0 for q in active_rounds}
     open_round = released_round(config, active_rounds)
-    eliminated_count = 0
     finished_count = 0
     waiting_count = 0
 
@@ -1956,18 +1666,12 @@ def display_data():
 
         if p["name"] in winners:
             status = "WINNER"
-            if p["status"] == "eliminated":
-                eliminated_count += 1
-            else:
-                finished_count += 1
-        elif p["status"] == "eliminated":
-            status = "ELIMINATED"
-            eliminated_count += 1
+            finished_count += 1
         elif p["phase"] == "finished":
-            status = "STILL IN"
+            status = "FINISHED"
             finished_count += 1
         elif p["phase"] == "question" and p["question_index"] < TOTAL_ROUNDS:
-            status = "STILL IN"
+            status = "PLAYING"
             round_number = active_rounds[p["question_index"]]["round_number"]
             if round_number > open_round:
                 # Done with the open round, waiting for the next to start.
@@ -1977,12 +1681,13 @@ def display_data():
             else:
                 round_counts[round_number] = round_counts.get(round_number, 0) + 1
         else:
-            status = "STILL IN"
+            status = "PLAYING"
 
         rows.append({
             "name": p["name"],
             "avatar": AVATAR_IMAGES.get(p["avatar"]),
-            "progress": f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS} correct",
+            "progress": score_label(p),
+            "correct": f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS} correct",
             "status": status,
             "round_number": round_number
         })
@@ -1993,46 +1698,17 @@ def display_data():
     if progress["phase"] in ("intermission", "finished"):
         review = round_review(review_connection, config, progress["round"])
 
-    sudden = None
-    if progress["phase"] in ("sudden_death", "sudden_death_result", "winner"):
-        _, seconds_left = sudden_death_state(review_connection, get_config(review_connection))
-        contenders = [p for p in players if p["in_sudden_death"]]
-        if contenders:
-            reveal = progress["phase"] != "sudden_death"
-            if not reveal:
-                # Ranked order would hint at who's closer, so list by name until the reveal.
-                contenders.sort(key=lambda p: p["name"].lower())
-            sudden = {
-                "question": SUDDEN_DEATH["text"],
-                "answer": SUDDEN_DEATH["answer"] if reveal else None,
-                "seconds_left": seconds_left,
-                "total_seconds": SUDDEN_DEATH_SECONDS,
-                "players": [
-                    {
-                        "name": p["name"],
-                        "answered": p["sd_seconds"] is not None,
-                        # Guesses stay hidden until sudden death is over.
-                        "guess": (p["sd_answer"] or "-") if reveal else None,
-                        "seconds": p["sd_seconds"] if reveal else None,
-                        "exact": reveal and parse_guess(p["sd_answer"]) == SUDDEN_DEATH["answer"],
-                    }
-                    # players is already ranked, so the sudden-death winner is first.
-                    for p in contenders
-                ],
-            }
     review_connection.close()
 
     return jsonify({
         "phase": progress["phase"],
         "progress": progress,
         "review": review,
-        "sudden_death": sudden,
         "is_host": bool(session.get("fe_is_host")),
         "game_status": config["status"],
         "pin": config["pin"],
         "players": rows,
         "round_counts": round_counts,
-        "eliminated_count": eliminated_count,
         "finished_count": finished_count,
         "waiting_count": waiting_count
     })

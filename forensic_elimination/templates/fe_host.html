@@ -1,5 +1,4 @@
 {% extends "fe_base.html" %}
-{% from "_hearts.html" import hearts %}
 
 {% block title %}Host — Forensic Elimination{% endblock %}
 
@@ -46,16 +45,12 @@
                         {% endif %}
                     </div>
                     <div class="fe-player-name">{{ player["name"] }}</div>
-                    {% if player["status"] == "eliminated" %}
-                        <span class="fe-status-pill eliminated">ELIMINATED</span>
-                    {% elif player["phase"] == "finished" %}
+                    {% if player["phase"] == "finished" %}
                         <span class="fe-status-pill winner">FINISHED</span>
                     {% else %}
                         <span class="fe-status-pill in">{{ [player["question_index"], total_rounds] | min }}/{{ total_rounds }}</span>
                     {% endif %}
-                    {% if config['elimination_enabled'] and player["status"] != "eliminated" %}
-                        <span class="fe-host-lives" title="{{ player['lives'] }} lives left">{{ hearts(player['lives'], max_lives) }}</span>
-                    {% endif %}
+                    <span class="fe-host-score">{{ player["score"] or 0 }} pts</span>
                     <form method="POST"
                           action="{{ url_for('elimination.host_kick', name=player['name']) }}"
                           onsubmit="return confirm('Remove {{ player['name']|e }} from the game?');">
@@ -88,14 +83,6 @@
                 </div>
 
                 <div class="fe-settings-row">
-                    <span>Elimination</span>
-                    <label class="fe-toggle">
-                        <input type="checkbox" name="elimination_enabled" {% if config['elimination_enabled'] %}checked{% endif %} {% if config['status'] != 'lobby' %}disabled{% endif %}>
-                        <span class="fe-toggle-slider"></span>
-                    </label>
-                </div>
-
-                <div class="fe-settings-row">
                     <span>Lifelines</span>
                     <label class="fe-toggle">
                         <input type="checkbox" name="lifelines_enabled" {% if config['lifelines_enabled'] %}checked{% endif %} {% if config['status'] != 'lobby' %}disabled{% endif %}>
@@ -123,11 +110,7 @@
             </button>
         </form>
         {% else %}
-        {% if progress["phase"] == "finished" and progress["tied"] %}
-        <form method="POST" action="{{ url_for('elimination.host_sudden_death') }}">
-            <button type="submit" class="fe-btn fe-btn-gold">&#9889; START SUDDEN DEATH ({{ progress["tied"]|join(" vs ") }})</button>
-        </form>
-        {% elif progress["phase"] in ("finished", "sudden_death_result") %}
+        {% if progress["phase"] == "finished" %}
         <form method="POST" action="{{ url_for('elimination.host_show_winner') }}">
             <button type="submit" class="fe-btn fe-btn-gold">&#127942; SHOW WINNER ON BIG SCREEN</button>
         </form>
