@@ -53,7 +53,7 @@ HOST_PASSWORD = os.environ.get("FE_HOST_PASSWORD", "forensics2024")
 # Scoring: everyone plays every round.
 POINTS_CORRECT = 5
 POINTS_WRONG = 0
-LIFELINE_COST = 1
+LIFELINE_COST = 1   # never takes a score below zero
 # Correct answers earn up to this many extra points for speed: +3 in the
 # first quarter of the timer, +2 in the second, +1 in the third.
 SPEED_BONUS_MAX = 3
@@ -1350,7 +1350,7 @@ def use_fifty_fifty(name):
         connection.execute(
             """
             UPDATE fe_players
-            SET fifty_fifty_used = 1, lifeline_removed = ?, score = score - ?
+            SET fifty_fifty_used = 1, lifeline_removed = ?, score = MAX(0, score - ?)
             WHERE id = ?
             """,
             (removed, LIFELINE_COST, player["id"])
@@ -1381,7 +1381,7 @@ def use_ask_team(name):
     round_data = get_active_rounds(config)[question_id]
 
     connection.execute(
-        "UPDATE fe_players SET ask_team_used = 1, score = score - ? WHERE id = ?",
+        "UPDATE fe_players SET ask_team_used = 1, score = MAX(0, score - ?) WHERE id = ?",
         (LIFELINE_COST, player["id"])
     )
     connection.commit()
