@@ -54,6 +54,12 @@ HOST_PASSWORD = os.environ.get("FE_HOST_PASSWORD", "forensics2024")
 POINTS_CORRECT = 5
 POINTS_WRONG = 0
 LIFELINE_COST = 1
+# Correct answers earn up to this many extra points for speed: +3 in the
+# first quarter of the timer, +2 in the second, +1 in the third.
+SPEED_BONUS_MAX = 3
+# Every STREAK_LENGTH correct answers in a row earns STREAK_BONUS extra.
+STREAK_LENGTH = 3
+STREAK_BONUS = 2
 
 AVATAR_IMAGES = {
     "detective_black": "detective.png",
@@ -134,6 +140,9 @@ def initialize_database():
             ask_team_used INTEGER DEFAULT 0,
             option_order TEXT,
             score INTEGER DEFAULT 0,
+            streak INTEGER DEFAULT 0,
+            last_speed_bonus INTEGER DEFAULT 0,
+            last_streak_bonus INTEGER DEFAULT 0,
             question_order TEXT,
             finished_at TEXT,
             joined_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -185,6 +194,13 @@ def initialize_database():
         connection.execute(
             "ALTER TABLE fe_players ADD COLUMN score INTEGER DEFAULT 0"
         )
+
+    # Running streak and the breakdown of the last answer's points.
+    for column in ("streak", "last_speed_bonus", "last_streak_bonus"):
+        if column not in existing_columns:
+            connection.execute(
+                f"ALTER TABLE fe_players ADD COLUMN {column} INTEGER DEFAULT 0"
+            )
 
     connection.execute("""
         CREATE TABLE IF NOT EXISTS fe_answer_tally (
@@ -635,6 +651,16 @@ def build_round_tracker(active_rounds, question_index):
     return tracker
 
 
+def question_position(active_rounds, question_index):
+    """'Question 3 of 7' within the current round."""
+    current = active_rounds[question_index]["round_number"]
+    in_round = [i for i, q in enumerate(active_rounds) if q["round_number"] == current]
+    return {
+        "question_in_round": in_round.index(question_index) + 1,
+        "questions_in_round": len(in_round),
+    }
+
+
 def starts_new_round(active_rounds, question_index):
     """True when question_index is the first question of a later round."""
     return (0 < question_index < len(active_rounds)
@@ -744,19 +770,42 @@ def players_remaining_count(connection):
     ).fetchone()["count"]
 
 
+def speed_bonus_for(connection, player, config):
+    """Extra points for answering quickly: the full bonus in the first
+    quarter of the timer, one less each quarter after that."""
+    if not player["phase_started_at"]:
+        return 0
+    elapsed = connection.execute(
+        "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
+        (player["phase_started_at"],)
+    ).fetchone()["seconds"] or 0
+    quarter = config["timer_seconds"] / 4
+    return max(0, SPEED_BONUS_MAX - int(elapsed // quarter))
+
+
 def grade_regular_answer(connection, player, config, answer):
     question_id = player_question_ids(config, player)[player["question_index"]]
     round_data = get_active_rounds(config)[question_id]
     correct = 1 if answer == round_data["correct"] else 0
-    points = POINTS_CORRECT if correct else POINTS_WRONG
+
+    speed_bonus = 0
+    streak = 0
+    streak_bonus = 0
+    if correct:
+        speed_bonus = speed_bonus_for(connection, player, config)
+        streak = (player["streak"] or 0) + 1
+        if streak % STREAK_LENGTH == 0:
+            streak_bonus = STREAK_BONUS
+    points = (POINTS_CORRECT + speed_bonus + streak_bonus) if correct else POINTS_WRONG
 
     connection.execute(
         """
         UPDATE fe_players
-        SET score = score + ?, answered_current = 1, last_correct = ?
+        SET score = score + ?, answered_current = 1, last_correct = ?,
+            streak = ?, last_speed_bonus = ?, last_streak_bonus = ?
         WHERE id = ?
         """,
-        (points, correct, player["id"])
+        (points, correct, streak, speed_bonus, streak_bonus, player["id"])
     )
 
     if answer in round_data["options"]:
@@ -991,7 +1040,8 @@ def host_start():
             """
             UPDATE fe_players
             SET phase = 'question', question_index = 0,
-                answered_current = 0, phase_started_at = NULL, score = 0
+                answered_current = 0, phase_started_at = NULL, score = 0,
+                streak = 0, last_speed_bonus = 0, last_streak_bonus = 0
             WHERE phase = 'lobby'
             """
         )
@@ -1266,6 +1316,8 @@ def play(name):
         ordered_options=ordered_options,
         rounds=active_rounds,
         tracker=build_round_tracker(active_rounds, player["question_index"]),
+        **question_position(active_rounds, player["question_index"]),
+        streak=player["streak"] or 0,
         current_round=round_data["round_number"],
         timer_seconds=config["timer_seconds"],
         remaining_seconds=max(0, int(config["timer_seconds"] - elapsed)),
@@ -1413,7 +1465,12 @@ def feedback(name):
         correct=bool(player["last_correct"]),
         correct_answer=correct_answer,
         eliminated=(player["status"] == "eliminated"),
-        points=POINTS_CORRECT if player["last_correct"] else POINTS_WRONG,
+        points=(POINTS_CORRECT + (player["last_speed_bonus"] or 0) + (player["last_streak_bonus"] or 0))
+        if player["last_correct"] else POINTS_WRONG,
+        base_points=POINTS_CORRECT,
+        speed_bonus=player["last_speed_bonus"] or 0,
+        streak_bonus=player["last_streak_bonus"] or 0,
+        streak=player["streak"] or 0,
         active_nav="play"
     )
 

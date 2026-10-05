@@ -77,6 +77,7 @@
             <span class="fe-difficulty-pill {{ question['difficulty']|lower }}">
                 {{ question["difficulty"] }}
             </span>
+            <span class="fe-question-count">QUESTION {{ question_in_round }} OF {{ questions_in_round }}</span>
             <span class="fe-remaining-text" id="fe-remaining-text">{{ players|length }} PLAYERS</span>
         </div>
 
@@ -121,6 +122,9 @@
         <div class="fe-score">
             <h2>SCORE</h2>
             <div class="fe-score-value">{{ player["score"] or 0 }} <span>pts</span></div>
+            {% if streak >= 2 %}
+            <div class="fe-streak">&#128293; {{ streak }} in a row</div>
+            {% endif %}
         </div>
 
         {% if lifelines_enabled %}

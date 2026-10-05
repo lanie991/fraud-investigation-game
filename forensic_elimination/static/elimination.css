@@ -2622,3 +2622,215 @@ body:has(.fe-hero) .fe-main {
         font-size: 26px;
     }
 }
+
+/* =========================================================
+   QUESTION COUNTER, STREAKS AND POINT BREAKDOWN
+========================================================= */
+
+.fe-question-count {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(148, 163, 184, 0.12);
+    color: #e2e8f0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.fe-streak {
+    margin-top: 6px;
+    color: #fb923c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.fe-feedback-breakdown {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -4px 0 12px;
+}
+
+.fe-feedback-breakdown span {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(74, 222, 128, 0.12);
+    color: #86efac;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.fe-feedback-breakdown span.speed {
+    background: rgba(96, 165, 250, 0.14);
+    color: #93c5fd;
+}
+
+.fe-feedback-breakdown span.streak {
+    background: rgba(251, 146, 60, 0.16);
+    color: #fdba74;
+}
+
+.fe-feedback-streak {
+    margin: 0 0 14px;
+    color: #fb923c;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    animation: fe-trophy-pop 0.6s ease-out both;
+}
+
+@media (max-width: 1000px) {
+    .fe-streak {
+        margin-top: 2px;
+        font-size: 10px;
+    }
+}
+
+/* =========================================================
+   BIG SCREEN: TOP-3 PODIUM
+========================================================= */
+
+.fe-display-winner {
+    max-width: 900px;
+}
+
+.fe-podium {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 14px;
+}
+
+.fe-podium-slot {
+    width: 230px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    animation: fe-podium-rise 0.9s ease-out forwards;
+}
+
+@keyframes fe-podium-rise {
+    0% { opacity: 0; transform: translateY(60px) scale(0.9); }
+    70% { opacity: 1; transform: translateY(-6px) scale(1.04); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.fe-podium-medal {
+    font-size: 46px;
+    line-height: 1;
+}
+
+.fe-podium-slot.place-1 .fe-podium-medal {
+    font-size: 64px;
+}
+
+.fe-podium-avatar {
+    width: 64px;
+    height: 64px;
+    margin: 8px 0 6px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #0d1220;
+    border: 2px solid rgba(148, 163, 184, 0.4);
+}
+
+.fe-podium-slot.place-1 .fe-podium-avatar {
+    width: 84px;
+    height: 84px;
+    border-color: #facc15;
+    box-shadow: 0 0 24px rgba(250, 204, 21, 0.5);
+}
+
+.fe-podium-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.fe-podium-name {
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.1;
+    text-align: center;
+}
+
+.fe-podium-slot.place-1 .fe-podium-name {
+    color: #facc15;
+    font-size: 40px;
+}
+
+.fe-podium-score {
+    color: #f8fafc;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.fe-podium-correct {
+    margin-bottom: 10px;
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.fe-podium-block {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 12px;
+    border-radius: 12px 12px 0 0;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 44px;
+    font-weight: 800;
+    color: rgba(15, 23, 42, 0.85);
+}
+
+.fe-podium-slot.place-1 .fe-podium-block {
+    height: 150px;
+    background: linear-gradient(180deg, #fde68a, #facc15 60%, #b45309);
+}
+
+.fe-podium-slot.place-2 .fe-podium-block {
+    height: 110px;
+    background: linear-gradient(180deg, #f1f5f9, #94a3b8);
+}
+
+.fe-podium-slot.place-3 .fe-podium-block {
+    height: 80px;
+    background: linear-gradient(180deg, #fdba74, #b45309);
+}
+
+@media (max-width: 800px) {
+    .fe-podium-slot {
+        width: 31%;
+    }
+
+    .fe-podium-name {
+        font-size: 18px;
+    }
+
+    .fe-podium-slot.place-1 .fe-podium-name {
+        font-size: 24px;
+    }
+}
+
+.fe-display-board,
+#fe-standings-label {
+    transition: opacity 0.8s ease;
+}
+
+.fe-reveal-wait {
+    opacity: 0;
+}

@@ -58,10 +58,8 @@
 
                 <div class="fe-display-standings">
                     <div class="fe-display-winner" id="fe-display-winner" hidden>
-                        <div class="fe-display-winner-trophy" id="fe-winner-trophy">&#127942;</div>
-                        <div class="fe-display-label" id="fe-winner-label">WINNER</div>
-                        <div class="fe-display-winner-name" id="fe-winner-name"></div>
-                        <div class="fe-display-winner-score" id="fe-winner-score"></div>
+                        <div class="fe-display-label">FINAL RESULTS</div>
+                        <div class="fe-podium" id="fe-podium"></div>
                     </div>
                     <div class="fe-display-label" id="fe-standings-label">LIVE STANDINGS</div>
                     <div class="fe-display-board" id="fe-display-board"></div>
@@ -156,29 +154,63 @@
         }
 
         // Once everyone's done the last round and the host reveals it, the
-        // standings move back to the middle under a winner banner.
+        // standings move back to the middle under a top-3 podium that
+        // reveals 3rd, then 2nd, then 1st.
         const winnerEl = document.getElementById("fe-display-winner");
-        const winnerName = document.getElementById("fe-winner-name");
-        const winnerScore = document.getElementById("fe-winner-score");
+        const podiumEl = document.getElementById("fe-podium");
         const standingsLabel = document.getElementById("fe-standings-label");
+        const REVEAL_GAP_MS = 2200;
         let celebrated = false;
 
         function renderWinner(data) {
             const show = data.phase === "winner";
             winnerEl.hidden = !show;
             standingsLabel.textContent = show ? "FINAL STANDINGS" : "LIVE STANDINGS";
-            if (data.phase === "winner") statsRow.hidden = true;
+            if (show) statsRow.hidden = true;
             if (!show) {
                 celebrated = false;
+                standingsLabel.classList.remove("fe-reveal-wait");
+                board.classList.remove("fe-reveal-wait");
                 return;
             }
-            const winner = data.players.find(function (p) { return p.status === "WINNER"; });
-            winnerName.textContent = winner ? winner.name : "";
-            winnerScore.textContent = winner ? winner.progress + " \u00B7 " + winner.correct : "";
-            if (!celebrated && winner) {
-                celebrated = true;
+            if (celebrated) return;   // build the podium once so the reveal doesn't replay
+            celebrated = true;
+
+            const top = data.players.slice(0, 3);
+            const medals = ["&#129351;", "&#129352;", "&#129353;"];
+            // Reveal order is 3rd, 2nd, 1st; on screen 2nd sits left, 1st middle, 3rd right.
+            const revealOrder = [];
+            for (let place = top.length; place >= 1; place--) revealOrder.push(place);
+            const slots = [2, 1, 3].filter(function (place) { return place <= top.length; });
+
+            let html = "";
+            slots.forEach(function (place) {
+                const p = top[place - 1];
+                const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
+                const delay = revealOrder.indexOf(place) * REVEAL_GAP_MS;
+                html += '<div class="fe-podium-slot place-' + place + '" style="animation-delay:' + delay + 'ms">'
+                    + '<div class="fe-podium-medal">' + medals[place - 1] + "</div>"
+                    + '<div class="fe-podium-avatar">' + avatarImg + "</div>"
+                    + '<div class="fe-podium-name">' + esc(p.name) + "</div>"
+                    + '<div class="fe-podium-score">' + esc(p.progress) + "</div>"
+                    + '<div class="fe-podium-correct">' + esc(p.correct) + "</div>"
+                    + '<div class="fe-podium-block">' + place + "</div>"
+                    + "</div>";
+            });
+            podiumEl.innerHTML = html;
+
+            // Confetti as 1st place appears; the full standings fade in
+            // afterwards so they don't give away the order early.
+            const firstDelay = revealOrder.indexOf(1) * REVEAL_GAP_MS;
+            standingsLabel.classList.add("fe-reveal-wait");
+            board.classList.add("fe-reveal-wait");
+            setTimeout(function () {
                 if (window.FE_CONFETTI) FE_CONFETTI.burst(6000);
-            }
+            }, firstDelay + 300);
+            setTimeout(function () {
+                standingsLabel.classList.remove("fe-reveal-wait");
+                board.classList.remove("fe-reveal-wait");
+            }, firstDelay + 1800);
         }
 
         nextRoundBtn.addEventListener("click", function () {

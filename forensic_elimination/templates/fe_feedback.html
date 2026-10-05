@@ -20,6 +20,18 @@
             {{ "+" if points > 0 else "" }}{{ points }} {{ "point" if points == 1 else "points" }}
         </div>
 
+        {% if correct and (speed_bonus or streak_bonus) %}
+        <div class="fe-feedback-breakdown">
+            <span>+{{ base_points }} correct</span>
+            {% if speed_bonus %}<span class="speed">&#9889; +{{ speed_bonus }} speed</span>{% endif %}
+            {% if streak_bonus %}<span class="streak">&#128293; +{{ streak_bonus }} streak</span>{% endif %}
+        </div>
+        {% endif %}
+
+        {% if correct and streak >= 2 %}
+        <div class="fe-feedback-streak">&#128293; {{ streak }} IN A ROW{% if streak_bonus %} &mdash; STREAK BONUS!{% endif %}</div>
+        {% endif %}
+
         {% if not correct %}
         <div class="fe-feedback-points">
             Correct Answer: <strong style="color:#f8fafc;">{{ correct_answer }}</strong>
