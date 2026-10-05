@@ -37,6 +37,8 @@
 
     <div class="fe-app">
 
+        <button type="button" class="fe-sound-toggle" id="fe-sound-toggle" aria-label="Sound on" title="Sound on/off">&#128266;</button>
+
         {% block top_header %}
         <header class="fe-topbar-simple">
             <a href="{{ url_for('elimination.home') }}" class="fe-brand">
@@ -80,6 +82,25 @@
         </nav>
 
     </div>
+
+<script>
+(function () {
+    // Sound on/off switch, shown on every player screen.
+    const btn = document.getElementById("fe-sound-toggle");
+    if (!btn || !window.FE_SFX || !FE_SFX.setMuted) return;
+    function show() {
+        const off = FE_SFX.isMuted();
+        btn.innerHTML = off ? "&#128263;" : "&#128266;";
+        btn.classList.toggle("off", off);
+        btn.setAttribute("aria-label", off ? "Sound off" : "Sound on");
+    }
+    btn.addEventListener("click", function () {
+        FE_SFX.setMuted(!FE_SFX.isMuted());
+        show();
+    });
+    show();
+})();
+</script>
 
 </body>
 

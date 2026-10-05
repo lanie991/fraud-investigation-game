@@ -8,7 +8,12 @@
 window.FE_SFX = (function () {
     let ctx = null;
 
+    // Players can switch sound off; the choice is remembered on their phone.
+    let muted = false;
+    try { muted = localStorage.getItem("fe_sound") === "off"; } catch (e) {}
+
     function getCtx() {
+        if (muted) return null;
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (!AudioContextClass) return null;
         if (!ctx) {
@@ -90,7 +95,21 @@ window.FE_SFX = (function () {
     document.addEventListener("keydown", unlock);
     document.addEventListener("touchstart", unlock);
 
+    function isMuted() {
+        return muted;
+    }
+
+    function setMuted(value) {
+        muted = !!value;
+        try { localStorage.setItem("fe_sound", muted ? "off" : "on"); } catch (e) {}
+        if (muted && ctx && ctx.state === "running") {
+            ctx.suspend().catch(function () {});
+        }
+    }
+
     return {
+        isMuted: isMuted,
+        setMuted: setMuted,
         playCorrect: playCorrect,
         playIncorrect: playIncorrect,
         playTick: playTick,

@@ -61,6 +61,7 @@
                         <div class="fe-display-label">FINAL RESULTS</div>
                         <div class="fe-podium" id="fe-podium"></div>
                     </div>
+                    <div class="fe-display-mvp" id="fe-display-mvp" hidden></div>
                     <div class="fe-display-label" id="fe-standings-label">LIVE STANDINGS</div>
                     <div class="fe-display-board" id="fe-display-board"></div>
                 </div>
@@ -258,22 +259,97 @@
                 + '<strong>' + data.finished_count + '</strong><span>FINISHED</span></div>';
             statsRow.innerHTML = statsHtml;
 
-            let boardHtml = "";
-            if (!data.players.length) {
-                boardHtml = '<div class="fe-player-empty">No investigators have joined yet.</div>';
-            } else {
-                data.players.forEach(function (p, index) {
-                    const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
-                    boardHtml += '<div class="fe-leaderboard-row fe-display-row">'
-                        + '<div class="fe-leaderboard-rank">' + (index + 1) + "</div>"
-                        + '<div class="fe-player-avatar">' + avatarImg + "</div>"
-                        + '<div class="fe-leaderboard-name">' + esc(p.name) + "</div>"
-                        + '<div class="fe-leaderboard-score">' + p.progress + "</div>"
-                        + '<span class="fe-status-pill ' + statusClass(p.status) + '">' + p.status + "</span>"
-                        + "</div>";
-                });
+            renderBoard(data.players);
+            renderMvp(data);
+        }
+
+        // Live standings: rows slide to their new position when the order
+        // changes, scores count up, and a "+N" pops next to anyone who just
+        // scored.
+        let lastScores = {};
+
+        function renderBoard(players) {
+            if (!players.length) {
+                board.innerHTML = '<div class="fe-player-empty">No investigators have joined yet.</div>';
+                lastScores = {};
+                return;
             }
-            board.innerHTML = boardHtml;
+
+            // Where every row is now, before redrawing.
+            const oldTops = {};
+            board.querySelectorAll(".fe-display-row").forEach(function (row) {
+                oldTops[row.dataset.name] = row.getBoundingClientRect().top;
+            });
+
+            let html = "";
+            players.forEach(function (p, index) {
+                const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
+                const before = lastScores[p.name];
+                const gained = before !== undefined ? p.score - before : 0;
+                html += '<div class="fe-leaderboard-row fe-display-row" data-name="' + esc(p.name) + '">'
+                    + '<div class="fe-leaderboard-rank">' + (index + 1) + "</div>"
+                    + '<div class="fe-player-avatar">' + avatarImg + "</div>"
+                    + '<div class="fe-leaderboard-name">' + esc(p.name) + "</div>"
+                    + '<div class="fe-leaderboard-score">'
+                    + '<span class="fe-score-num" data-from="' + (before !== undefined ? before : p.score)
+                    + '" data-to="' + p.score + '">' + (before !== undefined ? before : p.score) + " pts</span>"
+                    + (gained > 0 ? '<span class="fe-score-pop">+' + gained + "</span>" : "")
+                    + "</div>"
+                    + '<span class="fe-status-pill ' + statusClass(p.status) + '">' + p.status + "</span>"
+                    + "</div>";
+            });
+            board.innerHTML = html;
+
+            board.querySelectorAll(".fe-display-row").forEach(function (row) {
+                // Slide from the old position to the new one.
+                const oldTop = oldTops[row.dataset.name];
+                if (oldTop !== undefined) {
+                    const shift = oldTop - row.getBoundingClientRect().top;
+                    if (shift) {
+                        row.style.transition = "none";
+                        row.style.transform = "translateY(" + shift + "px)";
+                        row.getBoundingClientRect();   // apply the start position
+                        row.style.transition = "transform 0.8s cubic-bezier(.2,.8,.2,1)";
+                        row.style.transform = "";
+                        row.classList.add(shift > 0 ? "fe-row-up" : "fe-row-down");
+                    }
+                }
+                // Count the score up.
+                const scoreEl = row.querySelector(".fe-score-num");
+                const from = Number(scoreEl.dataset.from), to = Number(scoreEl.dataset.to);
+                if (from !== to) {
+                    const start = performance.now();
+                    (function step(now) {
+                        const t = Math.min(1, (now - start) / 900);
+                        const value = Math.round(from + (to - from) * t);
+                        scoreEl.textContent = value + (Math.abs(value) === 1 ? " pt" : " pts");
+                        if (t < 1) requestAnimationFrame(step);
+                    })(start);
+                } else {
+                    scoreEl.textContent = to + (Math.abs(to) === 1 ? " pt" : " pts");
+                }
+            });
+
+            lastScores = {};
+            players.forEach(function (p) { lastScores[p.name] = p.score; });
+        }
+
+        // Intermission: who scored the most in the round just played.
+        const mvpEl = document.getElementById("fe-display-mvp");
+
+        function renderMvp(data) {
+            const mvp = data.mvp;
+            const show = !!mvp && (data.phase === "intermission" || data.phase === "finished");
+            mvpEl.hidden = !show;
+            if (!show) return;
+            const avatarImg = mvp.avatar ? '<img src="/static/avatars/' + mvp.avatar + '" alt="">' : "";
+            mvpEl.innerHTML = '<div class="fe-display-mvp-medal">&#127941;</div>'
+                + '<div class="fe-player-avatar">' + avatarImg + "</div>"
+                + '<div class="fe-display-mvp-text">'
+                + "<span>ROUND " + esc(mvp.round_number) + " MVP</span>"
+                + "<strong>" + esc(mvp.name) + "</strong>"
+                + "</div>"
+                + '<div class="fe-display-mvp-points">+' + esc(mvp.points) + " pts</div>";
         }
 
         function poll() {

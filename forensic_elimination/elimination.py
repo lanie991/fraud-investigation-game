@@ -217,9 +217,19 @@ def initialize_database():
             player_id INTEGER NOT NULL,
             round_number INTEGER NOT NULL,
             answer TEXT,
-            correct INTEGER NOT NULL
+            correct INTEGER NOT NULL,
+            points INTEGER DEFAULT 0
         )
     """)
+
+    history_columns = {
+        row["name"]
+        for row in connection.execute("PRAGMA table_info(fe_answer_history)")
+    }
+    if "points" not in history_columns:
+        connection.execute(
+            "ALTER TABLE fe_answer_history ADD COLUMN points INTEGER DEFAULT 0"
+        )
 
     existing_config = connection.execute(
         "SELECT COUNT(*) AS count FROM fe_config"
@@ -729,6 +739,34 @@ def round_progress(connection, config):
     }
 
 
+def round_mvp(connection, config, round_number):
+    """Whoever scored the most points from answers in this round."""
+    active_rounds = get_active_rounds(config)
+    in_round = {i for i, q in enumerate(active_rounds) if q["round_number"] == round_number}
+    totals = {}
+    for row in connection.execute(
+        "SELECT player_id, round_number AS question_id, points FROM fe_answer_history"
+    ):
+        if row["question_id"] in in_round:
+            totals[row["player_id"]] = totals.get(row["player_id"], 0) + (row["points"] or 0)
+    if not totals:
+        return None
+    player_id, points = max(totals.items(), key=lambda item: item[1])
+    if points <= 0:
+        return None
+    player = connection.execute(
+        "SELECT name, avatar FROM fe_players WHERE id = ?", (player_id,)
+    ).fetchone()
+    if player is None:
+        return None
+    return {
+        "round_number": round_number,
+        "name": player["name"],
+        "avatar": AVATAR_IMAGES.get(player["avatar"]),
+        "points": points,
+    }
+
+
 def round_review(connection, config, round_number):
     """Every question in a round with its correct answer, for the
     intermission screen."""
@@ -821,10 +859,10 @@ def grade_regular_answer(connection, player, config, answer):
 
     connection.execute(
         """
-        INSERT INTO fe_answer_history (player_id, round_number, answer, correct)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO fe_answer_history (player_id, round_number, answer, correct, points)
+        VALUES (?, ?, ?, ?, ?)
         """,
-        (player["id"], question_id, answer, correct)
+        (player["id"], question_id, answer, correct, points)
     )
 
     connection.commit()
@@ -1744,6 +1782,7 @@ def display_data():
             "name": p["name"],
             "avatar": AVATAR_IMAGES.get(p["avatar"]),
             "progress": score_label(p),
+            "score": p["score"] or 0,
             "correct": f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS} correct",
             "status": status,
             "round_number": round_number
@@ -1752,8 +1791,10 @@ def display_data():
     review_connection = get_db()
     progress = round_progress(review_connection, config)
     review = None
+    mvp = None
     if progress["phase"] in ("intermission", "finished"):
         review = round_review(review_connection, config, progress["round"])
+        mvp = round_mvp(review_connection, config, progress["round"])
 
     review_connection.close()
 
@@ -1761,6 +1802,7 @@ def display_data():
         "phase": progress["phase"],
         "progress": progress,
         "review": review,
+        "mvp": mvp,
         "is_host": bool(session.get("fe_is_host")),
         "game_status": config["status"],
         "pin": config["pin"],
