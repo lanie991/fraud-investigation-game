@@ -21,7 +21,7 @@ html, body {
 
     background-image:
         linear-gradient(rgba(3, 5, 10, 0.35), rgba(3, 5, 10, 0.5)),
-        url("/static/images/home-bg.webp");
+        url("/static/images/fraud-files-bg.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
