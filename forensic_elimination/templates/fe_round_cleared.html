@@ -22,18 +22,21 @@
             <span class="fe-diff-word diff-{{ upcoming['difficulty']|lower }}">{{ upcoming["difficulty"] }}</span>!
         </p>
 
-        <div id="fe-round-wait" class="fe-round-wait" {% if released %}hidden{% endif %}>
+        {% if released %}
+        <div class="fe-round-wait">
+            <div class="fe-round-wait-spinner" aria-hidden="true"></div>
+            <strong>Round {{ upcoming["round_number"] }} is starting&hellip;</strong>
+            <span>Get ready!</span>
+        </div>
+        {% else %}
+        <div class="fe-round-wait">
             <div class="fe-round-wait-spinner" aria-hidden="true"></div>
             <strong>Waiting for everyone to finish this round&hellip;</strong>
             <span><span id="fe-round-wait-done">{{ progress["done"] }}</span> of
             <span id="fe-round-wait-total">{{ progress["survivors"] }}</span> investigators done.
-            Check the big screen for the answers!</span>
+            The host will start the next round &mdash; check the big screen for the answers!</span>
         </div>
-
-        <a id="fe-round-start" href="{{ url_for('elimination.play', name=name) }}"
-           class="fe-btn fe-btn-gold fe-btn-block" {% if not released %}hidden{% endif %}>
-            START ROUND {{ upcoming["round_number"] }}
-        </a>
+        {% endif %}
 
     </div>
 
@@ -45,7 +48,13 @@ document.addEventListener("DOMContentLoaded", function () {
     if (window.FE_CONFETTI && FE_CONFETTI.burst) { FE_CONFETTI.burst(); }
     if (window.FE_SFX && FE_SFX.playCorrect) { FE_SFX.playCorrect(); }
 
-    {% if not released %}
+    {% if released %}
+    // The host already started the next round: show the congrats for a
+    // moment, then carry straight on. Players never start rounds themselves.
+    setTimeout(function () {
+        window.location.href = "{{ url_for('elimination.play', name=name) }}";
+    }, 2500);
+    {% else %}
     // Wait here until the host opens the next round, then go straight in
     // so everyone starts together.
     const doneEl = document.getElementById("fe-round-wait-done");
