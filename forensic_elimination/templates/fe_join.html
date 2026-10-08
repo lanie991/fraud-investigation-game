@@ -52,7 +52,7 @@
                 <div class="fe-avatar-grid">
                     {% for value, filename in avatar_images.items() %}
                     <label class="fe-avatar-option">
-                        <input type="radio" name="avatar" value="{{ value }}" {% if loop.first %}checked{% endif %}>
+                        <input type="radio" name="avatar" value="{{ value }}" required>
                         <span class="fe-avatar-card">
                             <img src="{{ url_for('static', filename='avatars/' + filename) }}" alt="">
                         </span>

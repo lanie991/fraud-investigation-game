@@ -1167,7 +1167,7 @@ def join():
     if request.method == "POST":
         name = request.form.get("player_name", "").strip()
         pin = request.form.get("game_pin", "").strip().upper()
-        avatar = request.form.get("avatar", "detective_black").strip()
+        avatar = request.form.get("avatar", "").strip()
         island = request.form.get("island", "").strip()
 
         existing = get_player(connection, name) if name else None
@@ -1190,6 +1190,8 @@ def join():
             error = "This game has already started. Ask the host to reset for a new game."
         elif island not in ISLANDS:
             error = "Choose the island you're joining from."
+        elif avatar not in AVATAR_IMAGES:
+            error = "Choose an avatar."
         else:
             connection.execute(
                 """
