@@ -8,6 +8,13 @@
 
     <div class="fe-card fe-join-card">
 
+        {% if game_started %}
+        <h1>REJOIN GAME</h1>
+        <p class="fe-subtitle" style="margin-bottom:22px;">
+            Game in progress. Enter the same name you joined with to pick
+            up where you left off.
+        </p>
+        {% else %}
         <h1>JOIN GAME</h1>
         <p class="fe-subtitle" style="margin-bottom:22px;">
             Enter the game PIN from the host screen to join the investigation.
@@ -15,6 +22,7 @@
         <p class="fe-subtitle" style="margin:-12px 0 22px; font-size:13px;">
             Lost your connection? Enter the same name and PIN to rejoin.
         </p>
+        {% endif %}
 
         {% if error %}
         <div class="fe-error">{{ error }}</div>
@@ -32,6 +40,9 @@
                 <input type="text" id="game_pin" name="game_pin" placeholder="e.g. 7K4Q" required maxlength="8" style="text-transform:uppercase;" value="{{ prefill_pin }}">
             </div>
 
+            {# Once the game has started only rejoining is possible, so the
+               island and avatar (already saved) aren't asked for again. #}
+            {% if not game_started %}
             <div class="fe-field">
                 <label>YOUR ISLAND</label>
                 <div class="fe-island-grid">
@@ -61,8 +72,10 @@
                 </div>
             </div>
 
+            {% endif %}
+
             <button type="submit" class="fe-btn fe-btn-gold fe-btn-block">
-                JOIN INVESTIGATION &#8594;
+                {{ "REJOIN" if game_started else "JOIN INVESTIGATION" }} &#8594;
             </button>
 
         </form>

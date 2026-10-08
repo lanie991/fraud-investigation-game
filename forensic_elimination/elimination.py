@@ -1209,6 +1209,7 @@ def join():
     return render_template(
         "fe_join.html",
         error=error,
+        game_started=config["status"] != "lobby",
         avatar_images=AVATAR_IMAGES,
         active_nav="play",
         prefill_pin=request.args.get("pin", "").strip().upper()

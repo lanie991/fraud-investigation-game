@@ -47,6 +47,13 @@
 
         </div>
 
+        <!-- Small rejoin QR in the corner while the game is running -->
+        <div class="fe-display-rejoin" id="fe-display-rejoin" hidden>
+            <img id="fe-rejoin-qr" src="{{ url_for('elimination.qr_png') }}" alt="Scan to rejoin">
+            <span>Dropped out?<br>Scan to rejoin</span>
+            <small>PIN <strong id="fe-rejoin-pin"></strong></small>
+        </div>
+
         <!-- ACTIVE GAME VIEW -->
         <div id="fe-display-active" style="display:none;">
 
@@ -368,11 +375,15 @@
 
                     // A reset makes a new PIN: redraw the QR code so it
                     // matches the PIN on screen.
-                    const qrEl = document.getElementById("fe-display-qr");
-                    if (qrEl && qrEl.dataset.pin !== data.pin) {
-                        qrEl.dataset.pin = data.pin;
-                        qrEl.src = "{{ url_for('elimination.qr_png') }}?pin=" + encodeURIComponent(data.pin);
-                    }
+                    ["fe-display-qr", "fe-rejoin-qr"].forEach(function (id) {
+                        const qrEl = document.getElementById(id);
+                        if (qrEl && qrEl.dataset.pin !== data.pin) {
+                            qrEl.dataset.pin = data.pin;
+                            qrEl.src = "{{ url_for('elimination.qr_png') }}?pin=" + encodeURIComponent(data.pin);
+                        }
+                    });
+                    document.getElementById("fe-rejoin-pin").textContent = data.pin;
+                    document.getElementById("fe-display-rejoin").hidden = data.game_status === "lobby";
 
                     if (data.game_status === "lobby") {
                         lobbyView.style.display = "block";
