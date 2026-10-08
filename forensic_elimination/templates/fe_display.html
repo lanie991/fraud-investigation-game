@@ -102,6 +102,12 @@
         const nextRoundBtn = document.getElementById("fe-next-round-btn");
         let lastReviewKey = "";
 
+        function flag(p) {
+            return p && p.island
+                ? '<img class="fe-flag" src="/static/flags/' + esc(p.island) + '.svg" alt="' + esc(p.island_name) + '" title="' + esc(p.island_name) + '">'
+                : "";
+        }
+
         function esc(text) {
             const div = document.createElement("div");
             div.textContent = text == null ? "" : String(text);
@@ -193,6 +199,7 @@
                     + '<div class="fe-podium-medal">' + medals[place - 1] + "</div>"
                     + '<div class="fe-podium-avatar">' + avatarImg + "</div>"
                     + '<div class="fe-podium-name">' + esc(p.name) + "</div>"
+                    + (p.island ? '<div class="fe-podium-island">' + flag(p) + esc(p.island_name) + "</div>" : "")
                     + '<div class="fe-podium-score">' + esc(p.progress) + "</div>"
                     + '<div class="fe-podium-correct">' + esc(p.correct) + "</div>"
                     + '<div class="fe-podium-block">' + place + "</div>"
@@ -238,6 +245,7 @@
                 html += '<div class="fe-display-player-chip">'
                     + '<div class="fe-display-player-avatar">' + avatarImg + "</div>"
                     + "<div>" + esc(p.name) + "</div>"
+                    + (p.island ? '<div class="fe-display-chip-island">' + flag(p) + esc(p.island_name) + "</div>" : "")
                     + "</div>";
             });
             playersGrid.innerHTML = html;
@@ -289,7 +297,7 @@
                 html += '<div class="fe-leaderboard-row fe-display-row" data-name="' + esc(p.name) + '">'
                     + '<div class="fe-leaderboard-rank">' + (index + 1) + "</div>"
                     + '<div class="fe-player-avatar">' + avatarImg + "</div>"
-                    + '<div class="fe-leaderboard-name">' + esc(p.name) + "</div>"
+                    + '<div class="fe-leaderboard-name">' + flag(p) + esc(p.name) + "</div>"
                     + '<div class="fe-leaderboard-score">'
                     + '<span class="fe-score-num" data-from="' + (before !== undefined ? before : p.score)
                     + '" data-to="' + p.score + '">' + (before !== undefined ? before : p.score) + " pts</span>"
@@ -347,7 +355,7 @@
                 + '<div class="fe-player-avatar">' + avatarImg + "</div>"
                 + '<div class="fe-display-mvp-text">'
                 + "<span>ROUND " + esc(mvp.round_number) + " MVP</span>"
-                + "<strong>" + esc(mvp.name) + "</strong>"
+                + "<strong>" + flag(mvp) + esc(mvp.name) + "</strong>"
                 + "</div>"
                 + '<div class="fe-display-mvp-points">+' + esc(mvp.points) + " pts</div>";
         }

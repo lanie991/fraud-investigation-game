@@ -2971,3 +2971,96 @@ body:has(.fe-hero) .fe-main {
     border-color: rgba(148, 163, 184, 0.35);
     opacity: 0.8;
 }
+
+/* =========================================================
+   ISLANDS (flags next to names, island picker on join)
+========================================================= */
+
+.fe-flag {
+    display: inline-block;
+    width: 1.35em;
+    height: 1em;
+    margin-right: 0.4em;
+    vertical-align: -0.12em;
+    border-radius: 2px;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.fe-island-tag {
+    display: inline-flex;
+    align-items: center;
+}
+
+.fe-island-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+}
+
+.fe-island-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.fe-island-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(13, 18, 32, 0.75);
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.fe-island-card img {
+    width: 30px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.fe-island-option input:checked + .fe-island-card {
+    border-color: #facc15;
+    background: rgba(250, 204, 21, 0.12);
+    box-shadow: 0 0 0 1px #facc15;
+}
+
+.fe-island-option input:focus-visible + .fe-island-card {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+.fe-display-chip-island,
+.fe-podium-island {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.fe-podium-island {
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.fe-island-option {
+    position: relative;
+}
+
+.fe-display-mvp-text .fe-flag {
+    width: 24px;
+    height: 18px;
+    vertical-align: 0;
+}

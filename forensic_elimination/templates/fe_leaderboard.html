@@ -1,4 +1,5 @@
 {% extends "fe_base.html" %}
+{% from "_island.html" import island_flag with context %}
 
 {% block title %}Leaderboard — Fraud Files{% endblock %}
 
@@ -23,7 +24,7 @@
                     {% endif %}
                 </div>
 
-                <div class="fe-leaderboard-name">{{ player["name"] }}</div>
+                <div class="fe-leaderboard-name">{{ island_flag(player["island"]) }}{{ player["name"] }}</div>
                 <div class="fe-leaderboard-score">{{ player["score"] or 0 }} pts</div>
 
                 {% if player["name"] in winners %}

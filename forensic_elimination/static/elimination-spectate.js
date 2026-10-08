@@ -8,6 +8,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const board = document.getElementById("fe-spectate-board");
     if (!board) return;
 
+    function esc(text) {
+        const div = document.createElement("div");
+        div.textContent = text == null ? "" : String(text);
+        return div.innerHTML;
+    }
+
+    function flag(p) {
+        return p.island
+            ? '<img class="fe-flag" src="/static/flags/' + esc(p.island) + '.svg" alt="' + esc(p.island_name) + '" title="' + esc(p.island_name) + '">'
+            : "";
+    }
+
     function statusClass(status) {
         if (status === "WINNER") return "winner";
         return "in";
@@ -28,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
             html += '<div class="fe-leaderboard-row">'
                 + '<div class="fe-leaderboard-rank">' + (index + 1) + "</div>"
                 + '<div class="fe-player-avatar">' + avatarImg + "</div>"
-                + '<div class="fe-leaderboard-name">' + p.name + "</div>"
+                + '<div class="fe-leaderboard-name">' + flag(p) + esc(p.name) + "</div>"
                 + '<div class="fe-leaderboard-score">' + p.progress + "</div>"
                 + '<span class="fe-status-pill ' + statusClass(p.status) + '">' + p.status + "</span>"
                 + "</div>";

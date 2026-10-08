@@ -33,6 +33,21 @@
             </div>
 
             <div class="fe-field">
+                <label>YOUR ISLAND</label>
+                <div class="fe-island-grid">
+                    {% for code, island_name in islands.items() %}
+                    <label class="fe-island-option">
+                        <input type="radio" name="island" value="{{ code }}" required>
+                        <span class="fe-island-card">
+                            <img src="{{ url_for('static', filename='flags/' + code + '.svg') }}" alt="">
+                            <span>{{ island_name }}</span>
+                        </span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="fe-field">
                 <label>CHOOSE AN AVATAR</label>
                 <div class="fe-avatar-grid">
                     {% for value, filename in avatar_images.items() %}

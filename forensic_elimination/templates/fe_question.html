@@ -1,4 +1,5 @@
 {% extends "fe_base.html" %}
+{% from "_island.html" import island_flag with context %}
 
 {% block title %}Round {{ current_round }} — Fraud Files{% endblock %}
 
@@ -58,7 +59,7 @@
                     {% endif %}
                 </div>
                 <div class="fe-player-status-text">
-                    <strong>{{ p['name'] }}</strong>
+                    <strong>{{ island_flag(p['island']) }}{{ p['name'] }}</strong>
                     <span>IN PLAY</span>
                 </div>
             </div>

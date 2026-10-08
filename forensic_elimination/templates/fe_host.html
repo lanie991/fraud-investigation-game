@@ -1,4 +1,5 @@
 {% extends "fe_base.html" %}
+{% from "_island.html" import island_flag with context %}
 
 {% block title %}Host — Fraud Files{% endblock %}
 
@@ -44,7 +45,7 @@
                         <img src="{{ url_for('static', filename='avatars/' + avatar_images[player['avatar']]) }}" alt="">
                         {% endif %}
                     </div>
-                    <div class="fe-player-name">{{ player["name"] }}</div>
+                    <div class="fe-player-name">{{ island_flag(player["island"]) }}{{ player["name"] }}</div>
                     {% if player["phase"] == "finished" %}
                         <span class="fe-status-pill winner">FINISHED</span>
                     {% else %}

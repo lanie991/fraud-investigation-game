@@ -61,6 +61,19 @@ SPEED_BONUS_MAX = 3
 STREAK_LENGTH = 3
 STREAK_BONUS = 2
 
+# Deloitte CBC islands players pick from when they join (code -> name).
+# The code matches the flag file in static/flags/<code>.svg. Add, remove or
+# reorder entries here to change the list.
+ISLANDS = {
+    "bs": "The Bahamas",
+    "bb": "Barbados",
+    "bm": "Bermuda",
+    "vg": "British Virgin Islands",
+    "ky": "Cayman Islands",
+    "jm": "Jamaica",
+    "tt": "Trinidad & Tobago",
+}
+
 AVATAR_IMAGES = {
     "detective_black": "detective.png",
     "investigator_black": "investigator.png",
@@ -140,6 +153,7 @@ def initialize_database():
             ask_team_used INTEGER DEFAULT 0,
             option_order TEXT,
             score INTEGER DEFAULT 0,
+            island TEXT,
             streak INTEGER DEFAULT 0,
             last_speed_bonus INTEGER DEFAULT 0,
             last_streak_bonus INTEGER DEFAULT 0,
@@ -194,6 +208,9 @@ def initialize_database():
         connection.execute(
             "ALTER TABLE fe_players ADD COLUMN score INTEGER DEFAULT 0"
         )
+
+    if "island" not in existing_columns:
+        connection.execute("ALTER TABLE fe_players ADD COLUMN island TEXT")
 
     # Running streak and the breakdown of the last answer's points.
     for column in ("streak", "last_speed_bonus", "last_streak_bonus"):
@@ -755,7 +772,7 @@ def round_mvp(connection, config, round_number):
     if points <= 0:
         return None
     player = connection.execute(
-        "SELECT name, avatar FROM fe_players WHERE id = ?", (player_id,)
+        "SELECT name, avatar, island FROM fe_players WHERE id = ?", (player_id,)
     ).fetchone()
     if player is None:
         return None
@@ -763,6 +780,8 @@ def round_mvp(connection, config, round_number):
         "round_number": round_number,
         "name": player["name"],
         "avatar": AVATAR_IMAGES.get(player["avatar"]),
+        "island": player["island"] if player["island"] in ISLANDS else None,
+        "island_name": ISLANDS.get(player["island"], ""),
         "points": points,
     }
 
@@ -875,6 +894,11 @@ def host_required(view):
             return redirect(url_for("elimination.host_login", next=request.path))
         return view(*args, **kwargs)
     return wrapped
+
+
+@elimination_bp.app_context_processor
+def island_context():
+    return {"islands": ISLANDS}
 
 
 @elimination_bp.app_template_filter("allow_bold")
@@ -1144,6 +1168,7 @@ def join():
         name = request.form.get("player_name", "").strip()
         pin = request.form.get("game_pin", "").strip().upper()
         avatar = request.form.get("avatar", "detective_black").strip()
+        island = request.form.get("island", "").strip()
 
         existing = get_player(connection, name) if name else None
 
@@ -1163,13 +1188,15 @@ def join():
             error = "That name is already taken this game. Try another."
         elif config["status"] != "lobby":
             error = "This game has already started. Ask the host to reset for a new game."
+        elif island not in ISLANDS:
+            error = "Choose the island you're joining from."
         else:
             connection.execute(
                 """
-                INSERT INTO fe_players (name, avatar, status, phase)
-                VALUES (?, ?, 'in', 'lobby')
+                INSERT INTO fe_players (name, avatar, island, status, phase)
+                VALUES (?, ?, ?, 'in', 'lobby')
                 """,
-                (name, avatar)
+                (name, avatar, island)
             )
             connection.commit()
             connection.close()
@@ -1237,7 +1264,7 @@ def player_status(name):
 def players_status_json():
     connection = get_db()
     players = connection.execute(
-        "SELECT name, avatar, status FROM fe_players ORDER BY joined_at"
+        "SELECT name, avatar, status, island FROM fe_players ORDER BY joined_at"
     ).fetchall()
     connection.close()
 
@@ -1340,7 +1367,7 @@ def play(name):
     ]
 
     players = connection.execute(
-        "SELECT name, avatar, status FROM fe_players ORDER BY joined_at"
+        "SELECT name, avatar, status, island FROM fe_players ORDER BY joined_at"
     ).fetchall()
     remaining = sum(1 for p in players if p["status"] == "in")
 
@@ -1721,6 +1748,8 @@ def leaderboard_data():
         rows.append({
             "name": p["name"],
             "avatar": AVATAR_IMAGES.get(p["avatar"]),
+            "island": p["island"] if p["island"] in ISLANDS else None,
+            "island_name": ISLANDS.get(p["island"], ""),
             "progress": score_label(p),
             "status": status
         })
@@ -1781,6 +1810,8 @@ def display_data():
         rows.append({
             "name": p["name"],
             "avatar": AVATAR_IMAGES.get(p["avatar"]),
+            "island": p["island"] if p["island"] in ISLANDS else None,
+            "island_name": ISLANDS.get(p["island"], ""),
             "progress": score_label(p),
             "score": p["score"] or 0,
             "correct": f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS} correct",
