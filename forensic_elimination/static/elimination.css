@@ -3280,3 +3280,460 @@ body:has(.fe-hero) .fe-main {
 .fe-display-stage.split .fe-display-row.fe-rest .fe-player-avatar { width: 30px; height: 30px; }
 .fe-display-row.fe-medal .fe-flag { width: 30px; height: 21px; margin-right: 10px; }
 .fe-display-stage.split .fe-display-row.fe-medal .fe-flag { width: 22px; height: 15px; margin-right: 7px; }
+
+/* =========================================================
+   BIG SCREEN: LIVE ROUND LAYOUT
+   standings | questions & case files | live feed, plus a
+   "Did you know?" strip along the bottom
+========================================================= */
+
+.fe-display { position: relative; }
+
+.fe-display.live {
+    max-width: none;
+    padding: 22px 40px 100px;
+    text-align: left;
+}
+
+.fe-display.live .fe-display-logo {
+    justify-content: flex-start;
+    margin-bottom: 18px;
+}
+
+.fe-display.live .fe-display-stats-row {
+    position: absolute;
+    top: 28px;
+    right: 40px;
+    gap: 10px;
+}
+
+.fe-pill {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    background: rgba(13, 18, 32, 0.85);
+    color: #e2e8f0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.fe-pill.gold { color: #facc15; border-color: rgba(250, 204, 21, 0.4); }
+.fe-pill.green { color: #4ade80; }
+
+.fe-display-stage.live {
+    display: grid;
+    grid-template-columns: minmax(420px, 540px) minmax(0, 1fr) minmax(320px, 430px);
+    gap: 24px;
+    align-items: stretch;
+    margin-top: 0;
+}
+
+.fe-display-stage.live > * {
+    min-height: calc(100vh - 200px);
+    padding: 18px 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    background: rgba(11, 14, 24, 0.86);
+}
+
+.fe-display-stage.live .fe-display-board {
+    max-width: none;
+    margin-top: 12px;
+}
+
+.fe-display-stage.live #fe-standings-label { text-align: left; }
+
+.fe-spotlight[hidden],
+.fe-feed[hidden],
+.fe-ticker[hidden] {
+    display: none !important;
+}
+
+/* Spotlight */
+.fe-spotlight {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 34px 40px !important;
+}
+
+.fe-spot-kick {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+}
+
+.fe-spot-kick span { color: #facc15; font-size: 13px; }
+.fe-spot-kick em { margin-left: auto; color: #94a3b8; font-size: 14px; font-style: normal; }
+
+.fe-spot-question {
+    padding: 22px 10px 8px;
+    color: #ffffff;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.fe-spot-hush {
+    margin: 6px 0 26px;
+    color: #fbbf24;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.fe-spot-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.fe-spot-tile {
+    padding: 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    background: rgba(13, 18, 32, 0.85);
+    text-align: center;
+}
+
+.fe-spot-tile strong {
+    display: block;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 44px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.fe-spot-tile strong small { color: #64748b; font-size: 24px; }
+.fe-spot-tile.green strong { color: #4ade80; }
+.fe-spot-tile.gold strong { color: #facc15; }
+
+.fe-spot-tile span {
+    display: block;
+    margin-top: 8px;
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.fe-spot-meter {
+    height: 8px;
+    margin-top: 10px;
+    border-radius: 4px;
+    background: rgba(148, 163, 184, 0.2);
+    overflow: hidden;
+}
+
+.fe-spot-meter i { display: block; height: 100%; background: #4ade80; }
+
+.fe-spot-faces {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.fe-face {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #475569;
+    background: #0d1220;
+    overflow: hidden;
+    opacity: 0.3;
+    transition: opacity 0.4s, border-color 0.4s;
+}
+
+.fe-face img { width: 100%; height: 100%; object-fit: contain; }
+.fe-face.done { opacity: 1; border-color: #4ade80; }
+
+.fe-spot-waiting {
+    margin-top: 10px;
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: center;
+}
+
+/* Case file card */
+.fe-dossier {
+    position: relative;
+    padding: 26px 30px;
+    border-radius: 16px;
+    background: linear-gradient(160deg, #e8dcc0, #cdbd98);
+    color: #2b2113;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    transform: rotate(-0.6deg);
+}
+
+.fe-dossier h2 {
+    margin: 0;
+    padding-right: 170px;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 44px;
+    line-height: 1.05;
+}
+
+.fe-dossier-stamp {
+    position: absolute;
+    top: 22px;
+    right: 26px;
+    padding: 4px 14px;
+    border: 4px solid #b91c1c;
+    border-radius: 8px;
+    color: #b91c1c;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    transform: rotate(9deg);
+}
+
+.fe-dossier-tag {
+    margin-top: 6px;
+    color: #6b5636;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.fe-dossier-facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 22px 0;
+}
+
+.fe-dossier-facts div {
+    padding: 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.45);
+    text-align: center;
+}
+
+.fe-dossier-facts b {
+    display: block;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 36px;
+}
+
+.fe-dossier-facts small {
+    color: #6b5636;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.fe-dossier p { margin: 0; font-size: 19px; line-height: 1.45; }
+
+.fe-dossier-flag {
+    margin-top: 20px;
+    padding: 16px 20px;
+    border: 1px dashed #facc15;
+    border-radius: 14px;
+    background: rgba(250, 204, 21, 0.12);
+    color: #fde68a;
+    font-size: 21px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Slide timer + sequence */
+.fe-spotlight-timer { margin-top: 28px; }
+
+.fe-spotlight-bar {
+    height: 10px;
+    border-radius: 5px;
+    background: rgba(148, 163, 184, 0.18);
+    overflow: hidden;
+}
+
+.fe-spotlight-bar i {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #facc15, #f59e0b);
+}
+
+.fe-spotlight-next {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.fe-spotlight-seq {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 22px;
+}
+
+.fe-spotlight-seq i {
+    padding: 5px 9px;
+    border-radius: 6px;
+    background: rgba(148, 163, 184, 0.15);
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.fe-spotlight-seq i.on { background: #facc15; color: #111111; }
+
+/* Live feed (shorter, so the rejoin QR fits underneath) */
+.fe-display-stage.live > .fe-feed {
+    align-self: start;
+    min-height: calc(100vh - 390px);
+}
+
+.fe-feed .fe-display-label { margin-bottom: 14px; }
+
+.fe-feed-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 9px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    border-left: 3px solid #60a5fa;
+    background: rgba(13, 18, 32, 0.8);
+    color: #e2e8f0;
+    font-size: 15px;
+    line-height: 1.35;
+    animation: fe-feed-in 0.5s ease-out;
+}
+
+.fe-feed-item:first-child { background: rgba(251, 146, 60, 0.12); }
+.fe-feed-item.fire { border-left-color: #fb923c; }
+.fe-feed-item.lead { border-left-color: #4ade80; }
+.fe-feed-item.life { border-left-color: #a78bfa; }
+.fe-feed-item b { color: #ffffff; }
+.fe-feed-icon { font-size: 22px; line-height: 1; }
+.fe-feed-item small { display: block; margin-top: 2px; color: #64748b; font-size: 11px; }
+
+.fe-feed-empty {
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(13, 18, 32, 0.6);
+    color: #94a3b8;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+@keyframes fe-feed-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* "Did you know?" strip */
+.fe-ticker {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 25;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 40px;
+    background: rgba(250, 204, 21, 0.95);
+    color: #111111;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.fe-ticker b {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #111111;
+    color: #facc15;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+}
+
+.fe-has-ticker .fe-display-rejoin { bottom: 80px; }
+
+/* Smaller screens (laptops, 720p TVs): tighten the live layout */
+@media (max-width: 1600px) {
+    .fe-display.live { padding: 18px 24px 96px; }
+    .fe-display.live .fe-display-stats-row { top: 22px; right: 24px; }
+    .fe-pill { font-size: 12px; padding: 6px 10px; }
+    .fe-display-stage.live {
+        grid-template-columns: minmax(300px, 380px) minmax(0, 1fr) minmax(240px, 300px);
+        gap: 16px;
+    }
+    .fe-display-stage.live > * { padding: 14px; }
+    .fe-spotlight { padding: 22px 24px !important; }
+    .fe-spot-question { font-size: 34px; padding-top: 10px; }
+    .fe-spot-hush { font-size: 16px; margin-bottom: 18px; }
+    .fe-spot-tile { padding: 12px 8px; }
+    .fe-spot-tile strong { font-size: 32px; }
+    .fe-spot-tile span { font-size: 10px; letter-spacing: 0.06em; }
+    .fe-face { width: 32px; height: 32px; }
+    .fe-dossier { padding: 18px 20px; }
+    .fe-dossier h2 { font-size: 30px; padding-right: 130px; }
+    .fe-dossier-stamp { font-size: 18px; top: 16px; right: 16px; }
+    .fe-dossier-facts b { font-size: 26px; }
+    .fe-dossier p { font-size: 16px; }
+    .fe-dossier-flag { font-size: 16px; padding: 12px; }
+    .fe-feed-item { font-size: 13px; padding: 9px 10px; }
+    .fe-ticker { font-size: 16px; height: 54px; }
+    .fe-has-ticker .fe-display-rejoin { bottom: 70px; }
+
+    .fe-display-stage.live .fe-display-row.fe-medal { gap: 10px; padding: 10px 12px; }
+    .fe-display-stage.live .fe-display-row.fe-medal-1 { padding: 12px; }
+    .fe-display-stage.live .fe-display-row.fe-medal .fe-leaderboard-rank { font-size: 26px; }
+    .fe-display-stage.live .fe-display-row.fe-medal .fe-player-avatar { width: 42px; height: 42px; border-width: 2px; }
+    .fe-display-stage.live .fe-display-row.fe-medal-1 .fe-player-avatar { width: 50px; height: 50px; }
+    .fe-display-stage.live .fe-display-row.fe-medal .fe-leaderboard-name { font-size: 18px; }
+    .fe-display-stage.live .fe-display-row.fe-medal .fe-leaderboard-score { font-size: 30px; }
+    .fe-display-stage.live .fe-display-row.fe-medal-1 .fe-leaderboard-score { font-size: 36px; }
+    .fe-display-stage.live .fe-display-row.fe-medal .fe-flag { width: 22px; height: 15px; margin-right: 7px; }
+    .fe-display-stage.live .fe-display-row.fe-rest { padding: 8px 6px; font-size: 14px; }
+    .fe-display-stage.live .fe-display-row.fe-rest .fe-player-avatar { width: 30px; height: 30px; }
+}
+
+/* Very narrow: drop the live feed so the question has room */
+@media (max-width: 1150px) {
+    .fe-display-stage.live { grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); }
+    .fe-display-stage.live > .fe-feed { display: none !important; }
+    .fe-display.live .fe-display-stats-row { position: static; justify-content: flex-start; margin-bottom: 12px; }
+}
+
+/* Short screens (720p): fewer feed items, no slide labels, tighter cards */
+@media (max-height: 800px) {
+    .fe-feed-item:nth-child(n+5) { display: none; }
+    .fe-spotlight-seq { display: none; }
+    .fe-spotlight-timer { margin-top: 16px; }
+    .fe-spot-kick { margin-bottom: 10px; }
+    .fe-dossier-facts { margin: 12px 0; }
+    .fe-dossier-facts div { padding: 8px; }
+    .fe-dossier-flag { margin-top: 12px; }
+    .fe-spot-faces { margin-top: 12px; }
+}

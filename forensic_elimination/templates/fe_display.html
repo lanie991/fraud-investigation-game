@@ -84,13 +84,37 @@
                     <div class="fe-display-review-grid" id="fe-review-grid"></div>
                 </div>
 
+                <!-- While a round is played: the round's questions (no
+                     answers) take turns with real fraud case files. -->
+                <div class="fe-spotlight" id="fe-spotlight" hidden>
+                    <div class="fe-spotlight-slide" id="fe-spotlight-slide"></div>
+                    <div class="fe-spotlight-timer">
+                        <div class="fe-spotlight-bar"><i id="fe-spotlight-bar"></i></div>
+                        <div class="fe-spotlight-next"><span>NEXT SLIDE IN</span><span id="fe-spotlight-secs"></span></div>
+                    </div>
+                    <div class="fe-spotlight-seq" id="fe-spotlight-seq"></div>
+                </div>
+
+                <div class="fe-feed" id="fe-feed" hidden>
+                    <div class="fe-display-label">&#128225; LIVE FEED</div>
+                    <div id="fe-feed-list"></div>
+                </div>
+
             </div>
 
         </div>
 
     </div>
 
+    <div class="fe-ticker" id="fe-ticker" hidden>
+        <b>DID YOU KNOW?</b><span id="fe-ticker-text"></span>
+    </div>
+
     <script src="{{ url_for('static', filename='elimination-confetti.js') }}"></script>
+    <script>
+        window.FE_CASE_FILES = {{ case_files|tojson }};
+        window.FE_DID_YOU_KNOW = {{ did_you_know|tojson }};
+    </script>
     <script>
     document.addEventListener("DOMContentLoaded", function () {
         const lobbyView = document.getElementById("fe-display-lobby");
@@ -123,9 +147,15 @@
 
         function renderReview(data) {
             const showReview = data.phase === "intermission" || data.phase === "finished";
+            const live = data.phase === "playing" && !!data.spotlight;
             stage.classList.toggle("split", showReview);
+            stage.classList.toggle("live", live);
             statsRow.hidden = showReview;
             displayEl.classList.toggle("wide", showReview);
+            displayEl.classList.toggle("live", live);
+            renderSpotlight(data, live);
+            renderFeed(data, live);
+            renderTicker(data);
             reviewEl.hidden = !showReview;
             renderWinner(data);
             if (!showReview || !data.review) {
@@ -254,6 +284,15 @@
         }
 
         function renderActive(data) {
+            if (data.phase === "playing" && data.spotlight) {
+                const answering = data.players.filter(function (p) { return p.status === "PLAYING"; }).length;
+                statsRow.innerHTML = '<span class="fe-pill gold">ROUND ' + esc(data.spotlight.round) + "</span>"
+                    + '<span class="fe-pill">' + esc(data.spotlight.difficulty) + "</span>"
+                    + '<span class="fe-pill green">' + answering + " / " + data.players.length + " PLAYERS ANSWERING</span>";
+                renderBoard(data.players);
+                renderMvp(data);
+                return;
+            }
             let statsHtml = "";
             Object.keys(data.round_counts).sort().forEach(function (roundNum) {
                 statsHtml += '<div class="fe-display-stat">'
@@ -383,6 +422,179 @@
                 + '<div class="fe-display-mvp-points">+' + esc(mvp.points) + " pts</div>";
         }
 
+        // ---------- Spotlight: questions and case files take turns ----------
+        const SLIDE_MS = 20000;
+        const spotlightEl = document.getElementById("fe-spotlight");
+        const slideEl = document.getElementById("fe-spotlight-slide");
+        const slideBar = document.getElementById("fe-spotlight-bar");
+        const slideSecs = document.getElementById("fe-spotlight-secs");
+        const slideSeq = document.getElementById("fe-spotlight-seq");
+        const caseFiles = window.FE_CASE_FILES || [];
+        let spotData = null;
+        let slot = -1;            // even = question, odd = case file
+        let slotStarted = 0;
+        let questionTurn = -1;
+        let caseTurn = -1;
+        let spotRound = null;
+
+        function slotKind(n) {
+            return caseFiles.length && n % 2 === 1 ? "case" : "question";
+        }
+
+        function nextSlot() {
+            slot += 1;
+            slotStarted = Date.now();
+            if (slotKind(slot) === "case") caseTurn = (caseTurn + 1) % caseFiles.length;
+            else questionTurn += 1;
+            slideBar.style.transition = "none";
+            slideBar.style.width = "100%";
+            slideBar.getBoundingClientRect();
+            slideBar.style.transition = "width " + (SLIDE_MS / 1000) + "s linear";
+            slideBar.style.width = "0%";
+            drawSlide();
+        }
+
+        function questionSlide(q) {
+            const faces = q.faces.slice(0, 16).map(function (f) {
+                return '<span class="fe-face' + (f.done ? " done" : "") + '">'
+                    + (f.avatar ? '<img src="/static/avatars/' + f.avatar + '" alt="">' : "") + "</span>";
+            }).join("");
+            const waiting = q.players - q.answered;
+            const pct = q.correct_pct == null ? "&ndash;" : q.correct_pct + "%";
+            const fast = q.fastest
+                ? q.fastest.seconds + "s"
+                : "&ndash;";
+            return '<div class="fe-spot-kick"><span>&#129504; PLAY ALONG &middot; ROUND ' + esc(spotData.round) + ' QUESTION</span>'
+                + "<em>QUESTION " + q.number + " OF " + q.of + "</em></div>"
+                + '<div class="fe-spot-question">' + esc(q.text) + "</div>"
+                + '<div class="fe-spot-hush">&#129323; Watching? Play along in your head. No shouting out answers!</div>'
+                + '<div class="fe-spot-tiles">'
+                + '<div class="fe-spot-tile"><strong>' + q.answered + "<small>/" + q.players + "</small></strong><span>HAVE ANSWERED</span></div>"
+                + '<div class="fe-spot-tile green"><strong>' + pct + "</strong>"
+                + '<div class="fe-spot-meter"><i style="width:' + (q.correct_pct || 0) + '%"></i></div><span>GOT IT RIGHT</span></div>'
+                + '<div class="fe-spot-tile gold"><strong>' + fast + "</strong><span>&#9889; FASTEST"
+                + (q.fastest ? " &middot; " + flag(q.fastest) + esc(q.fastest.name).toUpperCase() : " CORRECT") + "</span></div>"
+                + "</div>"
+                + '<div class="fe-spot-faces">' + faces + "</div>"
+                + '<div class="fe-spot-waiting">' + (waiting > 0 ? waiting + " STILL THINKING&hellip;" : "EVERYONE HAS ANSWERED") + "</div>";
+        }
+
+        function caseSlide(c) {
+            const facts = c.facts.map(function (f) {
+                return "<div><b>" + esc(f[0]) + "</b><small>" + esc(f[1]) + "</small></div>";
+            }).join("");
+            const story = esc(c.story).replace(/&lt;b&gt;/g, "<b>").replace(/&lt;\/b&gt;/g, "</b>");
+            return '<div class="fe-spot-kick"><span>&#128450;&#65039; CASE FILE &middot; REAL FRAUD STORY</span><em>BETWEEN QUESTIONS</em></div>'
+                + '<div class="fe-dossier"><div class="fe-dossier-stamp">CLOSED</div>'
+                + "<h2>" + esc(c.title) + "</h2>"
+                + '<div class="fe-dossier-tag">' + esc(c.tagline) + "</div>"
+                + '<div class="fe-dossier-facts">' + facts + "</div>"
+                + "<p>" + story + "</p></div>"
+                + '<div class="fe-dossier-flag">&#128373;&#65039; Red flag: ' + esc(c.red_flag) + "</div>";
+        }
+
+        function drawSlide() {
+            if (!spotData || !spotData.questions.length) {
+                slideEl.innerHTML = "";
+                return;
+            }
+            if (slotKind(slot) === "case") {
+                slideEl.innerHTML = caseSlide(caseFiles[caseTurn]);
+            } else {
+                const qs = spotData.questions;
+                slideEl.innerHTML = questionSlide(qs[questionTurn % qs.length]);
+            }
+            let seq = "";
+            for (let i = 0; i < 6; i++) {
+                const kind = slotKind(slot + i);
+                seq += '<i class="' + (i === 0 ? "on" : "") + '">' + (kind === "case" ? "CASE FILE" : "QUESTION") + "</i>";
+            }
+            slideSeq.innerHTML = seq;
+        }
+
+        function renderSpotlight(data, live) {
+            spotlightEl.hidden = !live;
+            if (!live) {
+                spotData = null;
+                return;
+            }
+            spotData = data.spotlight;
+            if (spotRound !== spotData.round) {
+                // New round: start again from its first question.
+                spotRound = spotData.round;
+                slot = -1;
+                questionTurn = -1;
+                nextSlot();
+            } else {
+                drawSlide();
+            }
+        }
+
+        setInterval(function () {
+            if (!spotData) return;
+            const left = SLIDE_MS - (Date.now() - slotStarted);
+            if (left <= 0) nextSlot();
+            else slideSecs.textContent = Math.ceil(left / 1000) + "s";
+        }, 250);
+
+        // ---------- Live feed ----------
+        const feedEl = document.getElementById("fe-feed");
+        const feedList = document.getElementById("fe-feed-list");
+
+        function feedLine(e) {
+            const who = "<b>" + esc(e.name) + "</b>";
+            switch (e.kind) {
+                case "fast": return ["&#9889;", "speed", who + " answered in <b>" + esc(e.value) + " seconds</b>"];
+                case "streak": return ["&#128293;", "fire", who + " is on fire, <b>" + esc(e.value) + " in a row!</b>"];
+                case "lead": return ["&#128640;", "lead", who + " takes the <b>lead!</b>"];
+                case "round": {
+                    const parts = String(e.value || "").split("|");
+                    return ["&#127919;", "speed", who + " finished Round " + esc(parts[0]) + " with <b>" + esc(parts[1]) + "</b>"];
+                }
+                case "fifty": return ["&#9986;&#65039;", "life", who + " used <b>50/50</b>"];
+                case "team": return ["&#128735;", "life", who + " used <b>Ask the Team</b>"];
+            }
+            return ["&#8226;", "speed", who];
+        }
+
+        function ago(seconds) {
+            if (seconds < 10) return "just now";
+            if (seconds < 60) return seconds + "s ago";
+            return Math.floor(seconds / 60) + " min ago";
+        }
+
+        function renderFeed(data, live) {
+            feedEl.hidden = !live;
+            if (!live) return;
+            if (!data.feed.length) {
+                feedList.innerHTML = '<div class="fe-feed-empty">Big moments will show up here: streaks, lightning-fast answers and new leaders.</div>';
+                return;
+            }
+            feedList.innerHTML = data.feed.map(function (e) {
+                const line = feedLine(e);
+                return '<div class="fe-feed-item ' + line[1] + '"><span class="fe-feed-icon">' + line[0] + "</span>"
+                    + "<div>" + line[2] + "<small>" + ago(e.age) + "</small></div></div>";
+            }).join("");
+        }
+
+        // ---------- "Did you know?" strip ----------
+        const tickerEl = document.getElementById("fe-ticker");
+        const tickerText = document.getElementById("fe-ticker-text");
+        const facts = window.FE_DID_YOU_KNOW || [];
+        let factTurn = 0;
+        tickerText.textContent = facts[0] || "";
+        setInterval(function () {
+            if (!facts.length) return;
+            factTurn = (factTurn + 1) % facts.length;
+            tickerText.textContent = facts[factTurn];
+        }, SLIDE_MS);
+
+        function renderTicker(data) {
+            const show = facts.length > 0 && (data.phase === "playing" || data.phase === "intermission");
+            tickerEl.hidden = !show;
+            document.body.classList.toggle("fe-has-ticker", show);
+        }
+
         function poll() {
             fetch("/display-data", { cache: "no-store" })
                 .then(function (r) { return r.json(); })
@@ -405,6 +617,7 @@
                         lobbyView.style.display = "block";
                         activeView.style.display = "none";
                         renderLobby(data.players);
+                        renderTicker(data);
                     } else {
                         lobbyView.style.display = "none";
                         activeView.style.display = "block";

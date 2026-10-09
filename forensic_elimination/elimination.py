@@ -22,6 +22,8 @@ import re
 import sqlite3
 import string
 
+from big_screen_content import CASE_FILES, DID_YOU_KNOW
+
 flask = import_module("flask")
 qrcode = import_module("qrcode")
 
@@ -247,6 +249,21 @@ def initialize_database():
         connection.execute(
             "ALTER TABLE fe_answer_history ADD COLUMN points INTEGER DEFAULT 0"
         )
+    if "seconds" not in history_columns:
+        connection.execute(
+            "ALTER TABLE fe_answer_history ADD COLUMN seconds REAL"
+        )
+
+    # Things worth shouting about on the big screen's live feed.
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS fe_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            kind TEXT NOT NULL,
+            name TEXT NOT NULL,
+            value TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
 
     existing_config = connection.execute(
         "SELECT COUNT(*) AS count FROM fe_config"
@@ -827,23 +844,46 @@ def players_remaining_count(connection):
     ).fetchone()["count"]
 
 
+def seconds_on_question(connection, player):
+    """How long the player has been looking at the current question."""
+    if not player["phase_started_at"]:
+        return None
+    return connection.execute(
+        "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
+        (player["phase_started_at"],)
+    ).fetchone()["seconds"]
+
+
 def speed_bonus_for(connection, player, config):
     """Extra points for answering quickly: the full bonus in the first
     quarter of the timer, one less each quarter after that."""
-    if not player["phase_started_at"]:
+    elapsed = seconds_on_question(connection, player)
+    if elapsed is None:
         return 0
-    elapsed = connection.execute(
-        "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
-        (player["phase_started_at"],)
-    ).fetchone()["seconds"] or 0
     quarter = config["timer_seconds"] / 4
     return max(0, SPEED_BONUS_MAX - int(elapsed // quarter))
 
 
+def add_event(connection, kind, name, value=None):
+    connection.execute(
+        "INSERT INTO fe_events (kind, name, value) VALUES (?, ?, ?)",
+        (kind, name, None if value is None else str(value))
+    )
+
+
+def current_leader(connection):
+    players, _ = rank_players(connection)
+    return players[0]["name"] if players and (players[0]["score"] or 0) > 0 else None
+
+
 def grade_regular_answer(connection, player, config, answer):
-    question_id = player_question_ids(config, player)[player["question_index"]]
-    round_data = get_active_rounds(config)[question_id]
+    question_ids = player_question_ids(config, player)
+    question_id = question_ids[player["question_index"]]
+    active_rounds = get_active_rounds(config)
+    round_data = active_rounds[question_id]
     correct = 1 if answer == round_data["correct"] else 0
+    seconds = seconds_on_question(connection, player) if answer is not None else None
+    leader_before = current_leader(connection)
 
     speed_bonus = 0
     streak = 0
@@ -878,11 +918,35 @@ def grade_regular_answer(connection, player, config, answer):
 
     connection.execute(
         """
-        INSERT INTO fe_answer_history (player_id, round_number, answer, correct, points)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO fe_answer_history (player_id, round_number, answer, correct, points, seconds)
+        VALUES (?, ?, ?, ?, ?, ?)
         """,
-        (player["id"], question_id, answer, correct, points)
+        (player["id"], question_id, answer, correct, points, seconds)
     )
+
+    # Live feed on the big screen.
+    name = player["name"]
+    if correct and seconds is not None and round(seconds, 1) < 3:
+        add_event(connection, "fast", name, f"{seconds:.1f}")
+    if streak_bonus:
+        add_event(connection, "streak", name, streak)
+    leader_after = current_leader(connection)
+    if leader_after == name and leader_before != name:
+        add_event(connection, "lead", name)
+    position = player["question_index"]
+    this_round = round_data["round_number"]
+    is_last_in_round = (
+        position + 1 >= len(question_ids)
+        or active_rounds[question_ids[position + 1]]["round_number"] != this_round
+    )
+    if is_last_in_round:
+        round_ids = {i for i, q in enumerate(active_rounds) if q["round_number"] == this_round}
+        got = connection.execute(
+            "SELECT round_number AS qid, correct FROM fe_answer_history WHERE player_id = ?",
+            (player["id"],)
+        ).fetchall()
+        right = sum(1 for row in got if row["qid"] in round_ids and row["correct"])
+        add_event(connection, "round", name, f"{this_round}|{right}/{len(round_ids)}")
 
     connection.commit()
 
@@ -1094,6 +1158,7 @@ def host_start():
     config = get_config(connection)
 
     if config["status"] == "lobby":
+        connection.execute("DELETE FROM fe_events")
         connection.execute(
             "UPDATE fe_config SET status = 'active', released_round = ?, winner_revealed = 0 WHERE id = 1",
             (first_round_number(get_active_rounds(config)),)
@@ -1145,6 +1210,7 @@ def host_reset():
     connection.execute("DELETE FROM fe_players")
     connection.execute("DELETE FROM fe_answer_tally")
     connection.execute("DELETE FROM fe_answer_history")
+    connection.execute("DELETE FROM fe_events")
     connection.execute(
         "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ?, released_round = 1, winner_revealed = 0 WHERE id = 1",
         (generate_pin(), json.dumps(pick_active_questions()))
@@ -1423,6 +1489,7 @@ def use_fifty_fifty(name):
             """,
             (removed, LIFELINE_COST, player["id"])
         )
+        add_event(connection, "fifty", player["name"])
         connection.commit()
 
     connection.close()
@@ -1452,6 +1519,7 @@ def use_ask_team(name):
         "UPDATE fe_players SET ask_team_used = 1, score = MAX(0, score - ?) WHERE id = ?",
         (LIFELINE_COST, player["id"])
     )
+    add_event(connection, "team", player["name"])
     connection.commit()
 
     rows = connection.execute(
@@ -1764,11 +1832,78 @@ def leaderboard_data():
 # BIG-SCREEN DISPLAY (for projecting during an in-person game)
 # =========================================================
 
+def round_spotlight(connection, config, round_number):
+    """The open round's questions (no answers) with how the room is doing
+    on each one, for the big screen to cycle through."""
+    active_rounds = get_active_rounds(config)
+    players = [
+        p for p in connection.execute("SELECT * FROM fe_players ORDER BY joined_at, id")
+        if p["status"] == "in" and p["phase"] != "lobby"
+    ]
+    by_id = {p["id"]: p for p in players}
+    history = {}
+    for row in connection.execute(
+        "SELECT player_id, round_number AS qid, correct, seconds FROM fe_answer_history"
+    ):
+        history.setdefault(row["qid"], []).append(row)
+
+    questions = []
+    in_round = [i for i, q in enumerate(active_rounds) if q["round_number"] == round_number]
+    for position, qid in enumerate(in_round, start=1):
+        rows = [r for r in history.get(qid, []) if r["player_id"] in by_id]
+        answered_ids = {r["player_id"] for r in rows}
+        right = sum(1 for r in rows if r["correct"])
+        fastest = min(
+            (r for r in rows if r["correct"] and r["seconds"] is not None),
+            key=lambda r: r["seconds"],
+            default=None
+        )
+        fastest_player = by_id.get(fastest["player_id"]) if fastest else None
+        questions.append({
+            "number": position,
+            "of": len(in_round),
+            "text": active_rounds[qid]["text"],
+            "answered": len(answered_ids),
+            "players": len(players),
+            "correct_pct": round(right * 100 / len(rows)) if rows else None,
+            "fastest": {
+                "name": fastest_player["name"],
+                "island": fastest_player["island"] if fastest_player["island"] in ISLANDS else None,
+                "island_name": ISLANDS.get(fastest_player["island"], ""),
+                "seconds": round(fastest["seconds"], 1),
+            } if fastest_player else None,
+            "faces": [
+                {"avatar": AVATAR_IMAGES.get(p["avatar"]), "done": p["id"] in answered_ids}
+                for p in players
+            ],
+        })
+
+    return {
+        "round": round_number,
+        "difficulty": active_rounds[in_round[0]]["difficulty"] if in_round else "",
+        "questions": questions,
+    }
+
+
+def live_feed(connection, limit=7):
+    rows = connection.execute(
+        """
+        SELECT id, kind, name, value,
+               CAST((julianday('now') - julianday(created_at)) * 86400 AS INTEGER) AS age
+        FROM fe_events ORDER BY id DESC LIMIT ?
+        """,
+        (limit,)
+    ).fetchall()
+    return [dict(row) for row in rows]
+
+
 @elimination_bp.route("/display")
 def display():
     return render_template(
         "fe_display.html",
-        join_url=url_for("elimination.join", _external=True)
+        join_url=url_for("elimination.join", _external=True),
+        case_files=CASE_FILES,
+        did_you_know=DID_YOU_KNOW
     )
 
 
@@ -1826,9 +1961,13 @@ def display_data():
     progress = round_progress(review_connection, config)
     review = None
     mvp = None
+    spotlight = None
     if progress["phase"] in ("intermission", "finished"):
         review = round_review(review_connection, config, progress["round"])
         mvp = round_mvp(review_connection, config, progress["round"])
+    elif progress["phase"] == "playing":
+        spotlight = round_spotlight(review_connection, config, progress["round"])
+    feed = live_feed(review_connection) if config["status"] == "active" else []
 
     review_connection.close()
 
@@ -1837,6 +1976,8 @@ def display_data():
         "progress": progress,
         "review": review,
         "mvp": mvp,
+        "spotlight": spotlight,
+        "feed": feed,
         "is_host": bool(session.get("fe_is_host")),
         "game_status": config["status"],
         "pin": config["pin"],
