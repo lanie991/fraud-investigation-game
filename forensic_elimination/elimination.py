@@ -24,6 +24,11 @@ import string
 
 from big_screen_content import CASE_FILES, DID_YOU_KNOW
 
+# Changes every time the server starts (every deploy), so an open big
+# screen can notice it is running old page code and reload itself.
+import time as _time
+APP_VERSION = str(int(_time.time()))
+
 flask = import_module("flask")
 qrcode = import_module("qrcode")
 
@@ -1903,7 +1908,8 @@ def display():
         "fe_display.html",
         join_url=url_for("elimination.join", _external=True),
         case_files=CASE_FILES,
-        did_you_know=DID_YOU_KNOW
+        did_you_know=DID_YOU_KNOW,
+        app_version=APP_VERSION
     )
 
 
@@ -1978,6 +1984,7 @@ def display_data():
         "mvp": mvp,
         "spotlight": spotlight,
         "feed": feed,
+        "version": APP_VERSION,
         "is_host": bool(session.get("fe_is_host")),
         "game_status": config["status"],
         "pin": config["pin"],

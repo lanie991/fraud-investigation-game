@@ -114,6 +114,7 @@
     <script>
         window.FE_CASE_FILES = {{ case_files|tojson }};
         window.FE_DID_YOU_KNOW = {{ did_you_know|tojson }};
+        window.FE_VERSION = {{ app_version|tojson }};
     </script>
     <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -599,6 +600,12 @@
             fetch("/display-data", { cache: "no-store" })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
+                    // The game was updated since this page opened: reload
+                    // so the big screen shows the newest version.
+                    if (data.version && data.version !== window.FE_VERSION) {
+                        window.location.reload();
+                        return;
+                    }
                     pinEl.textContent = data.pin;
 
                     // A reset makes a new PIN: redraw the QR code so it
