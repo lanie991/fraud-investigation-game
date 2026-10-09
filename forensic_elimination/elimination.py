@@ -967,7 +967,14 @@ def host_required(view):
 
 @elimination_bp.app_context_processor
 def island_context():
-    return {"islands": ISLANDS}
+    return {"islands": ISLANDS, "app_version": APP_VERSION}
+
+
+@elimination_bp.route("/version")
+def version():
+    response = jsonify({"version": APP_VERSION})
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @elimination_bp.app_template_filter("allow_bold")

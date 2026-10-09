@@ -102,6 +102,27 @@
 })();
 </script>
 
+<script>
+// When the game is updated, every open page picks up the new version.
+// Pages where someone is typing (join form, host settings) are left alone.
+(function () {
+    var version = {{ app_version|tojson }};
+    setInterval(function () {
+        fetch("{{ url_for('elimination.version') }}", { cache: "no-store" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.version || data.version === version) return;
+                var typing = Array.prototype.some.call(
+                    document.querySelectorAll("input[type=text], input[type=password], input:not([type]), textarea"),
+                    function (el) { return el.value; }
+                );
+                if (!typing) window.location.reload();
+            })
+            .catch(function () {});
+    }, 20000);
+})();
+</script>
+
 </body>
 
 </html>
