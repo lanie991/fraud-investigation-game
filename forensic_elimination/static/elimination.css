@@ -3114,3 +3114,169 @@ body:has(.fe-hero) .fe-main {
 .fe-display-rejoin small strong {
     color: #facc15;
 }
+
+/* =========================================================
+   BIG SCREEN: MEDAL STANDINGS (top 3 cards, slim list below)
+========================================================= */
+
+.fe-display-row .fe-leaderboard-name {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.fe-display-row .fe-leaderboard-name > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fe-score-unit {
+    margin-left: 5px;
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.fe-rank-move {
+    margin-left: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.fe-rank-move.up { color: #4ade80; }
+.fe-rank-move.down { color: #f87171; }
+
+/* Top three */
+.fe-display-row.fe-medal {
+    gap: 16px;
+    padding: 14px 20px;
+    margin-bottom: 10px;
+    border-radius: 16px;
+    border: 1px solid rgba(250, 204, 21, 0.45);
+    background: linear-gradient(90deg, rgba(250, 204, 21, 0.16), rgba(13, 18, 32, 0.6)), rgba(8, 12, 22, 0.92);
+}
+
+.fe-display-row.fe-medal-1 {
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(250, 204, 21, 0.18);
+}
+
+.fe-display-row.fe-medal-2 {
+    border-color: rgba(203, 213, 225, 0.4);
+    background: linear-gradient(90deg, rgba(203, 213, 225, 0.14), rgba(13, 18, 32, 0.6)), rgba(8, 12, 22, 0.92);
+}
+
+.fe-display-row.fe-medal-3 {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.14), rgba(13, 18, 32, 0.6)), rgba(8, 12, 22, 0.92);
+}
+
+.fe-display-row.fe-medal .fe-leaderboard-rank {
+    width: auto;
+    font-size: 34px;
+    line-height: 1;
+}
+
+.fe-display-row.fe-medal-1 .fe-leaderboard-rank { font-size: 44px; }
+
+.fe-display-row.fe-medal .fe-player-avatar {
+    width: 58px;
+    height: 58px;
+    border: 3px solid #facc15;
+}
+
+.fe-display-row.fe-medal-1 .fe-player-avatar { width: 72px; height: 72px; }
+.fe-display-row.fe-medal-2 .fe-player-avatar { border-color: #cbd5e1; }
+.fe-display-row.fe-medal-3 .fe-player-avatar { border-color: #f59e0b; }
+
+.fe-display-row.fe-medal .fe-leaderboard-name {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.fe-display-row.fe-medal-1 .fe-leaderboard-name { font-size: 30px; }
+
+.fe-display-row.fe-medal .fe-leaderboard-score {
+    font-family: "Rajdhani", sans-serif;
+    font-size: 44px;
+    font-weight: 800;
+    line-height: 1;
+    color: #facc15;
+}
+
+.fe-display-row.fe-medal-1 .fe-leaderboard-score { font-size: 56px; }
+.fe-display-row.fe-medal-2 .fe-leaderboard-score { color: #e2e8f0; }
+.fe-display-row.fe-medal-3 .fe-leaderboard-score { color: #fbbf24; }
+
+.fe-display-row.fe-medal .fe-score-pop {
+    bottom: auto;
+    top: -22px;
+    background: #22c55e;
+    color: #04220f;
+    font-size: 14px;
+    padding: 2px 10px;
+}
+
+/* Everyone else: a plain list */
+.fe-display-row.fe-rest {
+    margin-bottom: 0;
+    padding: 12px 10px;
+    border: none;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 0;
+    background: rgba(8, 12, 22, 0.88);
+}
+
+.fe-display-row.fe-rest:last-child {
+    border-bottom: none;
+    border-radius: 0 0 12px 12px;
+}
+
+.fe-display-row.fe-medal-3 + .fe-rest {
+    margin-top: 8px;
+    border-radius: 12px 12px 0 0;
+}
+
+.fe-display-row.fe-medal-3 + .fe-rest:last-child {
+    border-radius: 12px;
+}
+
+.fe-display-row.fe-rest .fe-leaderboard-rank {
+    color: #64748b;
+    font-family: "Rajdhani", sans-serif;
+    font-weight: 800;
+    text-align: center;
+}
+
+.fe-display-row.fe-rest .fe-player-avatar {
+    width: 38px;
+    height: 38px;
+}
+
+.fe-display-row.fe-rest .fe-leaderboard-score {
+    font-family: "Rajdhani", sans-serif;
+    font-weight: 800;
+    color: #e2e8f0;
+}
+
+/* Smaller version when the standings sit on the left at an intermission */
+.fe-display-stage.split .fe-display-row.fe-medal { gap: 10px; padding: 10px 12px; }
+.fe-display-stage.split .fe-display-row.fe-medal-1 { padding: 12px; }
+.fe-display-stage.split .fe-display-row.fe-medal .fe-leaderboard-rank { font-size: 24px; }
+.fe-display-stage.split .fe-display-row.fe-medal .fe-player-avatar { width: 40px; height: 40px; border-width: 2px; }
+.fe-display-stage.split .fe-display-row.fe-medal-1 .fe-player-avatar { width: 46px; height: 46px; }
+.fe-display-stage.split .fe-display-row.fe-medal .fe-leaderboard-name { font-size: 17px; }
+.fe-display-stage.split .fe-display-row.fe-medal .fe-leaderboard-score { font-size: 28px; }
+.fe-display-stage.split .fe-display-row.fe-medal-1 .fe-leaderboard-score { font-size: 32px; }
+.fe-display-stage.split .fe-display-row.fe-rest { padding: 8px 6px; }
+.fe-display-stage.split .fe-display-row.fe-rest .fe-player-avatar { width: 30px; height: 30px; }
+.fe-display-row.fe-medal .fe-flag { width: 30px; height: 21px; margin-right: 10px; }
+.fe-display-stage.split .fe-display-row.fe-medal .fe-flag { width: 22px; height: 15px; margin-right: 7px; }

@@ -238,11 +238,6 @@
                 .finally(function () { nextRoundBtn.disabled = false; });
         });
 
-        function statusClass(status) {
-            if (status === "WINNER") return "winner";
-            return "in";
-        }
-
         function renderLobby(players) {
             joinedCountEl.textContent = players.length;
 
@@ -282,11 +277,14 @@
         // changes, scores count up, and a "+N" pops next to anyone who just
         // scored.
         let lastScores = {};
+        let lastRanks = {};
+        const rankMoves = {};
 
         function renderBoard(players) {
             if (!players.length) {
                 board.innerHTML = '<div class="fe-player-empty">No investigators have joined yet.</div>';
                 lastScores = {};
+                lastRanks = {};
                 return;
             }
 
@@ -297,20 +295,37 @@
             });
 
             let html = "";
+            const now = Date.now();
             players.forEach(function (p, index) {
                 const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
                 const before = lastScores[p.name];
                 const gained = before !== undefined ? p.score - before : 0;
-                html += '<div class="fe-leaderboard-row fe-display-row" data-name="' + esc(p.name) + '">'
-                    + '<div class="fe-leaderboard-rank">' + (index + 1) + "</div>"
+
+                // Remember a change of place for a few seconds so the arrow
+                // stays up long enough to read.
+                const oldRank = lastRanks[p.name];
+                if (oldRank !== undefined && oldRank !== index + 1) {
+                    rankMoves[p.name] = { by: oldRank - (index + 1), at: now };
+                }
+                const move = rankMoves[p.name];
+                const arrow = move && now - move.at < 8000
+                    ? '<span class="fe-rank-move ' + (move.by > 0 ? "up" : "down") + '">'
+                        + (move.by > 0 ? "&#9650;" : "&#9660;") + Math.abs(move.by) + "</span>"
+                    : "";
+
+                const medal = index < 3;
+                html += '<div class="fe-leaderboard-row fe-display-row '
+                    + (medal ? "fe-medal fe-medal-" + (index + 1) : "fe-rest") + '" data-name="' + esc(p.name) + '">'
+                    + '<div class="fe-leaderboard-rank">' + (medal ? ["&#129351;", "&#129352;", "&#129353;"][index] : index + 1) + "</div>"
                     + '<div class="fe-player-avatar">' + avatarImg + "</div>"
-                    + '<div class="fe-leaderboard-name">' + flag(p) + esc(p.name) + "</div>"
+                    + '<div class="fe-leaderboard-name">' + flag(p) + "<span>" + esc(p.name) + "</span>" + arrow + "</div>"
                     + '<div class="fe-leaderboard-score">'
                     + '<span class="fe-score-num" data-from="' + (before !== undefined ? before : p.score)
-                    + '" data-to="' + p.score + '">' + (before !== undefined ? before : p.score) + " pts</span>"
+                    + '" data-to="' + p.score + '">' + (before !== undefined ? before : p.score) + "</span>"
+                    + '<span class="fe-score-unit">pts</span>'
                     + (gained > 0 ? '<span class="fe-score-pop">+' + gained + "</span>" : "")
                     + "</div>"
-                    + '<span class="fe-status-pill ' + statusClass(p.status) + '">' + p.status + "</span>"
+                    + (p.status === "WINNER" ? '<span class="fe-status-pill winner">WINNER</span>' : "")
                     + "</div>";
             });
             board.innerHTML = html;
@@ -336,17 +351,18 @@
                     const start = performance.now();
                     (function step(now) {
                         const t = Math.min(1, (now - start) / 900);
-                        const value = Math.round(from + (to - from) * t);
-                        scoreEl.textContent = value + (Math.abs(value) === 1 ? " pt" : " pts");
+                        scoreEl.textContent = Math.round(from + (to - from) * t);
                         if (t < 1) requestAnimationFrame(step);
                     })(start);
-                } else {
-                    scoreEl.textContent = to + (Math.abs(to) === 1 ? " pt" : " pts");
                 }
             });
 
             lastScores = {};
-            players.forEach(function (p) { lastScores[p.name] = p.score; });
+            lastRanks = {};
+            players.forEach(function (p, index) {
+                lastScores[p.name] = p.score;
+                lastRanks[p.name] = index + 1;
+            });
         }
 
         // Intermission: who scored the most in the round just played.
