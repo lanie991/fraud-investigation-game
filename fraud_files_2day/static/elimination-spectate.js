@@ -1,0 +1,68 @@
+/* =========================================================
+   FORENSIC ELIMINATION -- LIVE SPECTATOR STANDINGS
+   Polls the leaderboard for players who are no longer actively
+   playing (eliminated, or finished and waiting on others).
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+    const board = document.getElementById("fe-spectate-board");
+    if (!board) return;
+
+    function esc(text) {
+        const div = document.createElement("div");
+        div.textContent = text == null ? "" : String(text);
+        return div.innerHTML;
+    }
+
+    function flag(p) {
+        return p.island
+            ? '<img class="fe-flag" src="/static/flags/' + esc(p.island) + '.svg" alt="' + esc(p.island_name) + '" title="' + esc(p.island_name) + '">'
+            : "";
+    }
+
+    function statusClass(status) {
+        if (status === "WINNER") return "winner";
+        return "in";
+    }
+
+    function render(players) {
+        if (!players.length) {
+            board.innerHTML = '<div class="fe-player-empty">No investigators have joined yet.</div>';
+            return;
+        }
+
+        let html = "";
+        players.forEach(function (p, index) {
+            const avatarImg = p.avatar
+                ? '<img src="/static/avatars/' + p.avatar + '" alt="">'
+                : "";
+
+            html += '<div class="fe-leaderboard-row">'
+                + '<div class="fe-leaderboard-rank">' + (index + 1) + "</div>"
+                + '<div class="fe-player-avatar">' + avatarImg + "</div>"
+                + '<div class="fe-leaderboard-name">' + flag(p) + esc(p.name) + "</div>"
+                + '<div class="fe-leaderboard-score">' + p.progress + "</div>"
+                + '<span class="fe-status-pill ' + statusClass(p.status) + '">' + p.status + "</span>"
+                + "</div>";
+        });
+
+        board.innerHTML = html;
+    }
+
+    function poll() {
+        fetch("/leaderboard-data", { cache: "no-store" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                render(data.players || []);
+                // Finished players wait here; once everyone is done, reload
+                // so the winner sees the winner screen and others their place.
+                if (data.game_over && board.dataset.reloadWhenOver) {
+                    window.location.reload();
+                }
+            })
+            .catch(function () {});
+    }
+
+    poll();
+    setInterval(poll, 3000);
+});

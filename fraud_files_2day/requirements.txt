@@ -1,0 +1,5 @@
+Flask
+gunicorn
+qrcode
+Pillow
+pg8000

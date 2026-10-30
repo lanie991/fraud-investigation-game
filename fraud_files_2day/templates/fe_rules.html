@@ -1,0 +1,84 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Rules — Fraud Files{% endblock %}
+
+{% block content %}
+
+<div class="fe-page">
+
+    <div class="fe-kicker">HOW TO PLAY</div>
+    <h1 class="fe-title">RULES</h1>
+    <p class="fe-subtitle">Know the rules. Top the leaderboard.</p>
+
+    <div class="fe-card">
+
+        <div class="fe-info-section">
+            <h2>Getting In</h2>
+            <p>
+                A host starts a game from the Host screen and receives a
+                4-character game PIN. Players join with that PIN, pick a
+                name and an avatar, and wait in the lobby until the host
+                starts the game.
+            </p>
+        </div>
+
+        <div class="fe-info-section">
+            <h2>Answering Questions</h2>
+            <p>
+                The challenge has two rounds of 10 questions, played on
+                two different days: Round 1 on day one and Round 2 the
+                next day. Each round mixes easy, intermediate and hard
+                questions. Every question has a countdown timer -- run out
+                of time and it counts as a wrong answer. When you finish
+                Round 1 your score is saved; the answers go up on the big
+                screen. On day two, rejoin with the <strong>same name and
+                PIN</strong> and the host starts Round 2 for everyone.
+            </p>
+        </div>
+
+        <div class="fe-info-section">
+            <h2>Scoring</h2>
+            <p>
+                Everyone plays both rounds &mdash; nobody is knocked
+                out. A correct answer is worth <strong>5 points</strong>.
+                A wrong answer (or running out of time) scores
+                <strong>0 points</strong>.
+            </p>
+            <p>
+                <strong>&#9889; Speed bonus:</strong> answer correctly fast
+                for up to <strong>+3</strong> extra &mdash; +3 in the first
+                quarter of the timer, +2 in the second, +1 in the third.
+            </p>
+            <p>
+                <strong>&#128293; Streak bonus:</strong> every
+                <strong>3 correct answers in a row</strong> earns
+                <strong>+2</strong> extra. A wrong answer resets your streak.
+            </p>
+        </div>
+
+        <div class="fe-info-section">
+            <h2>Lifelines</h2>
+            <p>
+                Each investigator gets two lifelines, usable once each
+                per game: <strong>50/50</strong> removes two incorrect
+                options, and <strong>Ask the Team</strong> reveals what
+                percentage of other players chose each answer. Each
+                lifeline costs <strong>1 point</strong> (your score never goes
+                below zero).
+            </p>
+        </div>
+
+        <div class="fe-info-section">
+            <h2>Winning</h2>
+            <p>
+                Once everyone has finished, the investigator with the
+                highest score wins. If scores are level, the most correct
+                answers wins, then whoever finished first.
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

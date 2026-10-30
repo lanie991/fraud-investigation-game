@@ -1,0 +1,4 @@
+{# Small flag (and optionally the island name) for a player. #}
+{% macro island_flag(code, with_name=False) %}
+{% if code in islands %}<span class="fe-island-tag" title="{{ islands[code] }}"><img class="fe-flag" src="{{ url_for('static', filename='flags/' + code + '.svg') }}" alt="{{ islands[code] }}">{% if with_name %}<span>{{ islands[code] }}</span>{% endif %}</span>{% endif %}
+{% endmacro %}

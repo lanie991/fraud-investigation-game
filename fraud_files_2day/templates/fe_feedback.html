@@ -1,0 +1,70 @@
+{% extends "fe_base.html" %}
+
+{% block title %}{{ "Correct" if correct else "Incorrect" }} — Fraud Files{% endblock %}
+
+{% block content %}
+
+<div class="fe-feedback-wrap">
+
+    <div class="fe-card fe-feedback-card {{ 'correct' if correct else 'incorrect' }}">
+
+        <div class="fe-feedback-icon">
+            {{ "&#10003;"|safe if correct else "&#10007;"|safe }}
+        </div>
+
+        <h1 class="fe-feedback-title">
+            {{ "CORRECT!" if correct else "INCORRECT" }}
+        </h1>
+
+        <div class="fe-feedback-gain {{ 'plus' if points > 0 else '' }}">
+            {{ "+" if points > 0 else "" }}{{ points }} {{ "point" if points == 1 else "points" }}
+        </div>
+
+        {% if correct and (speed_bonus or streak_bonus) %}
+        <div class="fe-feedback-breakdown">
+            <span>+{{ base_points }} correct</span>
+            {% if speed_bonus %}<span class="speed">&#9889; +{{ speed_bonus }} speed</span>{% endif %}
+            {% if streak_bonus %}<span class="streak">&#128293; +{{ streak_bonus }} streak</span>{% endif %}
+        </div>
+        {% endif %}
+
+        {% if correct and streak >= 2 %}
+        <div class="fe-feedback-streak">&#128293; {{ streak }} IN A ROW{% if streak_bonus %} &mdash; STREAK BONUS!{% endif %}</div>
+        {% endif %}
+
+        {% if not correct %}
+        <div class="fe-feedback-points">
+            Correct Answer: <strong style="color:#f8fafc;">{{ correct_answer }}</strong>
+        </div>
+        {% endif %}
+
+        <div class="fe-feedback-total">Your score: <strong>{{ player["score"] or 0 }}</strong></div>
+
+        <div class="fe-feedback-explanation">
+            <strong>EXPLANATION</strong>
+            <p>{{ question["explanation"]|allow_bold }}</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('elimination.advance', name=name) }}">
+            <button type="submit" class="fe-btn fe-btn-gold fe-btn-block">
+                NEXT QUESTION
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.FE_SFX) {
+        {% if correct %}
+        FE_SFX.playCorrect();
+        {% else %}
+        FE_SFX.playIncorrect();
+        {% endif %}
+    }
+});
+</script>
+
+{% endblock %}

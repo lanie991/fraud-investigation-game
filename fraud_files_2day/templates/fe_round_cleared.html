@@ -1,0 +1,81 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Round {{ cleared["round_number"] }} Cleared — Fraud Files{% endblock %}
+
+{% block content %}
+
+<div class="fe-feedback-wrap">
+
+    <div class="fe-card fe-feedback-card fe-round-cleared-card">
+
+        <div class="fe-feedback-icon">&#127942;</div>
+
+        <h1 class="fe-feedback-title">CONGRATS, {{ name|upper }}!</h1>
+
+        <div class="fe-feedback-points">
+            You finished <strong>Round {{ cleared["round_number"] }}</strong>.
+            Your score is saved.
+        </div>
+
+        <p class="fe-round-cleared-next">
+            Round {{ upcoming["round_number"] }} is on the next day.
+            Come back with the <strong>same name and PIN</strong> to rejoin.
+        </p>
+
+        {% if released %}
+        <div class="fe-round-wait">
+            <div class="fe-round-wait-spinner" aria-hidden="true"></div>
+            <strong>Round {{ upcoming["round_number"] }} is starting&hellip;</strong>
+            <span>Get ready!</span>
+        </div>
+        {% else %}
+        <div class="fe-round-wait">
+            <div class="fe-round-wait-spinner" aria-hidden="true"></div>
+            <strong>See you for Round {{ upcoming["round_number"] }}!</strong>
+            <span><span id="fe-round-wait-done">{{ progress["done"] }}</span> of
+            <span id="fe-round-wait-total">{{ progress["survivors"] }}</span> investigators done.
+            Check the big screen for the answers. You can close this page; if you keep
+            it open it will start Round {{ upcoming["round_number"] }} by itself when the host does.</span>
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='elimination-confetti.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.FE_CONFETTI && FE_CONFETTI.burst) { FE_CONFETTI.burst(); }
+    if (window.FE_SFX && FE_SFX.playCorrect) { FE_SFX.playCorrect(); }
+
+    {% if released %}
+    // The host already started the next round: show the congrats for a
+    // moment, then carry straight on. Players never start rounds themselves.
+    setTimeout(function () {
+        window.location.href = "{{ url_for('elimination.play', name=name) }}";
+    }, 2500);
+    {% else %}
+    // Wait here until the host opens the next round, then go straight in
+    // so everyone starts together.
+    const doneEl = document.getElementById("fe-round-wait-done");
+    const totalEl = document.getElementById("fe-round-wait-total");
+    const timer = setInterval(function () {
+        fetch("{{ url_for('elimination.round_status', name=name) }}", { cache: "no-store" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.released) {
+                    clearInterval(timer);
+                    window.location.href = "{{ url_for('elimination.play', name=name) }}";
+                    return;
+                }
+                doneEl.textContent = data.done;
+                totalEl.textContent = data.survivors;
+            })
+            .catch(function () {});
+    }, 2500);
+    {% endif %}
+});
+</script>
+
+{% endblock %}

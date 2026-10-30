@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fraud Files — Display</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='elimination.css') }}">
+
+</head>
+
+<body class="fe-body">
+
+    <div class="fe-display" id="fe-display">
+
+        <div class="fe-display-logo">
+            <img class="fe-display-logo-icon" src="{{ url_for('static', filename='images/brand-icon.webp') }}" alt="">
+            <span class="fe-game-logo-text" style="font-size:34px;">FRAUD FILES</span>
+            <span class="fe-edition-tag">2-DAY CHALLENGE</span>
+        </div>
+
+        <!-- LOBBY VIEW -->
+        <div id="fe-display-lobby">
+
+            <div class="fe-display-pin-row">
+                <div>
+                    <div class="fe-display-label">GAME PIN</div>
+                    <div class="fe-display-pin" id="fe-display-pin">------</div>
+                    <div class="fe-display-label" id="fe-display-join-hint">OR GO TO {{ join_url }}</div>
+                </div>
+                <img class="fe-display-qr" id="fe-display-qr" src="{{ url_for('elimination.qr_png') }}" alt="Scan to join">
+            </div>
+
+            <div class="fe-display-label" style="margin-top:30px;">
+                <span id="fe-display-joined-count">0</span> INVESTIGATORS JOINED
+            </div>
+
+            <div class="fe-display-players-grid" id="fe-display-players-grid"></div>
+
+        </div>
+
+        <!-- Small rejoin QR in the corner while the game is running -->
+        <div class="fe-display-rejoin" id="fe-display-rejoin" hidden>
+            <img id="fe-rejoin-qr" src="{{ url_for('elimination.qr_png') }}" alt="Scan to rejoin">
+            <span>Dropped out?<br>Scan to rejoin</span>
+            <small>PIN <strong id="fe-rejoin-pin"></strong></small>
+        </div>
+
+        <!-- ACTIVE GAME VIEW -->
+        <div id="fe-display-active" style="display:none;">
+
+            <div class="fe-display-stats-row" id="fe-display-stats-row"></div>
+
+            <!-- During a round the standings sit in the middle; at an
+                 intermission they move left and the round's answers show. -->
+            <div class="fe-display-stage" id="fe-display-stage">
+
+                <div class="fe-display-standings">
+                    <div class="fe-display-winner" id="fe-display-winner" hidden>
+                        <div class="fe-display-label">FINAL RESULTS</div>
+                        <div class="fe-podium" id="fe-podium"></div>
+                    </div>
+                    <div class="fe-display-mvp" id="fe-display-mvp" hidden></div>
+                    <div class="fe-display-label" id="fe-standings-label">LIVE STANDINGS</div>
+                    <div class="fe-display-board" id="fe-display-board"></div>
+                </div>
+
+                <div class="fe-display-review" id="fe-display-review" hidden>
+                    <div class="fe-display-review-head">
+                        <div>
+                            <div class="fe-display-label" id="fe-review-kicker">INTERMISSION</div>
+                            <h2 class="fe-display-review-title" id="fe-review-title"></h2>
+                        </div>
+                        <button type="button" class="fe-btn fe-btn-gold" id="fe-next-round-btn" hidden></button>
+                    </div>
+                    <div class="fe-display-review-grid" id="fe-review-grid"></div>
+                </div>
+
+                <!-- While a round is played: the round's questions (no
+                     answers) take turns with real fraud case files. -->
+                <div class="fe-spotlight" id="fe-spotlight" hidden>
+                    <div class="fe-spotlight-slide" id="fe-spotlight-slide"></div>
+                    <div class="fe-spotlight-timer">
+                        <div class="fe-spotlight-bar"><i id="fe-spotlight-bar"></i></div>
+                        <div class="fe-spotlight-next"><span>NEXT SLIDE IN</span><span id="fe-spotlight-secs"></span></div>
+                    </div>
+                    <div class="fe-spotlight-seq" id="fe-spotlight-seq"></div>
+                </div>
+
+                <div class="fe-feed" id="fe-feed" hidden>
+                    <div class="fe-display-label">&#128225; LIVE FEED</div>
+                    <div id="fe-feed-list"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="fe-ticker" id="fe-ticker" hidden>
+        <b>DID YOU KNOW?</b><span id="fe-ticker-text"></span>
+    </div>
+
+    <script src="{{ url_for('static', filename='elimination-confetti.js') }}"></script>
+    <script>
+        window.FE_CASE_FILES = {{ case_files|tojson }};
+        window.FE_DID_YOU_KNOW = {{ did_you_know|tojson }};
+        window.FE_VERSION = {{ app_version|tojson }};
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const lobbyView = document.getElementById("fe-display-lobby");
+        const activeView = document.getElementById("fe-display-active");
+        const pinEl = document.getElementById("fe-display-pin");
+        const joinedCountEl = document.getElementById("fe-display-joined-count");
+        const playersGrid = document.getElementById("fe-display-players-grid");
+        const statsRow = document.getElementById("fe-display-stats-row");
+        const board = document.getElementById("fe-display-board");
+        const displayEl = document.getElementById("fe-display");
+        const stage = document.getElementById("fe-display-stage");
+        const reviewEl = document.getElementById("fe-display-review");
+        const reviewKicker = document.getElementById("fe-review-kicker");
+        const reviewTitle = document.getElementById("fe-review-title");
+        const reviewGrid = document.getElementById("fe-review-grid");
+        const nextRoundBtn = document.getElementById("fe-next-round-btn");
+        let lastReviewKey = "";
+
+        function flag(p) {
+            return p && p.island
+                ? '<img class="fe-flag" src="/static/flags/' + esc(p.island) + '.svg" alt="' + esc(p.island_name) + '" title="' + esc(p.island_name) + '">'
+                : "";
+        }
+
+        function esc(text) {
+            const div = document.createElement("div");
+            div.textContent = text == null ? "" : String(text);
+            return div.innerHTML;
+        }
+
+        function renderReview(data) {
+            const showReview = data.phase === "intermission" || data.phase === "finished";
+            const live = data.phase === "playing" && !!data.spotlight;
+            stage.classList.toggle("split", showReview);
+            stage.classList.toggle("live", live);
+            statsRow.hidden = showReview;
+            displayEl.classList.toggle("wide", showReview);
+            displayEl.classList.toggle("live", live);
+            renderSpotlight(data, live);
+            renderFeed(data, live);
+            renderTicker(data);
+            reviewEl.hidden = !showReview;
+            renderWinner(data);
+            if (!showReview || !data.review) {
+                lastReviewKey = "";
+                return;
+            }
+
+            const review = data.review;
+            const next = data.progress.next_round;
+            if (data.phase === "finished") {
+                nextRoundBtn.hidden = !data.is_host;
+                nextRoundBtn.textContent = "\uD83C\uDFC6 SHOW WINNER";
+                nextRoundBtn.dataset.action = "{{ url_for('elimination.host_show_winner') }}";
+            } else {
+                nextRoundBtn.hidden = !(data.is_host && next);
+                nextRoundBtn.textContent = "\u25B6 START ROUND " + (next || "");
+                nextRoundBtn.dataset.action = "{{ url_for('elimination.host_next_round') }}";
+            }
+
+            // Only redraw the cards when something changed, so the screen doesn't flicker.
+            const key = JSON.stringify(review) + data.phase;
+            if (key === lastReviewKey) return;
+            lastReviewKey = key;
+
+            reviewKicker.textContent = data.phase === "finished" ? "GAME OVER" : "INTERMISSION";
+            reviewTitle.innerHTML = "ROUND " + esc(review.round_number)
+                + ' <span class="diff-' + esc(String(review.difficulty).toLowerCase()) + '">'
+                + esc(review.difficulty) + "</span> ANSWERS";
+
+            let html = "";
+            review.questions.forEach(function (q, i) {
+                html += '<div class="fe-review-card">'
+                    + '<div class="fe-review-card-num">Q' + (i + 1) + "</div>"
+                    + '<div class="fe-review-card-q">' + esc(q.text) + "</div>"
+                    + '<div class="fe-review-card-a">&#10003; ' + esc(q.answer) + "</div>"
+                    + (q.explanation ? '<div class="fe-review-card-x">' + q.explanation + "</div>" : "")
+                    + "</div>";
+            });
+            reviewGrid.innerHTML = html;
+        }
+
+        // Once everyone's done the last round and the host reveals it, the
+        // standings move back to the middle under a top-3 podium that
+        // reveals 3rd, then 2nd, then 1st.
+        const winnerEl = document.getElementById("fe-display-winner");
+        const podiumEl = document.getElementById("fe-podium");
+        const standingsLabel = document.getElementById("fe-standings-label");
+        const REVEAL_GAP_MS = 2200;
+        let celebrated = false;
+
+        function renderWinner(data) {
+            const show = data.phase === "winner";
+            winnerEl.hidden = !show;
+            standingsLabel.textContent = show ? "FINAL STANDINGS" : "LIVE STANDINGS";
+            if (show) statsRow.hidden = true;
+            if (!show) {
+                celebrated = false;
+                standingsLabel.classList.remove("fe-reveal-wait");
+                board.classList.remove("fe-reveal-wait");
+                return;
+            }
+            if (celebrated) return;   // build the podium once so the reveal doesn't replay
+            celebrated = true;
+
+            const top = data.players.slice(0, 3);
+            const medals = ["&#129351;", "&#129352;", "&#129353;"];
+            // Reveal order is 3rd, 2nd, 1st; on screen 2nd sits left, 1st middle, 3rd right.
+            const revealOrder = [];
+            for (let place = top.length; place >= 1; place--) revealOrder.push(place);
+            const slots = [2, 1, 3].filter(function (place) { return place <= top.length; });
+
+            let html = "";
+            slots.forEach(function (place) {
+                const p = top[place - 1];
+                const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
+                const delay = revealOrder.indexOf(place) * REVEAL_GAP_MS;
+                html += '<div class="fe-podium-slot place-' + place + '" style="animation-delay:' + delay + 'ms">'
+                    + '<div class="fe-podium-medal">' + medals[place - 1] + "</div>"
+                    + '<div class="fe-podium-avatar">' + avatarImg + "</div>"
+                    + '<div class="fe-podium-name">' + esc(p.name) + "</div>"
+                    + (p.island ? '<div class="fe-podium-island">' + flag(p) + esc(p.island_name) + "</div>" : "")
+                    + '<div class="fe-podium-score">' + esc(p.progress) + "</div>"
+                    + '<div class="fe-podium-correct">' + esc(p.correct) + "</div>"
+                    + '<div class="fe-podium-block">' + place + "</div>"
+                    + "</div>";
+            });
+            podiumEl.innerHTML = html;
+
+            // Confetti as 1st place appears; the full standings fade in
+            // afterwards so they don't give away the order early.
+            const firstDelay = revealOrder.indexOf(1) * REVEAL_GAP_MS;
+            standingsLabel.classList.add("fe-reveal-wait");
+            board.classList.add("fe-reveal-wait");
+            setTimeout(function () {
+                if (window.FE_CONFETTI) FE_CONFETTI.burst(6000);
+            }, firstDelay + 300);
+            setTimeout(function () {
+                standingsLabel.classList.remove("fe-reveal-wait");
+                board.classList.remove("fe-reveal-wait");
+            }, firstDelay + 1800);
+        }
+
+        nextRoundBtn.addEventListener("click", function () {
+            nextRoundBtn.disabled = true;
+            fetch(nextRoundBtn.dataset.action || "{{ url_for('elimination.host_next_round') }}", {
+                method: "POST",
+                headers: { "X-Requested-With": "fetch" }
+            })
+                .then(function () { poll(); })
+                .finally(function () { nextRoundBtn.disabled = false; });
+        });
+
+        function renderLobby(players) {
+            joinedCountEl.textContent = players.length;
+
+            let html = "";
+            players.forEach(function (p) {
+                const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
+                html += '<div class="fe-display-player-chip">'
+                    + '<div class="fe-display-player-avatar">' + avatarImg + "</div>"
+                    + "<div>" + esc(p.name) + "</div>"
+                    + (p.island ? '<div class="fe-display-chip-island">' + flag(p) + esc(p.island_name) + "</div>" : "")
+                    + "</div>";
+            });
+            playersGrid.innerHTML = html;
+        }
+
+        function renderActive(data) {
+            if (data.phase === "playing" && data.spotlight) {
+                const answering = data.players.filter(function (p) { return p.status === "PLAYING"; }).length;
+                statsRow.innerHTML = '<span class="fe-pill gold">ROUND ' + esc(data.spotlight.round) + "</span>"
+                    + '<span class="fe-pill">' + esc(data.spotlight.difficulty) + "</span>"
+                    + '<span class="fe-pill green">' + answering + " / " + data.players.length + " PLAYERS ANSWERING</span>";
+                renderBoard(data.players);
+                renderMvp(data);
+                return;
+            }
+            let statsHtml = "";
+            Object.keys(data.round_counts).sort().forEach(function (roundNum) {
+                statsHtml += '<div class="fe-display-stat">'
+                    + '<strong>' + data.round_counts[roundNum] + '</strong>'
+                    + '<span>ON ROUND ' + roundNum + '</span>'
+                    + '</div>';
+            });
+            if (data.waiting_count) {
+                statsHtml += '<div class="fe-display-stat">'
+                    + '<strong>' + data.waiting_count + '</strong><span>WAITING</span></div>';
+            }
+            statsHtml += '<div class="fe-display-stat">'
+                + '<strong>' + data.finished_count + '</strong><span>FINISHED</span></div>';
+            statsRow.innerHTML = statsHtml;
+
+            renderBoard(data.players);
+            renderMvp(data);
+        }
+
+        // Live standings: rows slide to their new position when the order
+        // changes, scores count up, and a "+N" pops next to anyone who just
+        // scored.
+        let lastScores = {};
+        let lastRanks = {};
+        const rankMoves = {};
+
+        function renderBoard(players) {
+            if (!players.length) {
+                board.innerHTML = '<div class="fe-player-empty">No investigators have joined yet.</div>';
+                lastScores = {};
+                lastRanks = {};
+                return;
+            }
+
+            // Where every row is now, before redrawing.
+            const oldTops = {};
+            board.querySelectorAll(".fe-display-row").forEach(function (row) {
+                oldTops[row.dataset.name] = row.getBoundingClientRect().top;
+            });
+
+            let html = "";
+            const now = Date.now();
+            players.forEach(function (p, index) {
+                const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
+                const before = lastScores[p.name];
+                const gained = before !== undefined ? p.score - before : 0;
+
+                // Remember a change of place for a few seconds so the arrow
+                // stays up long enough to read.
+                const oldRank = lastRanks[p.name];
+                if (oldRank !== undefined && oldRank !== index + 1) {
+                    rankMoves[p.name] = { by: oldRank - (index + 1), at: now };
+                }
+                const move = rankMoves[p.name];
+                const arrow = move && now - move.at < 8000
+                    ? '<span class="fe-rank-move ' + (move.by > 0 ? "up" : "down") + '">'
+                        + (move.by > 0 ? "&#9650;" : "&#9660;") + Math.abs(move.by) + "</span>"
+                    : "";
+
+                const medal = index < 3;
+                html += '<div class="fe-leaderboard-row fe-display-row '
+                    + (medal ? "fe-medal fe-medal-" + (index + 1) : "fe-rest") + '" data-name="' + esc(p.name) + '">'
+                    + '<div class="fe-leaderboard-rank">' + (medal ? ["&#129351;", "&#129352;", "&#129353;"][index] : index + 1) + "</div>"
+                    + '<div class="fe-player-avatar">' + avatarImg + "</div>"
+                    + '<div class="fe-leaderboard-name">' + flag(p) + "<span>" + esc(p.name) + "</span>" + arrow + "</div>"
+                    + '<div class="fe-leaderboard-score">'
+                    + '<span class="fe-score-num" data-from="' + (before !== undefined ? before : p.score)
+                    + '" data-to="' + p.score + '">' + (before !== undefined ? before : p.score) + "</span>"
+                    + '<span class="fe-score-unit">pts</span>'
+                    + (gained > 0 ? '<span class="fe-score-pop">+' + gained + "</span>" : "")
+                    + "</div>"
+                    + (p.status === "WINNER" ? '<span class="fe-status-pill winner">WINNER</span>' : "")
+                    + "</div>";
+            });
+            board.innerHTML = html;
+
+            board.querySelectorAll(".fe-display-row").forEach(function (row) {
+                // Slide from the old position to the new one.
+                const oldTop = oldTops[row.dataset.name];
+                if (oldTop !== undefined) {
+                    const shift = oldTop - row.getBoundingClientRect().top;
+                    if (shift) {
+                        row.style.transition = "none";
+                        row.style.transform = "translateY(" + shift + "px)";
+                        row.getBoundingClientRect();   // apply the start position
+                        row.style.transition = "transform 0.8s cubic-bezier(.2,.8,.2,1)";
+                        row.style.transform = "";
+                        row.classList.add(shift > 0 ? "fe-row-up" : "fe-row-down");
+                    }
+                }
+                // Count the score up.
+                const scoreEl = row.querySelector(".fe-score-num");
+                const from = Number(scoreEl.dataset.from), to = Number(scoreEl.dataset.to);
+                if (from !== to) {
+                    const start = performance.now();
+                    (function step(now) {
+                        const t = Math.min(1, (now - start) / 900);
+                        scoreEl.textContent = Math.round(from + (to - from) * t);
+                        if (t < 1) requestAnimationFrame(step);
+                    })(start);
+                }
+            });
+
+            lastScores = {};
+            lastRanks = {};
+            players.forEach(function (p, index) {
+                lastScores[p.name] = p.score;
+                lastRanks[p.name] = index + 1;
+            });
+        }
+
+        // Intermission: who scored the most in the round just played.
+        const mvpEl = document.getElementById("fe-display-mvp");
+
+        function renderMvp(data) {
+            const mvp = data.mvp;
+            const show = !!mvp && (data.phase === "intermission" || data.phase === "finished");
+            mvpEl.hidden = !show;
+            if (!show) return;
+            const avatarImg = mvp.avatar ? '<img src="/static/avatars/' + mvp.avatar + '" alt="">' : "";
+            mvpEl.innerHTML = '<div class="fe-display-mvp-medal">&#127941;</div>'
+                + '<div class="fe-player-avatar">' + avatarImg + "</div>"
+                + '<div class="fe-display-mvp-text">'
+                + "<span>ROUND " + esc(mvp.round_number) + " MVP</span>"
+                + "<strong>" + flag(mvp) + esc(mvp.name) + "</strong>"
+                + "</div>"
+                + '<div class="fe-display-mvp-points">+' + esc(mvp.points) + " pts</div>";
+        }
+
+        // ---------- Spotlight: questions and case files take turns ----------
+        const SLIDE_MS = 20000;
+        const spotlightEl = document.getElementById("fe-spotlight");
+        const slideEl = document.getElementById("fe-spotlight-slide");
+        const slideBar = document.getElementById("fe-spotlight-bar");
+        const slideSecs = document.getElementById("fe-spotlight-secs");
+        const slideSeq = document.getElementById("fe-spotlight-seq");
+        const caseFiles = window.FE_CASE_FILES || [];
+        let spotData = null;
+        let slot = -1;            // even = question, odd = case file
+        let slotStarted = 0;
+        let questionTurn = -1;
+        let caseTurn = -1;
+        let spotRound = null;
+
+        function slotKind(n) {
+            return caseFiles.length && n % 2 === 1 ? "case" : "question";
+        }
+
+        function nextSlot() {
+            slot += 1;
+            slotStarted = Date.now();
+            if (slotKind(slot) === "case") caseTurn = (caseTurn + 1) % caseFiles.length;
+            else questionTurn += 1;
+            slideBar.style.transition = "none";
+            slideBar.style.width = "100%";
+            slideBar.getBoundingClientRect();
+            slideBar.style.transition = "width " + (SLIDE_MS / 1000) + "s linear";
+            slideBar.style.width = "0%";
+            drawSlide();
+        }
+
+        function questionSlide(q) {
+            const faces = q.faces.slice(0, 16).map(function (f) {
+                return '<span class="fe-face' + (f.done ? " done" : "") + '">'
+                    + (f.avatar ? '<img src="/static/avatars/' + f.avatar + '" alt="">' : "") + "</span>";
+            }).join("");
+            const waiting = q.players - q.answered;
+            const pct = q.correct_pct == null ? "&ndash;" : q.correct_pct + "%";
+            const fast = q.fastest
+                ? q.fastest.seconds + "s"
+                : "&ndash;";
+            return '<div class="fe-spot-kick"><span>&#129504; PLAY ALONG &middot; ROUND ' + esc(spotData.round) + ' &middot; ' + esc(q.difficulty) + ' QUESTION</span>'
+                + "<em>QUESTION " + q.number + " OF " + q.of + "</em></div>"
+                + '<div class="fe-spot-question">' + esc(q.text) + "</div>"
+                + '<div class="fe-spot-hush">&#129323; Watching? Play along in your head. No shouting out answers!</div>'
+                + '<div class="fe-spot-tiles">'
+                + '<div class="fe-spot-tile"><strong>' + q.answered + "<small>/" + q.players + "</small></strong><span>HAVE ANSWERED</span></div>"
+                + '<div class="fe-spot-tile green"><strong>' + pct + "</strong>"
+                + '<div class="fe-spot-meter"><i style="width:' + (q.correct_pct || 0) + '%"></i></div><span>GOT IT RIGHT</span></div>'
+                + '<div class="fe-spot-tile gold"><strong>' + fast + "</strong><span>&#9889; FASTEST"
+                + (q.fastest ? " &middot; " + flag(q.fastest) + esc(q.fastest.name).toUpperCase() : " CORRECT") + "</span></div>"
+                + "</div>"
+                + '<div class="fe-spot-faces">' + faces + "</div>"
+                + '<div class="fe-spot-waiting">' + (waiting > 0 ? waiting + " STILL THINKING&hellip;" : "EVERYONE HAS ANSWERED") + "</div>";
+        }
+
+        function caseSlide(c) {
+            const facts = c.facts.map(function (f) {
+                return "<div><b>" + esc(f[0]) + "</b><small>" + esc(f[1]) + "</small></div>";
+            }).join("");
+            const story = esc(c.story).replace(/&lt;b&gt;/g, "<b>").replace(/&lt;\/b&gt;/g, "</b>");
+            return '<div class="fe-spot-kick"><span>&#128450;&#65039; CASE FILE &middot; REAL FRAUD STORY</span><em>BETWEEN QUESTIONS</em></div>'
+                + '<div class="fe-dossier"><div class="fe-dossier-stamp">CLOSED</div>'
+                + "<h2>" + esc(c.title) + "</h2>"
+                + '<div class="fe-dossier-tag">' + esc(c.tagline) + "</div>"
+                + '<div class="fe-dossier-facts">' + facts + "</div>"
+                + "<p>" + story + "</p></div>"
+                + '<div class="fe-dossier-flag">&#128373;&#65039; Red flag: ' + esc(c.red_flag) + "</div>";
+        }
+
+        function drawSlide() {
+            if (!spotData || !spotData.questions.length) {
+                slideEl.innerHTML = "";
+                return;
+            }
+            if (slotKind(slot) === "case") {
+                slideEl.innerHTML = caseSlide(caseFiles[caseTurn]);
+            } else {
+                const qs = spotData.questions;
+                slideEl.innerHTML = questionSlide(qs[questionTurn % qs.length]);
+            }
+            let seq = "";
+            for (let i = 0; i < 6; i++) {
+                const kind = slotKind(slot + i);
+                seq += '<i class="' + (i === 0 ? "on" : "") + '">' + (kind === "case" ? "CASE FILE" : "QUESTION") + "</i>";
+            }
+            slideSeq.innerHTML = seq;
+        }
+
+        function renderSpotlight(data, live) {
+            spotlightEl.hidden = !live;
+            if (!live) {
+                spotData = null;
+                return;
+            }
+            spotData = data.spotlight;
+            if (spotRound !== spotData.round) {
+                // New round: start again from its first question.
+                spotRound = spotData.round;
+                slot = -1;
+                questionTurn = -1;
+                nextSlot();
+            } else {
+                drawSlide();
+            }
+        }
+
+        setInterval(function () {
+            if (!spotData) return;
+            const left = SLIDE_MS - (Date.now() - slotStarted);
+            if (left <= 0) nextSlot();
+            else slideSecs.textContent = Math.ceil(left / 1000) + "s";
+        }, 250);
+
+        // ---------- Live feed ----------
+        const feedEl = document.getElementById("fe-feed");
+        const feedList = document.getElementById("fe-feed-list");
+
+        function feedLine(e) {
+            const who = "<b>" + esc(e.name) + "</b>";
+            switch (e.kind) {
+                case "fast": return ["&#9889;", "speed", who + " answered in <b>" + esc(e.value) + " seconds</b>"];
+                case "streak": return ["&#128293;", "fire", who + " is on fire, <b>" + esc(e.value) + " in a row!</b>"];
+                case "lead": return ["&#128640;", "lead", who + " takes the <b>lead!</b>"];
+                case "round": {
+                    const parts = String(e.value || "").split("|");
+                    return ["&#127919;", "speed", who + " finished Round " + esc(parts[0]) + " with <b>" + esc(parts[1]) + "</b>"];
+                }
+                case "fifty": return ["&#9986;&#65039;", "life", who + " used <b>50/50</b>"];
+                case "team": return ["&#128735;", "life", who + " used <b>Ask the Team</b>"];
+            }
+            return ["&#8226;", "speed", who];
+        }
+
+        function ago(seconds) {
+            if (seconds < 10) return "just now";
+            if (seconds < 60) return seconds + "s ago";
+            return Math.floor(seconds / 60) + " min ago";
+        }
+
+        function renderFeed(data, live) {
+            feedEl.hidden = !live;
+            if (!live) return;
+            if (!data.feed.length) {
+                feedList.innerHTML = '<div class="fe-feed-empty">Big moments will show up here: streaks, lightning-fast answers and new leaders.</div>';
+                return;
+            }
+            feedList.innerHTML = data.feed.map(function (e) {
+                const line = feedLine(e);
+                return '<div class="fe-feed-item ' + line[1] + '"><span class="fe-feed-icon">' + line[0] + "</span>"
+                    + "<div>" + line[2] + "<small>" + ago(e.age) + "</small></div></div>";
+            }).join("");
+        }
+
+        // ---------- "Did you know?" strip ----------
+        const tickerEl = document.getElementById("fe-ticker");
+        const tickerText = document.getElementById("fe-ticker-text");
+        const facts = window.FE_DID_YOU_KNOW || [];
+        let factTurn = 0;
+        tickerText.textContent = facts[0] || "";
+        setInterval(function () {
+            if (!facts.length) return;
+            factTurn = (factTurn + 1) % facts.length;
+            tickerText.textContent = facts[factTurn];
+        }, SLIDE_MS);
+
+        function renderTicker(data) {
+            const show = facts.length > 0 && (data.phase === "playing" || data.phase === "intermission");
+            tickerEl.hidden = !show;
+            document.body.classList.toggle("fe-has-ticker", show);
+        }
+
+        function poll() {
+            fetch("/display-data", { cache: "no-store" })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    // The game was updated since this page opened: reload
+                    // so the big screen shows the newest version.
+                    if (data.version && data.version !== window.FE_VERSION) {
+                        window.location.reload();
+                        return;
+                    }
+                    pinEl.textContent = data.pin;
+
+                    // A reset makes a new PIN: redraw the QR code so it
+                    // matches the PIN on screen.
+                    ["fe-display-qr", "fe-rejoin-qr"].forEach(function (id) {
+                        const qrEl = document.getElementById(id);
+                        if (qrEl && qrEl.dataset.pin !== data.pin) {
+                            qrEl.dataset.pin = data.pin;
+                            qrEl.src = "{{ url_for('elimination.qr_png') }}?pin=" + encodeURIComponent(data.pin);
+                        }
+                    });
+                    document.getElementById("fe-rejoin-pin").textContent = data.pin;
+                    document.getElementById("fe-display-rejoin").hidden = data.game_status === "lobby";
+
+                    if (data.game_status === "lobby") {
+                        lobbyView.style.display = "block";
+                        activeView.style.display = "none";
+                        renderLobby(data.players);
+                        renderTicker(data);
+                    } else {
+                        lobbyView.style.display = "none";
+                        activeView.style.display = "block";
+                        renderActive(data);
+                        renderReview(data);
+                    }
+                })
+                .catch(function () {});
+        }
+
+        poll();
+        setInterval(poll, 2500);
+    });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,79 @@
+{% extends "fe_base.html" %}
+
+{% block title %}Fraud Files{% endblock %}
+
+{% block top_header %}
+<header class="fe-hero-nav">
+    <a href="{{ url_for('elimination.home') }}" class="fe-hero-nav-item active">
+        <span class="fe-hero-nav-icon">&#8962;</span>
+        <span>HOME</span>
+    </a>
+    <a href="{{ url_for('elimination.join') }}" class="fe-hero-nav-item">
+        <span class="fe-hero-nav-icon">&#10067;</span>
+        <span>PLAY</span>
+    </a>
+    <a href="{{ url_for('elimination.leaderboard') }}" class="fe-hero-nav-item">
+        <span class="fe-hero-nav-icon">&#128202;</span>
+        <span>LEADERBOARD</span>
+    </a>
+    <a href="{{ url_for('elimination.case_files') }}" class="fe-hero-nav-item">
+        <span class="fe-hero-nav-icon">&#128193;</span>
+        <span>CASE FILES</span>
+    </a>
+    <a href="{{ url_for('elimination.rules') }}" class="fe-hero-nav-item">
+        <span class="fe-hero-nav-icon">&#128220;</span>
+        <span>RULES</span>
+    </a>
+</header>
+{% endblock %}
+
+{% block content %}
+
+<div class="fe-hero">
+
+    <div class="fe-hero-side-left">
+        <div class="fe-hero-side-tagline">
+            SAME<br>QUESTIONS.<br>BIGGER<br>THINKERS.
+        </div>
+    </div>
+
+    <div class="fe-hero-center">
+
+        <img class="fe-hero-logo-icon" src="{{ url_for('static', filename='images/brand-icon.webp') }}" alt="">
+
+        <h1 class="fe-hero-title">
+            FRAUD<br><span>FILES</span>
+        </h1>
+
+        <div class="fe-hero-kicker">2-DAY CHALLENGE</div>
+
+        <p class="fe-hero-sub">
+            A FRAUD &amp; FORENSICS TRIVIA GAME<br>
+            WHERE EVERY ANSWER COUNTS.
+        </p>
+
+        <div class="fe-hero-actions">
+            <a href="{{ url_for('elimination.join') }}" class="fe-hero-btn fe-hero-btn-gold">
+                JOIN GAME <span>&#8594;</span>
+            </a>
+            <a href="{{ url_for('elimination.host') }}" class="fe-hero-btn fe-hero-btn-dark">
+                HOST GAME <span>&#8594;</span>
+            </a>
+        </div>
+
+        <div class="fe-hero-footer-line">
+            FORENSICS &nbsp;|&nbsp; COMPLIANCE &nbsp;|&nbsp; INVESTIGATION &nbsp;|&nbsp; FRAUD &nbsp;|&nbsp; REAL-WORLD CASES
+        </div>
+
+    </div>
+
+    <div class="fe-hero-side-right">
+        <div class="fe-hero-side-tagline-right">
+            REAL CASES.<br>REAL FRAUD.<br>
+            <span>THE SHARPEST<br>MIND WINS.</span>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
