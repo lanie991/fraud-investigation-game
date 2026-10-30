@@ -68,6 +68,8 @@
                     <div class="fe-display-winner" id="fe-display-winner" hidden>
                         <div class="fe-display-label">FINAL RESULTS</div>
                         <div class="fe-podium" id="fe-podium"></div>
+                        <!-- Best player from each island, shown after the podium -->
+                        <div class="fe-island-champs" id="fe-island-champs"></div>
                     </div>
                     <div class="fe-display-mvp" id="fe-display-mvp" hidden></div>
                     <div class="fe-display-label" id="fe-standings-label">LIVE STANDINGS</div>
@@ -204,6 +206,35 @@
         // reveals 3rd, then 2nd, then 1st.
         const winnerEl = document.getElementById("fe-display-winner");
         const podiumEl = document.getElementById("fe-podium");
+        const champsEl = document.getElementById("fe-island-champs");
+
+        // Players arrive ranked best first, so the first player seen from
+        // each island is that island's champion.
+        function renderIslandChamps(players) {
+            const seen = {};
+            const champs = [];
+            players.forEach(function (p) {
+                if (!p.island || seen[p.island]) return;
+                seen[p.island] = true;
+                champs.push(p);
+            });
+            if (!champs.length) {
+                champsEl.innerHTML = "";
+                return;
+            }
+            let html = '<div class="fe-display-label">&#127965;&#65039; ISLAND CHAMPIONS</div><div class="fe-island-champs-row">';
+            champs.forEach(function (p) {
+                const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
+                html += '<div class="fe-island-champ">'
+                    + '<img class="fe-island-champ-flag" src="/static/flags/' + esc(p.island) + '.svg" alt="">'
+                    + '<div class="fe-island-champ-island">' + esc(p.island_name) + "</div>"
+                    + '<div class="fe-island-champ-avatar">' + avatarImg + "</div>"
+                    + '<div class="fe-island-champ-name">' + esc(p.name) + "</div>"
+                    + '<div class="fe-island-champ-score">' + esc(p.score) + " <small>PTS</small></div>"
+                    + "</div>";
+            });
+            champsEl.innerHTML = html + "</div>";
+        }
         const standingsLabel = document.getElementById("fe-standings-label");
         const REVEAL_GAP_MS = 2200;
         let celebrated = false;
@@ -245,19 +276,24 @@
                     + "</div>";
             });
             podiumEl.innerHTML = html;
+            renderIslandChamps(data.players);
 
             // Confetti as 1st place appears; the full standings fade in
             // afterwards so they don't give away the order early.
             const firstDelay = revealOrder.indexOf(1) * REVEAL_GAP_MS;
             standingsLabel.classList.add("fe-reveal-wait");
             board.classList.add("fe-reveal-wait");
+            champsEl.classList.add("fe-reveal-wait");
             setTimeout(function () {
                 if (window.FE_CONFETTI) FE_CONFETTI.burst(6000);
             }, firstDelay + 300);
             setTimeout(function () {
+                champsEl.classList.remove("fe-reveal-wait");
+            }, firstDelay + 1800);
+            setTimeout(function () {
                 standingsLabel.classList.remove("fe-reveal-wait");
                 board.classList.remove("fe-reveal-wait");
-            }, firstDelay + 1800);
+            }, firstDelay + 3600);
         }
 
         nextRoundBtn.addEventListener("click", function () {
