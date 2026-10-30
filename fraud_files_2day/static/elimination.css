@@ -3920,3 +3920,70 @@ body:has(.fe-hero) .fe-main {
     font-weight: 700;
     letter-spacing: 0.08em;
 }
+
+/* Game lock */
+.fe-doors-card { margin-bottom: 22px; }
+.fe-doors-card.locked { border-color: rgba(248, 113, 113, 0.55); }
+.fe-doors-card.open { border-color: rgba(74, 222, 128, 0.55); }
+
+.fe-doors-state {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.fe-doors-state > div { flex: 1; min-width: 200px; }
+.fe-doors-icon { font-size: 34px; }
+
+.fe-doors-state strong {
+    display: block;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+}
+
+.fe-doors-card.locked strong { color: #f87171; }
+.fe-doors-card.open strong { color: #4ade80; }
+.fe-doors-state span { color: #94a3b8; font-size: 13px; }
+
+.fe-doors-message { margin-top: 14px; }
+
+.fe-doors-message label {
+    display: block;
+    margin-bottom: 6px;
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.fe-doors-message > div { display: flex; gap: 10px; }
+
+.fe-doors-message input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: #0d1220;
+    color: #e2e8f0;
+}
+
+.fe-locked-card { text-align: center; }
+.fe-locked-icon { font-size: 56px; margin-bottom: 6px; }
+
+.fe-locked-message {
+    margin: 18px 0;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(250, 204, 21, 0.45);
+    background: rgba(250, 204, 21, 0.1);
+    color: #fde68a;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.fe-locked-hint { color: #94a3b8; font-size: 13px; line-height: 1.5; }

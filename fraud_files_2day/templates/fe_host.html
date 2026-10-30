@@ -11,6 +11,37 @@
         &#9679; {{ "GAME IN PROGRESS" if config["status"] == "active" else "LOBBY OPEN" }}
     </div>
 
+    <div class="fe-card fe-doors-card {{ 'open' if config['doors_open'] else 'locked' }}">
+        <div class="fe-doors-state">
+            <span class="fe-doors-icon">{{ "&#128275;"|safe if config["doors_open"] else "&#128274;"|safe }}</span>
+            <div>
+                <strong>{{ "GAME OPEN" if config["doors_open"] else "GAME LOCKED" }}</strong>
+                <span>
+                    {% if config["doors_open"] %}
+                    Players can join and rejoin right now. Lock it again when today's round is over.
+                    {% else %}
+                    Nobody can join or rejoin. Open it when you're ready to play.
+                    {% endif %}
+                </span>
+            </div>
+            <form method="POST" action="{{ url_for('elimination.host_doors') }}">
+                <input type="hidden" name="open" value="{{ 0 if config['doors_open'] else 1 }}">
+                <button type="submit" class="fe-btn {{ 'fe-btn-ghost' if config['doors_open'] else 'fe-btn-gold' }}">
+                    {{ "LOCK GAME" if config["doors_open"] else "OPEN GAME" }}
+                </button>
+            </form>
+        </div>
+        <form method="POST" action="{{ url_for('elimination.host_doors') }}" class="fe-doors-message">
+            <label for="locked_message">Message players see while it's locked</label>
+            <div>
+                <input type="text" id="locked_message" name="locked_message" maxlength="200"
+                       placeholder="e.g. Round 1 opens Tuesday 4 Nov at 10:00am"
+                       value="{{ config['locked_message'] or '' }}">
+                <button type="submit" class="fe-btn fe-btn-ghost">SAVE</button>
+            </div>
+        </form>
+    </div>
+
     <h1 class="fe-title">GAME LOBBY</h1>
     <p class="fe-subtitle">
         Share the PIN below with players. Each investigator moves through

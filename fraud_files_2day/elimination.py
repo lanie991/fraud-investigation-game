@@ -154,6 +154,17 @@ def initialize_database():
             "ALTER TABLE fe_config ADD COLUMN pin_fixed INTEGER DEFAULT 0"
         )
 
+    # The game is locked (nobody can join or rejoin) until the host opens
+    # it on the day; locked_message tells players when to come back.
+    if "doors_open" not in existing_config_columns:
+        connection.execute(
+            "ALTER TABLE fe_config ADD COLUMN doors_open INTEGER DEFAULT 0"
+        )
+    if "locked_message" not in existing_config_columns:
+        connection.execute(
+            "ALTER TABLE fe_config ADD COLUMN locked_message TEXT"
+        )
+
     connection.execute("""
         CREATE TABLE IF NOT EXISTS fe_players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1225,11 +1236,50 @@ def host_reset():
 # JOIN / WAITING
 # =========================================================
 
+@elimination_bp.route("/host/doors", methods=["POST"])
+@host_required
+def host_doors():
+    """Open or lock the game for players, or change the locked message."""
+    connection = get_db()
+    if "open" in request.form:
+        connection.execute(
+            "UPDATE fe_config SET doors_open = ? WHERE id = 1",
+            (1 if request.form.get("open") == "1" else 0,)
+        )
+    if "locked_message" in request.form:
+        connection.execute(
+            "UPDATE fe_config SET locked_message = ? WHERE id = 1",
+            (request.form.get("locked_message", "").strip()[:200],)
+        )
+    connection.commit()
+    connection.close()
+    return redirect(url_for("elimination.host"))
+
+
+@elimination_bp.route("/join-status")
+def join_status():
+    """Polled by the locked page so it opens by itself when the host unlocks."""
+    connection = get_db()
+    config = get_config(connection)
+    connection.close()
+    response = jsonify({"open": bool(config["doors_open"])})
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @elimination_bp.route("/join", methods=["GET", "POST"])
 def join():
     connection = get_db()
     config = get_config(connection)
     error = None
+
+    if not config["doors_open"] and not session.get("fe_is_host"):
+        connection.close()
+        return render_template(
+            "fe_locked.html",
+            message=(config["locked_message"] or "").strip(),
+            active_nav="play"
+        )
 
     if request.method == "POST":
         name = request.form.get("player_name", "").strip()
