@@ -30,6 +30,16 @@
             <p style="color:#64748b; font-size:11px; margin-top:10px;">
                 Share this code, or scan to join
             </p>
+            <div class="fe-email-link">
+                <div class="fe-pin-label">LINK FOR THE INVITATION EMAIL</div>
+                <input type="text" id="fe-email-link" value="{{ email_link }}" readonly onclick="this.select()">
+                <button type="button" class="fe-btn fe-btn-gold fe-btn-block" id="fe-copy-link">COPY LINK</button>
+                <p style="color:#64748b; font-size:11px; margin:8px 0 0;">
+                    Players click it, type their name and they're in &mdash; no PIN to type.
+                    The same link works on day two to rejoin.
+                    {% if not config["pin_fixed"] %}<br><strong style="color:#fbbf24;">Tip:</strong> set your own Game PIN in Settings first, so the link stays the same after a Reset.{% endif %}
+                </p>
+            </div>
         </div>
 
         <div class="fe-card">
@@ -82,6 +92,14 @@
                     <span>Timer (seconds)</span>
                     <input type="number" name="timer_seconds" min="5" max="120" value="{{ config['timer_seconds'] }}" {% if config['status'] != 'lobby' %}disabled{% endif %}>
                 </div>
+
+                <div class="fe-settings-row">
+                    <span>Game PIN</span>
+                    <input type="text" name="game_pin" maxlength="12" value="{{ config['pin'] }}" style="width:130px; text-transform:uppercase;" {% if config['status'] != 'lobby' %}disabled{% endif %}>
+                </div>
+                {% if settings_error %}
+                <div class="fe-error" style="margin:6px 0;">{{ settings_error }}</div>
+                {% endif %}
 
                 <div class="fe-settings-row">
                     <span>Lifelines</span>
@@ -171,4 +189,17 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.getElementById("fe-copy-link");
+    var field = document.getElementById("fe-email-link");
+    if (!btn || !field) return;
+    btn.addEventListener("click", function () {
+        field.select();
+        var done = function () { btn.textContent = "COPIED!"; setTimeout(function () { btn.textContent = "COPY LINK"; }, 2000); };
+        if (navigator.clipboard) navigator.clipboard.writeText(field.value).then(done, function () { document.execCommand("copy"); done(); });
+        else { document.execCommand("copy"); done(); }
+    });
+});
+</script>
 {% endblock %}

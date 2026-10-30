@@ -17,6 +17,10 @@ app = Flask(
 # local play but will invalidate sessions on every restart.
 app.secret_key = os.environ.get("SECRET_KEY", os.urandom(24))
 
+# Players stay remembered on their phone between day one and day two.
+from datetime import timedelta
+app.permanent_session_lifetime = timedelta(days=30)
+
 # Hosting services sit behind a proxy; trust its https/host headers so
 # the join link and QR code point at the real public address.
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)

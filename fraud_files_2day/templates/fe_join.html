@@ -11,13 +11,17 @@
         {% if game_started %}
         <h1>REJOIN GAME</h1>
         <p class="fe-subtitle" style="margin-bottom:22px;">
-            Game in progress. Enter the same name you joined with to pick
-            up where you left off.
+            Game in progress. Enter the same name you joined with on day one
+            to pick up where you left off.
         </p>
         {% else %}
         <h1>JOIN GAME</h1>
         <p class="fe-subtitle" style="margin-bottom:22px;">
+            {% if pin_from_link %}
+            Enter your name, pick your island and avatar, and you're in.
+            {% else %}
             Enter the game PIN from the host screen to join the investigation.
+            {% endif %}
         </p>
         <p class="fe-subtitle" style="margin:-12px 0 22px; font-size:13px;">
             Lost your connection? Enter the same name and PIN to rejoin.
@@ -35,10 +39,16 @@
                 <input type="text" id="player_name" name="player_name" placeholder="Investigator name" required maxlength="30">
             </div>
 
+            {% if pin_from_link %}
+            {# Came from the email / QR link: the PIN is already filled in. #}
+            <input type="hidden" name="game_pin" value="{{ prefill_pin }}">
+            <div class="fe-pin-ok">&#10003; Game PIN <strong>{{ prefill_pin }}</strong> added from your link</div>
+            {% else %}
             <div class="fe-field">
                 <label for="game_pin">GAME PIN</label>
-                <input type="text" id="game_pin" name="game_pin" placeholder="e.g. 7K4Q" required maxlength="8" style="text-transform:uppercase;" value="{{ prefill_pin }}">
+                <input type="text" id="game_pin" name="game_pin" placeholder="e.g. 7K4Q" required maxlength="12" style="text-transform:uppercase;" value="{{ prefill_pin }}">
             </div>
+            {% endif %}
 
             {# Once the game has started only rejoining is possible, so the
                island and avatar (already saved) aren't asked for again. #}

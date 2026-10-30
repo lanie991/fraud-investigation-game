@@ -147,6 +147,13 @@ def initialize_database():
             "ALTER TABLE fe_config ADD COLUMN active_questions TEXT"
         )
 
+    # 1 when the host chose their own PIN (e.g. one printed in an email):
+    # it then stays the same after a reset.
+    if "pin_fixed" not in existing_config_columns:
+        connection.execute(
+            "ALTER TABLE fe_config ADD COLUMN pin_fixed INTEGER DEFAULT 0"
+        )
+
     connection.execute("""
         CREATE TABLE IF NOT EXISTS fe_players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1077,6 +1084,8 @@ def host():
         "fe_host.html",
         config=config,
         progress=progress,
+        email_link=url_for("elimination.join", pin=config["pin"], _external=True),
+        settings_error=session.pop("fe_settings_error", None),
         players=players,
         total_rounds=TOTAL_ROUNDS,
         avatar_images=AVATAR_IMAGES,
@@ -1125,6 +1134,16 @@ def host_settings():
             """,
             (timer_seconds, lifelines_enabled)
         )
+
+        # The host can pick their own PIN to put in the invitation email.
+        wanted_pin = re.sub(r"[^A-Z0-9]", "", request.form.get("game_pin", "").upper())
+        if wanted_pin and wanted_pin != config["pin"]:
+            if 3 <= len(wanted_pin) <= 12:
+                connection.execute(
+                    "UPDATE fe_config SET pin = ?, pin_fixed = 1 WHERE id = 1", (wanted_pin,)
+                )
+            else:
+                session["fe_settings_error"] = "The game PIN must be 3 to 12 letters or numbers."
         connection.commit()
 
     connection.close()
@@ -1191,9 +1210,11 @@ def host_reset():
     connection.execute("DELETE FROM fe_answer_tally")
     connection.execute("DELETE FROM fe_answer_history")
     connection.execute("DELETE FROM fe_events")
+    config = get_config(connection)
+    keep_pin = config["pin_fixed"] if "pin_fixed" in config.keys() else 0
     connection.execute(
         "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ?, released_round = 1, winner_revealed = 0 WHERE id = 1",
-        (generate_pin(), json.dumps(pick_active_questions()))
+        (config["pin"] if keep_pin else generate_pin(), json.dumps(pick_active_questions()))
     )
     connection.commit()
     connection.close()
@@ -1216,7 +1237,10 @@ def join():
         avatar = request.form.get("avatar", "").strip()
         island = request.form.get("island", "").strip()
 
-        existing = get_player(connection, name) if name else None
+        # Names match whatever the capitals ("lanie" finds "Lanie").
+        existing = connection.execute(
+            "SELECT * FROM fe_players WHERE name = ? COLLATE NOCASE", (name,)
+        ).fetchone() if name else None
 
         if not name:
             error = "Enter your investigator name."
@@ -1228,8 +1252,9 @@ def join():
             # Rejoin: a player whose tab closed or phone died comes back
             # with the same name and PIN and carries on where they left off.
             connection.close()
-            session["fe_player_name"] = name
-            return redirect(url_for("elimination.waiting", name=name))
+            session.permanent = True
+            session["fe_player_name"] = existing["name"]
+            return redirect(url_for("elimination.waiting", name=existing["name"]))
         elif existing is not None:
             error = "That name is already taken this game. Try another."
         elif config["status"] != "lobby":
@@ -1248,12 +1273,22 @@ def join():
             )
             connection.commit()
             connection.close()
+            # Remember this phone for a few weeks, so on day two the email
+            # link takes the player straight back into the game.
+            session.permanent = True
             session["fe_player_name"] = name
             return redirect(url_for("elimination.waiting", name=name))
+    else:
+        remembered = session.get("fe_player_name")
+        if remembered and get_player(connection, remembered) is not None:
+            connection.close()
+            return redirect(url_for("elimination.waiting", name=remembered))
 
+    link_pin = request.args.get("pin", "").strip().upper()
     connection.close()
     return render_template(
         "fe_join.html",
+        pin_from_link=bool(link_pin) and link_pin == config["pin"],
         error=error,
         game_started=config["status"] != "lobby",
         avatar_images=AVATAR_IMAGES,
