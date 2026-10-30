@@ -3826,3 +3826,58 @@ body:has(.fe-hero) .fe-main {
 }
 
 .fe-island-champ-score small { color: #94a3b8; font-size: 12px; }
+
+/* Score summary on the end-of-round screen */
+.fe-round-score {
+    margin: 16px 0 6px;
+    padding: 16px 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(250, 204, 21, 0.4);
+    background: rgba(8, 12, 22, 0.75);
+}
+
+.fe-round-score-total strong {
+    display: block;
+    color: #facc15;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.fe-round-score-total span {
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+}
+
+.fe-round-score-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.fe-round-score-stats div {
+    padding: 8px 4px;
+    border-radius: 10px;
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.fe-round-score-stats b {
+    display: block;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.fe-round-score-stats small {
+    color: #94a3b8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+}

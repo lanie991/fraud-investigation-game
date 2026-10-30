@@ -1630,6 +1630,27 @@ def advance(name):
     return redirect(url_for("elimination.play", name=name))
 
 
+def round_summary(connection, config, player, round_number):
+    """How a player did in one round, plus where they stand overall."""
+    active_rounds = get_active_rounds(config)
+    in_round = {i for i, q in enumerate(active_rounds) if q["round_number"] == round_number}
+    rows = connection.execute(
+        "SELECT round_number AS qid, correct, points FROM fe_answer_history WHERE player_id = ?",
+        (player["id"],)
+    ).fetchall()
+    rows = [r for r in rows if r["qid"] in in_round]
+    players, _ = rank_players(connection)
+    position = next((i for i, p in enumerate(players, start=1) if p["id"] == player["id"]), None)
+    return {
+        "total": player["score"] or 0,
+        "round_points": sum(r["points"] or 0 for r in rows),
+        "correct": sum(1 for r in rows if r["correct"]),
+        "questions": len(in_round),
+        "position": position,
+        "players": len(players),
+    }
+
+
 @elimination_bp.route("/round-cleared/<name>")
 def round_cleared(name):
     connection = get_db()
@@ -1642,9 +1663,12 @@ def round_cleared(name):
     config = get_config(connection)
     active_rounds = get_player_rounds(config, player)
     progress = round_progress(connection, config)
+    index = player["question_index"]
+    summary = None
+    if 0 < index <= len(active_rounds):
+        summary = round_summary(connection, config, player, active_rounds[index - 1]["round_number"])
     connection.close()
 
-    index = player["question_index"]
     if (player["status"] != "in" or player["phase"] != "question"
             or player["answered_current"] or player["phase_started_at"]
             or not starts_new_round(active_rounds, index)):
@@ -1658,6 +1682,7 @@ def round_cleared(name):
         upcoming=active_rounds[index],
         released=active_rounds[index]["round_number"] <= released_round(config, active_rounds),
         progress=progress,
+        summary=summary,
         active_nav="play"
     )
 

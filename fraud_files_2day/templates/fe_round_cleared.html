@@ -17,6 +17,22 @@
             Your score is saved.
         </div>
 
+        {% if summary %}
+        <div class="fe-round-score">
+            <div class="fe-round-score-total">
+                <strong>{{ summary.total }}</strong>
+                <span>{{ "POINT" if summary.total == 1 else "POINTS" }}</span>
+            </div>
+            <div class="fe-round-score-stats">
+                <div><b>+{{ summary.round_points }}</b><small>THIS ROUND</small></div>
+                <div><b>{{ summary.correct }}/{{ summary.questions }}</b><small>CORRECT</small></div>
+                {% if summary.position %}
+                <div><b>#{{ summary.position }}</b><small>OF {{ summary.players }} SO FAR</small></div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
         <p class="fe-round-cleared-next">
             Round {{ upcoming["round_number"] }} is on the next day.
             Come back with the <strong>same name and PIN</strong> to rejoin.
