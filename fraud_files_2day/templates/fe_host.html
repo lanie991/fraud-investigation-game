@@ -48,6 +48,14 @@
         </form>
     </div>
 
+    {% if feedback.count %}
+    <div class="fe-card fe-feedback-summary">
+        <span>PLAYER FEEDBACK</span>
+        <strong>{{ feedback.average }} &#11088;</strong>
+        <small>average from {{ feedback.count }} {{ "player" if feedback.count == 1 else "players" }} &middot; comments are in DOWNLOAD RESULTS</small>
+    </div>
+    {% endif %}
+
     <h1 class="fe-title">GAME LOBBY</h1>
     <p class="fe-subtitle">
         Share the PIN below with players. Each investigator moves through

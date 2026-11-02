@@ -4283,3 +4283,41 @@ body:has(.fe-hero) .fe-main {
 
 .fe-switch-player strong { color: #94a3b8; }
 .fe-switch-player a { color: #93c5fd; }
+
+/* End-of-game feedback */
+.fe-rate { width: 100%; max-width: 460px; margin: 16px auto 0; text-align: center; }
+.fe-rate h2 { margin: 0 0 10px; color: #f8fafc; font-family: "Rajdhani", sans-serif; font-size: 18px; letter-spacing: 0.06em; }
+.fe-rate h2[hidden], .fe-rate textarea[hidden], .fe-rate .fe-btn[hidden], .fe-rate-stars[hidden], .fe-rate-done[hidden] { display: none; }
+.fe-rate-stars { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
+
+.fe-rate-star {
+    border: none;
+    background: none;
+    color: #475569;
+    font-size: 40px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.fe-rate-star.on { color: #facc15; }
+
+.fe-rate textarea {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: #0d1220;
+    color: #e2e8f0;
+    font: inherit;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.fe-rate-done { color: #4ade80; font-weight: 700; }
+
+.fe-feedback-summary { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.fe-feedback-summary span { color: #94a3b8; font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; }
+.fe-feedback-summary strong { color: #facc15; font-family: "Rajdhani", sans-serif; font-size: 28px; }
+.fe-feedback-summary small { color: #94a3b8; }

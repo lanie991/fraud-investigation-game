@@ -200,7 +200,29 @@ document.addEventListener("DOMContentLoaded", function () {
     let wasPaused = {{ "true" if paused else "false" }};
     if (pauseCover) pauseCover.hidden = !wasPaused;
 
-    function poll() {
+    // The countdown runs on the phone itself; it checks in with the server
+    // every few seconds (and when it reaches zero) to stay in step, see if
+    // the host paused, and close the question. Checking every second from
+    // every phone would overload the server with a big crowd.
+    const SYNC_MS = 4000;
+    let deadline = Date.now() + Number("{{ remaining_seconds }}") * 1000;
+    let paused = wasPaused;
+    let syncing = false;
+    let lastSync = 0;
+
+    function show(remaining) {
+        if (timerValue) timerValue.textContent = pad(remaining);
+        updateRing(remaining);
+        if (window.FE_SFX && remaining > 0 && remaining <= 5 && remaining !== lastTickedSecond) {
+            lastTickedSecond = remaining;
+            FE_SFX.playTick();
+        }
+    }
+
+    function sync() {
+        if (syncing) return;
+        syncing = true;
+        lastSync = Date.now();
         fetch(timerUrl, { cache: "no-store" })
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -210,19 +232,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     window.location.reload();
                     return;
                 }
-                wasPaused = !!data.paused;
-                if (data.paused) return;
-                if (timerValue) {
-                    timerValue.textContent = pad(data.remaining_seconds);
-                }
-                updateRing(data.remaining_seconds);
-
-                if (window.FE_SFX && data.remaining_seconds > 0
-                        && data.remaining_seconds <= 5
-                        && data.remaining_seconds !== lastTickedSecond) {
-                    lastTickedSecond = data.remaining_seconds;
-                    FE_SFX.playTick();
-                }
+                wasPaused = paused = !!data.paused;
+                const exact = data.remaining_exact != null ? data.remaining_exact : data.remaining_seconds;
+                deadline = Date.now() + exact * 1000;
+                show(Math.ceil(exact));   // while paused this shows the frozen time
 
                 if (data.closed && !submitted) {
                     submitted = true;
@@ -233,11 +246,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
             })
-            .catch(function () {});
+            .catch(function () {})
+            .finally(function () { syncing = false; });
     }
 
-    poll();
-    setInterval(poll, 1000);
+    // Tick the clock locally every quarter second.
+    setInterval(function () {
+        if (paused || submitted) return;
+        const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+        show(remaining);
+        // Time's up: ask the server to close it (at most once a second).
+        if (remaining <= 0 && Date.now() - lastSync > 1000) sync();
+    }, 250);
+
+    sync();
+    setInterval(sync, SYNC_MS);
 
     const remainingText = document.getElementById("fe-remaining-text");
     function pollPlayers() {
@@ -250,7 +273,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(function () {});
     }
-    setInterval(pollPlayers, 4000);
+    setInterval(pollPlayers, 15000);
 
     const askTeamBtn = document.getElementById("fe-ask-team-btn");
     const askTeamResult = document.getElementById("fe-ask-team-result");

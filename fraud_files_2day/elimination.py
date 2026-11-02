@@ -250,9 +250,14 @@ def initialize_database():
     if "island" not in existing_columns:
         connection.execute("ALTER TABLE fe_players ADD COLUMN island TEXT")
 
+    # End-of-game feedback: 1-5 stars and an optional comment.
+    if "feedback_comment" not in existing_columns:
+        connection.execute("ALTER TABLE fe_players ADD COLUMN feedback_comment TEXT")
+
     # Running streak and the breakdown of the last answer's points, and
     # late_joiner = 1 for someone who missed Day 1 and only plays Round 2.
-    for column in ("streak", "last_speed_bonus", "last_streak_bonus", "late_joiner"):
+    for column in ("streak", "last_speed_bonus", "last_streak_bonus", "late_joiner",
+                   "feedback_rating"):
         if column not in existing_columns:
             connection.execute(
                 f"ALTER TABLE fe_players ADD COLUMN {column} INTEGER DEFAULT 0"
@@ -1112,12 +1117,14 @@ def host():
         "SELECT * FROM fe_players ORDER BY joined_at"
     ).fetchall()
     progress = round_progress(connection, config)
+    feedback = feedback_summary(connection)
     connection.close()
 
     return render_template(
         "fe_host.html",
         config=config,
         progress=progress,
+        feedback=feedback,
         email_link=url_for("elimination.join", pin=config["pin"], _external=True),
         paused=is_paused(config),
         settings_error=session.pop("fe_settings_error", None),
@@ -1326,6 +1333,39 @@ def island_battle(players):
     return result
 
 
+@elimination_bp.route("/feedback-submit/<name>", methods=["POST"])
+def feedback_submit(name):
+    """A player's star rating and comment from the results page."""
+    if session.get("fe_player_name") != name:
+        return jsonify({"error": "not_you"}), 403
+    try:
+        rating = int(request.form.get("rating", "0"))
+    except ValueError:
+        rating = 0
+    if not 1 <= rating <= 5:
+        return jsonify({"error": "rating"}), 400
+    comment = request.form.get("comment", "").strip()[:500]
+    connection = get_db()
+    connection.execute(
+        "UPDATE fe_players SET feedback_rating = ?, feedback_comment = ? WHERE name = ?",
+        (rating, comment, name)
+    )
+    connection.commit()
+    connection.close()
+    return jsonify({"ok": True})
+
+
+def feedback_summary(connection):
+    rows = connection.execute(
+        "SELECT feedback_rating FROM fe_players WHERE feedback_rating BETWEEN 1 AND 5"
+    ).fetchall()
+    ratings = [r["feedback_rating"] for r in rows]
+    return {
+        "count": len(ratings),
+        "average": round(sum(ratings) / len(ratings), 1) if ratings else None,
+    }
+
+
 @elimination_bp.route("/host/results.csv")
 @host_required
 def host_results_csv():
@@ -1343,7 +1383,8 @@ def host_results_csv():
     writer.writerow(
         ["Place", "Name", "Island"]
         + [f"Round {n} points" for n in numbers]
-        + ["Total points", "Correct answers", "Lifelines used", "Island champion", "Day 2 only"]
+        + ["Total points", "Correct answers", "Lifelines used", "Island champion", "Day 2 only",
+           "Feedback (1-5 stars)", "Feedback comment"]
     )
     for place, p in enumerate(players, start=1):
         lifelines = (1 if p["fifty_fifty_used"] else 0) + (1 if p["ask_team_used"] else 0)
@@ -1352,7 +1393,8 @@ def host_results_csv():
             + [by_round.get(p["id"], {}).get(n, 0) for n in numbers]
             + [p["score"] or 0, f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS}", lifelines,
                "Yes" if p["name"] in champions else "",
-               "Yes" if p["late_joiner"] else ""]
+               "Yes" if p["late_joiner"] else "",
+               p["feedback_rating"] or "", p["feedback_comment"] or ""]
         )
     response = flask.Response("\ufeff" + buffer.getvalue(), mimetype="text/csv")
     response.headers["Content-Disposition"] = "attachment; filename=fraud-files-results.csv"
@@ -1859,8 +1901,10 @@ def timer(name):
     elapsed = seconds_on_question(connection, player, config)
     connection.close()
 
-    remaining = max(0, int(config["timer_seconds"] - elapsed))
-    return jsonify({"remaining_seconds": remaining, "closed": remaining <= 0 and not paused,
+    exact = max(0.0, config["timer_seconds"] - elapsed)
+    remaining = int(exact)
+    return jsonify({"remaining_seconds": remaining, "remaining_exact": round(exact, 2),
+                    "closed": remaining <= 0 and not paused,
                     "paused": paused, "started": True})
 
 
@@ -2116,7 +2160,10 @@ def results(name):
         name=name, player=player, correct=correct.get(player["id"], 0),
         score=player["score"] or 0,
         game_over=game_over, placement=placement, player_count=len(players),
-        total_rounds=TOTAL_ROUNDS, cert=cert, active_nav="play"
+        total_rounds=TOTAL_ROUNDS, cert=cert,
+        feedback_given=bool(player["feedback_rating"]),
+        can_feedback=game_over and session.get("fe_player_name") == player["name"],
+        active_nav="play"
     )
 
 
