@@ -15,6 +15,8 @@ played, each player getting their own shuffle within each round.
 
 from functools import wraps
 from importlib import import_module
+import csv
+from datetime import datetime
 import io
 import json
 import os
@@ -23,7 +25,7 @@ import re
 import sqlite3
 import string
 
-from big_screen_content import CASE_FILES, DID_YOU_KNOW
+from big_screen_content import CASE_FILES, DID_YOU_KNOW, PRACTICE_QUESTION
 import db_store
 
 # Changes every time the server starts (every deploy), so an open big
@@ -163,6 +165,12 @@ def initialize_database():
     if "locked_message" not in existing_config_columns:
         connection.execute(
             "ALTER TABLE fe_config ADD COLUMN locked_message TEXT"
+        )
+
+    # The host can pause everyone's timers (e.g. a projector problem).
+    if "paused_at" not in existing_config_columns:
+        connection.execute(
+            "ALTER TABLE fe_config ADD COLUMN paused_at TEXT"
         )
 
     connection.execute("""
@@ -840,20 +848,28 @@ def players_remaining_count(connection):
     ).fetchone()["count"]
 
 
-def seconds_on_question(connection, player):
-    """How long the player has been looking at the current question."""
+def is_paused(config):
+    return bool("paused_at" in config.keys() and config["paused_at"])
+
+
+def seconds_on_question(connection, player, config=None):
+    """How long the player has been looking at the current question. While
+    the game is paused the clock stands still at the moment of the pause."""
     if not player["phase_started_at"]:
         return None
-    return connection.execute(
-        "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
-        (player["phase_started_at"],)
+    config = config if config is not None else get_config(connection)
+    until = config["paused_at"] if is_paused(config) else None
+    seconds = connection.execute(
+        "SELECT (julianday(COALESCE(?, 'now')) - julianday(?)) * 86400 AS seconds",
+        (until, player["phase_started_at"])
     ).fetchone()["seconds"]
+    return max(0.0, seconds or 0.0)
 
 
 def speed_bonus_for(connection, player, config):
     """Extra points for answering quickly: the full bonus in the first
     quarter of the timer, one less each quarter after that."""
-    elapsed = seconds_on_question(connection, player)
+    elapsed = seconds_on_question(connection, player, config)
     if elapsed is None:
         return 0
     quarter = config["timer_seconds"] / 4
@@ -1101,6 +1117,7 @@ def host():
         config=config,
         progress=progress,
         email_link=url_for("elimination.join", pin=config["pin"], _external=True),
+        paused=is_paused(config),
         settings_error=session.pop("fe_settings_error", None),
         players=players,
         total_rounds=TOTAL_ROUNDS,
@@ -1229,7 +1246,7 @@ def host_reset():
     config = get_config(connection)
     keep_pin = config["pin_fixed"] if "pin_fixed" in config.keys() else 0
     connection.execute(
-        "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ?, released_round = 1, winner_revealed = 0 WHERE id = 1",
+        "UPDATE fe_config SET pin = ?, status = 'lobby', active_questions = ?, released_round = 1, winner_revealed = 0, paused_at = NULL WHERE id = 1",
         (config["pin"] if keep_pin else generate_pin(), json.dumps(pick_active_questions()))
     )
     connection.commit()
@@ -1259,6 +1276,112 @@ def host_doors():
     connection.commit()
     connection.close()
     return redirect(url_for("elimination.host"))
+
+
+def points_by_round(connection, config):
+    """{player_id: {round_number: points}} from the answer history."""
+    active_rounds = get_active_rounds(config)
+    totals = {}
+    for row in connection.execute(
+        "SELECT player_id, round_number AS qid, points FROM fe_answer_history"
+    ):
+        if 0 <= row["qid"] < len(active_rounds):
+            round_number = active_rounds[row["qid"]]["round_number"]
+            per_player = totals.setdefault(row["player_id"], {})
+            per_player[round_number] = per_player.get(round_number, 0) + (row["points"] or 0)
+    return totals
+
+
+def island_battle(players):
+    """Islands ranked by average points per player, each with its best
+    player. `players` must already be ranked best first."""
+    islands = {}
+    for p in players:
+        if p["island"] not in ISLANDS:
+            continue
+        entry = islands.setdefault(p["island"], {
+            "island": p["island"],
+            "island_name": ISLANDS[p["island"]],
+            "total": 0,
+            "players": 0,
+            "champion": p,          # first seen = best on that island
+        })
+        entry["total"] += p["score"] or 0
+        entry["players"] += 1
+    result = []
+    for entry in islands.values():
+        champion = entry.pop("champion")
+        entry["average"] = round(entry["total"] / entry["players"], 1) if entry["players"] else 0
+        entry["champion"] = {
+            "name": champion["name"],
+            "avatar": AVATAR_IMAGES.get(champion["avatar"]),
+            "score": champion["score"] or 0,
+        }
+        result.append(entry)
+    result.sort(key=lambda e: (-e["average"], e["island_name"]))
+    return result
+
+
+@elimination_bp.route("/host/results.csv")
+@host_required
+def host_results_csv():
+    """Everyone's results as a spreadsheet (opens in Excel)."""
+    connection = get_db()
+    config = get_config(connection)
+    players, correct = rank_players(connection)
+    by_round = points_by_round(connection, config)
+    numbers = round_numbers(get_active_rounds(config))
+    champions = {i["champion"]["name"] for i in island_battle(players)}
+    connection.close()
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(
+        ["Place", "Name", "Island"]
+        + [f"Round {n} points" for n in numbers]
+        + ["Total points", "Correct answers", "Lifelines used", "Island champion"]
+    )
+    for place, p in enumerate(players, start=1):
+        lifelines = (1 if p["fifty_fifty_used"] else 0) + (1 if p["ask_team_used"] else 0)
+        writer.writerow(
+            [place, p["name"], ISLANDS.get(p["island"], "")]
+            + [by_round.get(p["id"], {}).get(n, 0) for n in numbers]
+            + [p["score"] or 0, f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS}", lifelines,
+               "Yes" if p["name"] in champions else ""]
+        )
+    response = flask.Response("\ufeff" + buffer.getvalue(), mimetype="text/csv")
+    response.headers["Content-Disposition"] = "attachment; filename=fraud-files-results.csv"
+    return response
+
+
+@elimination_bp.route("/host/pause", methods=["POST"])
+@host_required
+def host_pause():
+    """Freeze every player's timer, or carry on from where it stopped."""
+    connection = get_db()
+    config = get_config(connection)
+    if request.form.get("pause") == "1":
+        if config["status"] == "active" and not is_paused(config):
+            connection.execute("UPDATE fe_config SET paused_at = datetime('now') WHERE id = 1")
+    elif is_paused(config):
+        # Push every running question's start time forward by the length of
+        # the pause, so nobody loses the seconds the game was frozen.
+        paused_for = int(round(connection.execute(
+            "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
+            (config["paused_at"],)
+        ).fetchone()["seconds"] or 0))
+        connection.execute(
+            """
+            UPDATE fe_players
+            SET phase_started_at = datetime(phase_started_at, ?)
+            WHERE phase_started_at IS NOT NULL AND answered_current = 0
+            """,
+            (f"+{paused_for} seconds",)
+        )
+        connection.execute("UPDATE fe_config SET paused_at = NULL WHERE id = 1")
+    connection.commit()
+    connection.close()
+    return redirect(request.referrer or url_for("elimination.host"))
 
 
 @elimination_bp.route("/join-status")
@@ -1374,6 +1497,8 @@ def waiting(name):
     return render_template(
         "fe_waiting.html",
         name=name,
+        practice=PRACTICE_QUESTION,
+        timer_seconds=config["timer_seconds"],
         avatar=player["avatar"],
         avatar_images=AVATAR_IMAGES,
         active_nav="play"
@@ -1457,6 +1582,10 @@ def play(name):
         return redirect(url_for("elimination.round_cleared", name=name))
 
     if request.method == "POST":
+        if is_paused(config) and not player["answered_current"]:
+            # No answers while the host has the game paused.
+            connection.close()
+            return redirect(url_for("elimination.play", name=name))
         if not player["answered_current"]:
             answer = request.form.get("answer")
             grade_regular_answer(connection, player, config, answer)
@@ -1469,7 +1598,9 @@ def play(name):
 
     round_data = active_rounds[player["question_index"]]
 
-    if not player["phase_started_at"]:
+    # While paused, a new question isn't started (its timer would run);
+    # the page waits and reloads itself when the host resumes.
+    if not player["phase_started_at"] and not is_paused(config):
         shuffled_keys = list(round_data["options"].keys())
         random.shuffle(shuffled_keys)
         connection.execute(
@@ -1483,10 +1614,9 @@ def play(name):
         connection.commit()
         player = get_player(connection, player["name"])
 
-    elapsed = connection.execute(
-        "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
-        (player["phase_started_at"],)
-    ).fetchone()["seconds"]
+    elapsed = seconds_on_question(connection, player, config)
+    if elapsed is None:
+        elapsed = 0.0
 
     if elapsed >= config["timer_seconds"]:
         grade_regular_answer(connection, player, config, None)
@@ -1525,6 +1655,7 @@ def play(name):
         current_round=round_data["round_number"],
         timer_seconds=config["timer_seconds"],
         remaining_seconds=max(0, int(config["timer_seconds"] - elapsed)),
+        paused=is_paused(config),
         lifelines_enabled=config["lifelines_enabled"],
         lifeline_cost=LIFELINE_COST,
         removed_options=removed_options,
@@ -1625,19 +1756,20 @@ def timer(name):
 
     config = get_config(connection)
 
+    paused = is_paused(config)
+
     if player["answered_current"] or not player["phase_started_at"]:
         connection.close()
-        return jsonify({"remaining_seconds": config["timer_seconds"], "closed": bool(player["answered_current"])})
+        return jsonify({"remaining_seconds": config["timer_seconds"],
+                        "closed": bool(player["answered_current"]),
+                        "paused": paused, "started": bool(player["phase_started_at"])})
 
-    elapsed = connection.execute(
-        "SELECT (julianday('now') - julianday(?)) * 86400 AS seconds",
-        (player["phase_started_at"],)
-    ).fetchone()["seconds"]
-
+    elapsed = seconds_on_question(connection, player, config)
     connection.close()
 
     remaining = max(0, int(config["timer_seconds"] - elapsed))
-    return jsonify({"remaining_seconds": remaining, "closed": remaining <= 0})
+    return jsonify({"remaining_seconds": remaining, "closed": remaining <= 0 and not paused,
+                    "paused": paused, "started": True})
 
 
 @elimination_bp.route("/feedback/<name>")
@@ -1859,12 +1991,40 @@ def results(name):
     game_over = game_is_over(players)
     placement = next(i for i, p in enumerate(players, 1) if p["id"] == player["id"])
 
+    # Everyone gets a certificate once the game is over; the winner and
+    # the best player on each island get a special one.
+    cert = None
+    if game_over:
+        island_name = ISLANDS.get(player["island"], "")
+        champion = any(
+            i["island"] == player["island"] and i["champion"]["name"] == player["name"]
+            for i in island_battle(players)
+        )
+        if winner:
+            title, line = "CERTIFICATE OF VICTORY", "Overall winner of the Fraud Files 2-Day Challenge"
+        elif champion:
+            title, line = "ISLAND CHAMPION", f"Top investigator for {island_name}"
+        else:
+            title, line = "CERTIFICATE OF PARTICIPATION", "Completed the Fraud Files 2-Day Challenge"
+        cert = {
+            "title": title,
+            "line": line,
+            "name": player["name"],
+            "island": island_name,
+            "stats": f"{player['score'] or 0} POINTS  \u00b7  #{placement} OF {len(players)}  \u00b7  "
+                     f"{correct.get(player['id'], 0)}/{TOTAL_ROUNDS} CORRECT",
+            "date": datetime.now().strftime("%d %B %Y").lstrip("0"),
+            "icon": url_for("static", filename="images/brand-icon.webp"),
+            "flag": url_for("static", filename=f"flags/{player['island']}.svg") if player["island"] in ISLANDS else None,
+            "avatar": url_for("static", filename="avatars/" + AVATAR_IMAGES[player["avatar"]]) if player["avatar"] in AVATAR_IMAGES else None,
+        }
+
     return render_template(
         "fe_winner.html" if winner else "fe_results.html",
         name=name, player=player, correct=correct.get(player["id"], 0),
         score=player["score"] or 0,
         game_over=game_over, placement=placement, player_count=len(players),
-        total_rounds=TOTAL_ROUNDS, active_nav="play"
+        total_rounds=TOTAL_ROUNDS, cert=cert, active_nav="play"
     )
 
 
@@ -2076,7 +2236,9 @@ def display_data():
         "spotlight": spotlight,
         "feed": feed,
         "version": APP_VERSION,
+        "islands": island_battle(players),
         "is_host": bool(session.get("fe_is_host")),
+        "paused": is_paused(config),
         "game_status": config["status"],
         "pin": config["pin"],
         "players": rows,

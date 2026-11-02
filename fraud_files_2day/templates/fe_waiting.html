@@ -31,7 +31,82 @@
 
     </div>
 
+    {% if practice %}
+    <div class="fe-card fe-practice" id="fe-practice">
+        <div class="fe-practice-head">
+            <span class="fe-practice-tag">PRACTICE &middot; DOESN'T COUNT</span>
+            <span class="fe-practice-timer" id="fe-practice-timer"></span>
+        </div>
+        <div id="fe-practice-start">
+            <p class="fe-practice-intro">
+                While you wait, try a warm-up question. In the real game you
+                have {{ timer_seconds }} seconds per question: <b>+5</b> for a
+                correct answer, extra points for speed and streaks, and two
+                lifelines (50/50 and Ask the Team) that cost 1 point each.
+            </p>
+            <button type="button" class="fe-btn fe-btn-gold fe-btn-block" id="fe-practice-go">TRY A PRACTICE QUESTION</button>
+        </div>
+        <div id="fe-practice-q" hidden>
+            <h2 class="fe-practice-text">{{ practice.text }}</h2>
+            {% for letter, option in practice.options.items() %}
+            <button type="button" class="fe-practice-option" data-letter="{{ letter }}">
+                <span class="fe-option-letter">{{ letter }}</span><span>{{ option }}</span>
+            </button>
+            {% endfor %}
+            <div class="fe-practice-result" id="fe-practice-result" hidden></div>
+        </div>
+    </div>
+    {% endif %}
+
 </div>
+
+{% if practice %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const correct = {{ practice.correct|tojson }};
+    const explanation = {{ practice.explanation|tojson }};
+    const total = {{ timer_seconds|int }};
+    const startBox = document.getElementById("fe-practice-start");
+    const qBox = document.getElementById("fe-practice-q");
+    const timerEl = document.getElementById("fe-practice-timer");
+    const resultEl = document.getElementById("fe-practice-result");
+    const options = Array.prototype.slice.call(document.querySelectorAll(".fe-practice-option"));
+    let left = total, ticking = null, done = false;
+
+    function finish(letter) {
+        if (done) return;
+        done = true;
+        clearInterval(ticking);
+        options.forEach(function (b) {
+            b.disabled = true;
+            if (b.dataset.letter === correct) b.classList.add("right");
+            else if (b.dataset.letter === letter) b.classList.add("wrong");
+        });
+        const right = letter === correct;
+        if (window.FE_SFX) { right ? FE_SFX.playCorrect() : FE_SFX.playIncorrect(); }
+        resultEl.innerHTML = "<strong>" + (letter == null ? "TIME'S UP!" : right ? "CORRECT!" : "NOT QUITE") + "</strong>"
+            + "<span></span><small>That was just practice &mdash; the real game starts when the host is ready.</small>";
+        resultEl.querySelector("span").textContent = explanation;
+        resultEl.className = "fe-practice-result " + (right ? "right" : "wrong");
+        resultEl.hidden = false;
+    }
+
+    document.getElementById("fe-practice-go").addEventListener("click", function () {
+        startBox.hidden = true;
+        qBox.hidden = false;
+        timerEl.textContent = left + "s";
+        ticking = setInterval(function () {
+            left -= 1;
+            timerEl.textContent = Math.max(0, left) + "s";
+            if (left <= 0) finish(null);
+        }, 1000);
+    });
+    options.forEach(function (b) {
+        b.addEventListener("click", function () { finish(b.dataset.letter); });
+    });
+});
+</script>
+{% endif %}
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {

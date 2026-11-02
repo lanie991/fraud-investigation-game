@@ -85,6 +85,8 @@
                         <button type="button" class="fe-btn fe-btn-gold" id="fe-next-round-btn" hidden></button>
                     </div>
                     <div class="fe-display-review-grid" id="fe-review-grid"></div>
+                    <!-- Between rounds this takes turns with the answers -->
+                    <div class="fe-recap" id="fe-recap" hidden></div>
                 </div>
 
                 <!-- While a round is played: the round's questions (no
@@ -99,6 +101,7 @@
                 </div>
 
                 <div class="fe-feed" id="fe-feed" hidden>
+                    <div class="fe-island-battle" id="fe-island-battle"></div>
                     <div class="fe-display-label">&#128225; LIVE FEED</div>
                     <div id="fe-feed-list"></div>
                 </div>
@@ -107,6 +110,10 @@
 
         </div>
 
+    </div>
+
+    <div class="fe-display-paused" id="fe-display-paused" hidden>
+        &#9208;&#65039; GAME PAUSED &mdash; TIMERS ARE FROZEN
     </div>
 
     <div class="fe-ticker" id="fe-ticker" hidden>
@@ -149,7 +156,70 @@
             return div.innerHTML;
         }
 
+        // ---------- Island Battle (average points per player) ----------
+        function islandBars(islands, withChampion) {
+            if (!islands || !islands.length) return "";
+            const top = Math.max.apply(null, islands.map(function (i) { return i.average; })) || 1;
+            return islands.map(function (i, n) {
+                return '<div class="fe-ib-row' + (n === 0 ? " lead" : "") + '">'
+                    + '<img src="/static/flags/' + esc(i.island) + '.svg" alt="">'
+                    + '<div class="fe-ib-main"><div class="fe-ib-name">' + esc(i.island_name)
+                    + (withChampion ? ' <small>&#127941; ' + esc(i.champion.name) + "</small>" : "")
+                    + '</div><div class="fe-ib-bar"><i style="width:' + Math.max(4, Math.round(i.average / top * 100)) + '%"></i></div></div>'
+                    + '<div class="fe-ib-avg">' + esc(i.average) + "<small>AVG</small></div>"
+                    + "</div>";
+            }).join("");
+        }
+
+        const battleEl = document.getElementById("fe-island-battle");
+        function renderIslandBattle(data, live) {
+            if (!live || !data.islands || data.islands.length < 2) {
+                battleEl.innerHTML = "";
+                return;
+            }
+            battleEl.innerHTML = '<div class="fe-display-label">&#127965;&#65039; ISLAND BATTLE &middot; AVG POINTS</div>'
+                + islandBars(data.islands.slice(0, 7), false);
+        }
+
+        // ---------- "Previously on Fraud Files" between rounds ----------
+        const recapEl = document.getElementById("fe-recap");
+        const RECAP_MS = 20000;
+        let recapShowing = false;
+        let recapTimer = null;
+
+        function renderRecap(data) {
+            const top = data.players.slice(0, 3);
+            const medals = ["&#129351;", "&#129352;", "&#129353;"];
+            let html = '<div class="fe-recap-top">' + top.map(function (p, i) {
+                const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
+                return '<div class="fe-recap-card place-' + (i + 1) + '">'
+                    + '<div class="fe-recap-medal">' + medals[i] + "</div>"
+                    + '<div class="fe-recap-avatar">' + avatarImg + "</div>"
+                    + '<div class="fe-recap-name">' + flag(p) + esc(p.name) + "</div>"
+                    + '<div class="fe-recap-score">' + esc(p.score) + " <small>PTS</small></div></div>";
+            }).join("") + "</div>";
+            if (data.islands && data.islands.length) {
+                html += '<div class="fe-display-label" style="margin:22px 0 10px;">&#127965;&#65039; ISLAND BATTLE &middot; AVERAGE POINTS PER PLAYER &middot; &#127941; = ISLAND LEADER</div>'
+                    + '<div class="fe-recap-battle">' + islandBars(data.islands, true) + "</div>";
+            }
+            recapEl.innerHTML = html;
+        }
+
+        function setRecapVisible(show, data) {
+            recapShowing = show;
+            recapEl.hidden = !show;
+            reviewGrid.hidden = show;
+            if (show) {
+                reviewKicker.textContent = "DAY " + data.progress.round + " RECAP";
+                reviewTitle.innerHTML = "PREVIOUSLY ON <span class=\"diff-mixed\">FRAUD FILES</span>&hellip;";
+            } else {
+                lastReviewKey = "";   // redraw the answers title
+            }
+        }
+
+        let latestData = null;
         function renderReview(data) {
+            latestData = data;
             const showReview = data.phase === "intermission" || data.phase === "finished";
             const live = data.phase === "playing" && !!data.spotlight;
             stage.classList.toggle("split", showReview);
@@ -159,9 +229,31 @@
             displayEl.classList.toggle("live", live);
             renderSpotlight(data, live);
             renderFeed(data, live);
+            renderIslandBattle(data, live);
             renderTicker(data);
+            document.getElementById("fe-display-paused").hidden = !data.paused;
             reviewEl.hidden = !showReview;
             renderWinner(data);
+
+            // Between rounds (not after the last one) the answers and the
+            // recap take turns every 20 seconds.
+            const recapOn = data.phase === "intermission" && !!data.progress.next_round;
+            if (recapOn) {
+                renderRecap(data);
+                if (!recapTimer) {
+                    recapTimer = setInterval(function () {
+                        if (latestData) {
+                            setRecapVisible(!recapShowing, latestData);
+                            if (!recapShowing) renderReview(latestData);
+                        }
+                    }, RECAP_MS);
+                }
+            } else if (recapTimer) {
+                clearInterval(recapTimer);
+                recapTimer = null;
+                setRecapVisible(false, data);
+            }
+
             if (!showReview || !data.review) {
                 lastReviewKey = "";
                 return;
@@ -178,6 +270,8 @@
                 nextRoundBtn.textContent = "\u25B6 START ROUND " + (next || "");
                 nextRoundBtn.dataset.action = "{{ url_for('elimination.host_next_round') }}";
             }
+
+            if (recapShowing) return;
 
             // Only redraw the cards when something changed, so the screen doesn't flicker.
             const key = JSON.stringify(review) + data.phase;
@@ -210,27 +304,26 @@
 
         // Players arrive ranked best first, so the first player seen from
         // each island is that island's champion.
-        function renderIslandChamps(players) {
-            const seen = {};
-            const champs = [];
-            players.forEach(function (p) {
-                if (!p.island || seen[p.island]) return;
-                seen[p.island] = true;
-                champs.push(p);
-            });
-            if (!champs.length) {
+        // Final screen: one card per island, ranked by the Island Battle
+        // (average points per player), showing that island's best player.
+        function renderIslandChamps(data) {
+            const islands = data.islands || [];
+            if (!islands.length) {
                 champsEl.innerHTML = "";
                 return;
             }
-            let html = '<div class="fe-display-label">&#127965;&#65039; ISLAND CHAMPIONS</div><div class="fe-island-champs-row">';
-            champs.forEach(function (p) {
-                const avatarImg = p.avatar ? '<img src="/static/avatars/' + p.avatar + '" alt="">' : "";
-                html += '<div class="fe-island-champ">'
-                    + '<img class="fe-island-champ-flag" src="/static/flags/' + esc(p.island) + '.svg" alt="">'
-                    + '<div class="fe-island-champ-island">' + esc(p.island_name) + "</div>"
+            let html = '<div class="fe-display-label">&#127965;&#65039; ISLAND CHAMPIONS &middot; ISLANDS RANKED BY AVERAGE POINTS</div><div class="fe-island-champs-row">';
+            islands.forEach(function (i, n) {
+                const c = i.champion;
+                const avatarImg = c.avatar ? '<img src="/static/avatars/' + c.avatar + '" alt="">' : "";
+                html += '<div class="fe-island-champ' + (n === 0 ? " top" : "") + '">'
+                    + '<div class="fe-island-champ-rank">#' + (n + 1) + "</div>"
+                    + '<img class="fe-island-champ-flag" src="/static/flags/' + esc(i.island) + '.svg" alt="">'
+                    + '<div class="fe-island-champ-island">' + esc(i.island_name) + "</div>"
+                    + '<div class="fe-island-champ-avg">' + esc(i.average) + " AVG</div>"
                     + '<div class="fe-island-champ-avatar">' + avatarImg + "</div>"
-                    + '<div class="fe-island-champ-name">' + esc(p.name) + "</div>"
-                    + '<div class="fe-island-champ-score">' + esc(p.score) + " <small>PTS</small></div>"
+                    + '<div class="fe-island-champ-name">' + esc(c.name) + "</div>"
+                    + '<div class="fe-island-champ-score">' + esc(c.score) + " <small>PTS</small></div>"
                     + "</div>";
             });
             champsEl.innerHTML = html + "</div>";
@@ -276,7 +369,7 @@
                     + "</div>";
             });
             podiumEl.innerHTML = html;
-            renderIslandChamps(data.players);
+            renderIslandChamps(data);
 
             // Confetti as 1st place appears; the full standings fade in
             // afterwards so they don't give away the order early.

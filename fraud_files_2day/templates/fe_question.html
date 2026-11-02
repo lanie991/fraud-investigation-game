@@ -160,6 +160,14 @@
 
 </div>
 
+<div class="fe-paused-cover" id="fe-paused-cover" hidden>
+    <div>
+        <div class="fe-paused-icon">&#9208;&#65039;</div>
+        <strong>GAME PAUSED</strong>
+        <span>The host has paused the game. Your timer is frozen &mdash; stay on this page.</span>
+    </div>
+</div>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const timerValue = document.getElementById("fe-timer-value");
@@ -186,10 +194,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let lastTickedSecond = null;
 
+    // The host can pause the game: cover the question, freeze the timer,
+    // and pick up again as soon as it's resumed.
+    const pauseCover = document.getElementById("fe-paused-cover");
+    let wasPaused = {{ "true" if paused else "false" }};
+    if (pauseCover) pauseCover.hidden = !wasPaused;
+
     function poll() {
         fetch(timerUrl, { cache: "no-store" })
             .then(function (r) { return r.json(); })
             .then(function (data) {
+                if (pauseCover) pauseCover.hidden = !data.paused;
+                if (wasPaused && !data.paused) {
+                    // Resumed: reload so a question that hadn't started yet begins now.
+                    window.location.reload();
+                    return;
+                }
+                wasPaused = !!data.paused;
+                if (data.paused) return;
                 if (timerValue) {
                     timerValue.textContent = pad(data.remaining_seconds);
                 }

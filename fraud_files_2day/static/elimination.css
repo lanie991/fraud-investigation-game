@@ -3987,3 +3987,242 @@ body:has(.fe-hero) .fe-main {
 }
 
 .fe-locked-hint { color: #94a3b8; font-size: 13px; line-height: 1.5; }
+
+/* Paused game cover on phones */
+.fe-paused-cover {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(3, 6, 12, 0.9);
+    text-align: center;
+}
+
+.fe-paused-cover[hidden] { display: none; }
+.fe-paused-icon { font-size: 54px; }
+
+.fe-paused-cover strong {
+    display: block;
+    margin: 8px 0;
+    color: #facc15;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 34px;
+    letter-spacing: 0.08em;
+}
+
+.fe-paused-cover span { color: #cbd5e1; font-size: 15px; line-height: 1.5; }
+
+/* Island Battle bars */
+.fe-island-battle { margin-bottom: 16px; }
+.fe-island-battle:empty { display: none; }
+
+.fe-ib-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.fe-ib-row img {
+    width: 30px;
+    height: 21px;
+    border-radius: 3px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.fe-ib-main { flex: 1; min-width: 0; }
+
+.fe-ib-name {
+    overflow: hidden;
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fe-ib-name small { color: #facc15; font-size: 12px; font-weight: 700; }
+
+.fe-ib-bar {
+    height: 8px;
+    margin-top: 4px;
+    border-radius: 4px;
+    background: rgba(148, 163, 184, 0.15);
+    overflow: hidden;
+}
+
+.fe-ib-bar i {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #b45309, #facc15);
+}
+
+.fe-ib-row.lead .fe-ib-bar i { background: linear-gradient(90deg, #16a34a, #4ade80); }
+
+.fe-ib-avg {
+    width: 58px;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    text-align: right;
+}
+
+.fe-ib-avg small {
+    display: block;
+    margin-top: -4px;
+    color: #64748b;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+}
+
+/* "Previously on Fraud Files" recap */
+.fe-recap[hidden] { display: none; }
+
+.fe-recap-top {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.fe-recap-card {
+    padding: 18px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(250, 204, 21, 0.45);
+    background: linear-gradient(180deg, rgba(250, 204, 21, 0.14), rgba(8, 12, 22, 0.92));
+    text-align: center;
+}
+
+.fe-recap-card.place-2 { border-color: rgba(203, 213, 225, 0.45); }
+.fe-recap-card.place-3 { border-color: rgba(245, 158, 11, 0.45); }
+.fe-recap-medal { font-size: 34px; }
+
+.fe-recap-avatar {
+    width: 72px;
+    height: 72px;
+    margin: 6px auto;
+    border-radius: 50%;
+    border: 3px solid #facc15;
+    background: #0d1220;
+    overflow: hidden;
+}
+
+.fe-recap-avatar img { width: 100%; height: 100%; object-fit: contain; }
+.fe-recap-name { color: #f8fafc; font-size: 20px; font-weight: 800; }
+
+.fe-recap-score {
+    color: #facc15;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 34px;
+    font-weight: 800;
+}
+
+.fe-recap-score small { color: #94a3b8; font-size: 13px; }
+
+.fe-recap-battle {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(8, 12, 22, 0.85);
+}
+
+.fe-recap-battle .fe-ib-name { font-size: 16px; }
+.fe-recap-battle .fe-ib-bar { height: 12px; }
+
+/* Final screen island cards: rank + average */
+.fe-island-champ { position: relative; }
+.fe-island-champ.top { border-color: #4ade80; box-shadow: 0 0 18px rgba(74, 222, 128, 0.25); }
+
+.fe-island-champ-rank {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    color: #94a3b8;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.fe-island-champ-avg {
+    color: #4ade80;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+/* Paused banner on the big screen */
+.fe-display-paused {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    padding: 14px;
+    background: #facc15;
+    color: #111111;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-align: center;
+}
+
+.fe-display-paused[hidden] { display: none; }
+
+/* Certificate download */
+.fe-cert-box { width: 100%; margin: 4px 0 18px; }
+.fe-cert-preview { display: block; width: 100%; margin-top: 12px; border-radius: 8px; border: 1px solid rgba(250, 204, 21, 0.4); }
+.fe-cert-preview[hidden] { display: none; }
+.fe-cert-hint { margin: 8px 0 0; color: #94a3b8; font-size: 12px; }
+.fe-cert-hint[hidden] { display: none; }
+
+/* Practice question in the lobby */
+.fe-practice { width: 100%; max-width: 460px; margin-top: 16px; text-align: left; }
+.fe-practice-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+
+.fe-practice-tag {
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(96, 165, 250, 0.15);
+    color: #93c5fd;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.fe-practice-timer { color: #facc15; font-family: "Rajdhani", sans-serif; font-size: 22px; font-weight: 800; }
+.fe-practice-intro { margin: 0 0 14px; color: #cbd5e1; font-size: 14px; line-height: 1.5; }
+.fe-practice-text { margin: 0 0 12px; color: #f8fafc; font-size: 18px; line-height: 1.35; }
+
+.fe-practice-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    background: rgba(13, 18, 32, 0.85);
+    color: #e2e8f0;
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.fe-practice-option.right { border-color: #4ade80; background: rgba(74, 222, 128, 0.15); }
+.fe-practice-option.wrong { border-color: #f87171; background: rgba(248, 113, 113, 0.15); }
+
+.fe-practice-result { margin-top: 10px; padding: 12px; border-radius: 12px; background: rgba(13, 18, 32, 0.9); }
+.fe-practice-result[hidden] { display: none; }
+.fe-practice-result strong { display: block; font-family: "Rajdhani", sans-serif; font-size: 22px; }
+.fe-practice-result.right strong { color: #4ade80; }
+.fe-practice-result.wrong strong { color: #f87171; }
+.fe-practice-result span { display: block; margin: 4px 0; color: #e2e8f0; font-size: 14px; }
+.fe-practice-result small { color: #94a3b8; font-size: 12px; }
+.fe-display-review-grid[hidden] { display: none; }

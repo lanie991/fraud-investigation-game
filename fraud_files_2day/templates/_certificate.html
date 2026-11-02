@@ -1,0 +1,15 @@
+{# A "Download certificate" button. The certificate is drawn on the phone
+   (no upload needed) and saved as a picture. #}
+{% if cert %}
+<div class="fe-cert-box">
+    <button type="button" class="fe-btn fe-btn-gold fe-btn-block" id="fe-cert-btn"
+            data-cert='{{ cert|tojson|forceescape }}'>
+        &#127941; DOWNLOAD YOUR CERTIFICATE
+    </button>
+    <img id="fe-cert-preview" class="fe-cert-preview" alt="Your certificate" hidden>
+    <p class="fe-cert-hint" id="fe-cert-hint" hidden>
+        If it didn't save automatically, press and hold the picture to save it.
+    </p>
+</div>
+<script src="{{ url_for('static', filename='elimination-certificate.js') }}"></script>
+{% endif %}

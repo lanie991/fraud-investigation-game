@@ -7,6 +7,8 @@ Edit freely:
                   (big number + small label), a story and a red flag.
                   Use <b>...</b> to make words bold in the story.
   * DID_YOU_KNOW - one-line facts for the yellow strip at the bottom.
+  * PRACTICE_QUESTION - a warm-up players can try in the lobby while they
+                  wait for the host. It never counts toward their score.
 
 Tip: avoid stories that give away an answer to one of your questions.
 (Enron and FTX were removed here because the 2-Day questions ask about them.)
@@ -76,3 +78,16 @@ DID_YOU_KNOW = [
     "Unexpected lifestyle changes and never taking holidays are classic red flags.",
     "If something looks off, speak up. That's how most frauds are uncovered.",
 ]
+
+
+PRACTICE_QUESTION = {
+    "text": "Warm-up: which of these is the BEST way to keep a strong password safe?",
+    "options": {
+        "A": "Write it on a sticky note on your screen",
+        "B": "Share it with a trusted colleague",
+        "C": "Use a password manager",
+        "D": "Use the same password everywhere",
+    },
+    "correct": "C",
+    "explanation": "A password manager keeps long, unique passwords safe, so one leak doesn't unlock everything.",
+}

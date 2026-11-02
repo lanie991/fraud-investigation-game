@@ -26,6 +26,8 @@
             <span>{{ correct }}/{{ total_rounds }} QUESTIONS CORRECT</span>
         </div>
 
+        {% include "_certificate.html" %}
+
         <div style="display:flex; gap:12px; flex-wrap:wrap;">
             <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold">
                 VIEW LEADERBOARD

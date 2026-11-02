@@ -7,6 +7,12 @@
 
 <div class="fe-page">
 
+    {% if paused %}
+    <div class="fe-error" style="margin-bottom:16px; font-weight:700;">
+        &#9208;&#65039; GAME PAUSED &mdash; every timer is frozen. Press RESUME GAME below to carry on.
+    </div>
+    {% endif %}
+
     <div class="fe-lobby-status {{ config['status'] }}">
         &#9679; {{ "GAME IN PROGRESS" if config["status"] == "active" else "LOBBY OPEN" }}
     </div>
@@ -176,10 +182,22 @@
         <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn {{ 'fe-btn-ghost' if progress['next_round'] else 'fe-btn-gold' }}">
             VIEW LEADERBOARD
         </a>
+        <form method="POST" action="{{ url_for('elimination.host_pause') }}">
+            <input type="hidden" name="pause" value="{{ 0 if paused else 1 }}">
+            <button type="submit" class="fe-btn {{ 'fe-btn-gold' if paused else 'fe-btn-ghost' }}">
+                {{ "&#9654;&#65039; RESUME GAME"|safe if paused else "&#9208;&#65039; PAUSE GAME"|safe }}
+            </button>
+        </form>
+        {% endif %}
+
+        {% if players %}
+        <a href="{{ url_for('elimination.host_results_csv') }}" class="fe-btn fe-btn-ghost">
+            &#11015;&#65039; DOWNLOAD RESULTS
+        </a>
         {% endif %}
 
         <form method="POST" action="{{ url_for('elimination.host_reset') }}"
-              onsubmit="return confirm('Reset the game? This removes every player and their progress.');">
+              onsubmit="return confirm('Reset the game? This removes every player and ALL their points, including Day 1. Only do this before the real event or after it is over.');">
             <button type="submit" class="fe-btn fe-btn-ghost">
                 &#8635; RESET GAME
             </button>
