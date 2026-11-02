@@ -16,6 +16,7 @@ played, each player getting their own shuffle within each round.
 from functools import wraps
 from importlib import import_module
 import csv
+import difflib
 from datetime import datetime
 import io
 import json
@@ -1399,6 +1400,21 @@ def join_status():
     return response
 
 
+def similar_names(connection, name):
+    """Players whose name looks like what was typed, to help someone who
+    is rejoining but didn't type their name exactly the same way."""
+    names = [row["name"] for row in connection.execute("SELECT name FROM fe_players")]
+    by_lower = {n.lower(): n for n in names}
+    typed = name.lower()
+    found = [by_lower[m] for m in difflib.get_close_matches(typed, list(by_lower), n=4, cutoff=0.6)]
+    words = typed.split()
+    for n in names:
+        parts = n.lower().split()
+        if words and parts and (parts[0] == words[0] or parts[-1] == words[-1]) and n not in found:
+            found.append(n)
+    return found[:5]
+
+
 def late_join_open(connection, config):
     """Someone who missed Day 1 may join once Round 1 is over (between the
     rounds, or while Round 2 is being played) to play Round 2 only."""
@@ -1432,6 +1448,7 @@ def join():
     connection = get_db()
     config = get_config(connection)
     error = None
+    suggestions = []
 
     if not config["doors_open"] and not session.get("fe_is_host"):
         connection.close()
@@ -1477,9 +1494,23 @@ def join():
             return redirect(url_for("elimination.waiting", name=existing["name"]))
         elif len([word for word in name.split() if re.search(r"[A-Za-z]", word)]) < 2:
             error = "Please enter your first AND last name (e.g. Chad Smith), so players with the same first name can be told apart."
+            if config["status"] != "lobby":
+                # Probably a returning player typing just their first name.
+                suggestions = similar_names(connection, name)
         elif config["status"] != "lobby" and not late_join_open(connection, config):
-            error = ("Round 1 is being played right now, so new players can't join. "
-                     "If you missed it, you can join for Round 2 once Round 1 is over.")
+            # Most likely someone rejoining who typed their name differently.
+            suggestions = similar_names(connection, name)
+            error = (f"We couldn't find \"{name}\" in this game. To get back in, type your "
+                     "name exactly as you did when you first joined"
+                     + (" — is it one of the names below?" if suggestions else ".")
+                     + " (New players can't join while Round 1 is being played.)")
+        elif (config["status"] != "lobby" and not request.form.get("confirm_new")
+                and similar_names(connection, name)):
+            # Between rounds / Round 2: don't turn a mistyped returning player
+            # into a new Day-2-only player by accident.
+            suggestions = similar_names(connection, name)
+            error = (f"We couldn't find \"{name}\". If you played on Day 1, tap your name "
+                     "below. If you're new, press \"I'M NEW\" to join for Round 2.")
         elif island not in ISLANDS:
             error = "Choose the island you're joining from."
         elif avatar not in AVATAR_IMAGES:
@@ -1521,6 +1552,7 @@ def join():
     return render_template(
         "fe_join.html",
         late_join=late_open,
+        suggestions=suggestions,
         pin_from_link=bool(link_pin) and link_pin == config["pin"],
         error=error,
         game_started=config["status"] != "lobby",

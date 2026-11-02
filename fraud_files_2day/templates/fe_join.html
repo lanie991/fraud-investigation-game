@@ -43,6 +43,15 @@
         <div class="fe-error">{{ error }}</div>
         {% endif %}
 
+        {% if suggestions %}
+        <div class="fe-suggest">
+            <span>TAP YOUR NAME:</span>
+            {% for n in suggestions %}
+            <button type="button" class="fe-suggest-name" data-name="{{ n }}">{{ n }}</button>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <form method="POST" action="{{ url_for('elimination.join') }}">
 
             <div class="fe-field">
@@ -104,10 +113,29 @@
                 {{ "JOIN / REJOIN" if (game_started and late_join) else "REJOIN" if game_started else "JOIN INVESTIGATION" }} &#8594;
             </button>
 
+            {% if suggestions and late_join %}
+            <button type="submit" name="confirm_new" value="1" class="fe-btn fe-btn-ghost fe-btn-block" style="margin-top:10px;">
+                I'M NEW &mdash; JOIN FOR ROUND 2
+            </button>
+            {% endif %}
+
         </form>
 
     </div>
 
 </div>
+
+<script>
+// "Did you mean" names: tap one to put it in the name box.
+document.querySelectorAll(".fe-suggest-name").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+        const field = document.getElementById("player_name");
+        field.value = btn.dataset.name;
+        field.focus();
+        document.querySelectorAll(".fe-suggest-name").forEach(function (b) { b.classList.remove("picked"); });
+        btn.classList.add("picked");
+    });
+});
+</script>
 
 {% endblock %}

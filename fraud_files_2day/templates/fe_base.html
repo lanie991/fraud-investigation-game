@@ -75,10 +75,14 @@
                 <span class="fe-nav-icon">&#127942;</span>
                 <span>RULES</span>
             </a>
+            {# Settings is the host's page; players don't see it, so they can't
+               wander off to the host login in the middle of a game. #}
+            {% if session.get("fe_is_host") %}
             <a href="{{ url_for('elimination.settings') }}" class="{{ 'active' if active_nav == 'settings' else '' }}">
                 <span class="fe-nav-icon">&#9881;</span>
                 <span>SETTINGS</span>
             </a>
+            {% endif %}
         </nav>
 
     </div>
