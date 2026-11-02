@@ -453,7 +453,7 @@ QUESTION_BANK = {
         {
             "round_number": 1,
             "difficulty": "HARD",
-            "text": "Cristiano Ronaldo was scammed out of $320,000 in 2017 by whom?",
+            "text": "In 2017, a Portuguese court convicted the person who scammed Cristiano Ronaldo out of about \u20ac288,000 (roughly $320,000). Who was it?",
             "options": {
                 "A": "His personal trainer",
                 "B": "His parents",
@@ -461,7 +461,7 @@ QUESTION_BANK = {
                 "D": "His personal chef"
             },
             "correct": "C",
-            "explanation": "Cristiano Ronaldo was reportedly defrauded by his travel agent, who misused money connected to travel bookings."
+            "explanation": "His travel agent used the card details he trusted her with to bill trips he never took to his account between 2007 and 2010. She was convicted in 2017."
         }
     ],
     2: [
@@ -546,7 +546,7 @@ QUESTION_BANK = {
         {
             "round_number": 2,
             "difficulty": "INTERMEDIATE",
-            "text": "The movie Queenpins is based on the true story of two women who built a multi-million-dollar scheme by exploiting what?",
+            "text": "The movie Queenpins is based on a real multi-million-dollar scheme run by women in Arizona. What did they exploit?",
             "options": {
                 "A": "Checks",
                 "B": "Lottery tickets",
@@ -554,7 +554,7 @@ QUESTION_BANK = {
                 "D": "Coupons"
             },
             "correct": "D",
-            "explanation": "Queenpins is based on a fraud scheme involving counterfeit coupons that were sold to shoppers for profit."
+            "explanation": "Queenpins is loosely based on a 2012 Phoenix case in which three women sold counterfeit coupons online, costing manufacturers an estimated $40 million."
         },
         {
             "round_number": 2,

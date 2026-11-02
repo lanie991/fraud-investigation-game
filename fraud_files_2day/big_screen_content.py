@@ -9,6 +9,7 @@ Edit freely:
   * DID_YOU_KNOW - one-line facts for the yellow strip at the bottom.
 
 Tip: avoid stories that give away an answer to one of your questions.
+(Enron and FTX were removed here because the 2-Day questions ask about them.)
 """
 
 CASE_FILES = [
@@ -26,19 +27,6 @@ CASE_FILES = [
         "red_flag": "The same small circle of people kept winning big. Who checks the checkers?",
     },
     {
-        "title": "Enron",
-        "tagline": "USA · 2001 · ACCOUNTING FRAUD",
-        "facts": [
-            ("$74B", "SHAREHOLDER LOSSES"),
-            ("20,000+", "JOBS LOST"),
-            ("1", "BIG-5 AUDITOR DESTROYED"),
-        ],
-        "story": "One of America's biggest energy companies hid billions in debt inside "
-                 "<b>off-the-books companies</b> and reported profits it hadn't earned. "
-                 "Its auditor, Arthur Andersen, went down with it.",
-        "red_flag": "Profits kept rising, but the cash coming in didn't match.",
-    },
-    {
         "title": "Fyre Festival",
         "tagline": "THE BAHAMAS · 2017 · INVESTOR FRAUD",
         "facts": [
@@ -50,19 +38,6 @@ CASE_FILES = [
                  "<b>supermodels and influencers</b>. Guests arrived to disaster-relief "
                  "tents and cheese sandwiches.",
         "red_flag": "Lots of hype, no proof the stages, housing or food actually existed.",
-    },
-    {
-        "title": "FTX",
-        "tagline": "BAHAMAS / USA · 2022 · CRYPTO EXCHANGE",
-        "facts": [
-            ("$8B", "CUSTOMER MONEY MISSING"),
-            ("9 days", "FROM NEWS TO BANKRUPTCY"),
-            ("25 yrs", "PRISON FOR THE FOUNDER"),
-        ],
-        "story": "Customers' deposits were quietly moved to the founder's own trading "
-                 "firm and spent on <b>bets, property and donations</b>. When customers "
-                 "asked for their money back, it wasn't there.",
-        "red_flag": "No proper board, no real accounting, and one person controlled everything.",
     },
     {
         "title": "Wells Fargo Fake Accounts",
