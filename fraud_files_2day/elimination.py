@@ -57,7 +57,7 @@ DEFAULT_TIMER_SECONDS = 20
 # The host password gates /host, /settings, and every host-control route
 # (start/kick/reset/settings). Set FE_HOST_PASSWORD in the environment to
 # override the default before deploying somewhere other players can reach.
-HOST_PASSWORD = os.environ.get("FE_HOST_PASSWORD", "forensics2024")
+HOST_PASSWORD = os.environ.get("FE_HOST_PASSWORD", "").strip() or "forensics2024"
 
 # Scoring: everyone plays every round.
 POINTS_CORRECT = 5
