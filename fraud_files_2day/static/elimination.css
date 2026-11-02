@@ -4252,3 +4252,6 @@ body:has(.fe-hero) .fe-main {
     letter-spacing: 0.06em;
     white-space: nowrap;
 }
+
+/* Keep the header slogan clear of the round sound button (laptops) */
+.fe-game-tagline { margin-right: 56px; }
