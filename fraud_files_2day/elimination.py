@@ -336,186 +336,186 @@ QUESTION_BANK = {
         {
             "round_number": 1,
             "difficulty": "EASY",
-            "text": "Which of the following is a common fraud red flag?",
+            "text": "What is fraud?",
             "options": {
-                "A": "Strong internal controls",
-                "B": "Unexpected lifestyle changes",
-                "C": "Regular vacations",
-                "D": "Employee training"
-            },
-            "correct": "B",
-            "explanation": "Unexpected lifestyle changes can be a red flag for potential fraud."
-        },
-        {
-            "round_number": 1,
-            "difficulty": "EASY",
-            "text": "What is phishing?",
-            "options": {
-                "A": "A fishing business scam",
-                "B": "Theft of physical assets",
-                "C": "A fraudulent attempt to obtain sensitive information",
-                "D": "A type of audit"
+                "A": "An accounting error",
+                "B": "A financial loss",
+                "C": "Intentional deception for personal and/or financial gain",
+                "D": "Poor business judgement"
             },
             "correct": "C",
-            "explanation": "Phishing is a fraudulent attempt to obtain sensitive information by disguising as a trustworthy entity in electronic communications."
+            "explanation": "Fraud is the deliberate act of dishonesty or deception to obtain an unfair personal or financial benefit."
         },
         {
             "round_number": 1,
             "difficulty": "EASY",
-            "text": "Identity theft involves:",
+            "text": "What are the three elements of the Fraud Triangle?",
             "options": {
-                "A": "Creating duplicate invoices",
-                "B": "Using another person's personal information without permission",
-                "C": "Hacking a website",
-                "D": "Preparing an incorrect bank reconciliation"
-            },
-            "correct": "B",
-            "explanation": "Identity theft involves using another person's personal information without their permission."
-        },
-        {
-            "round_number": 1,
-            "difficulty": "EASY",
-            "text": "Embezzlement occurs when:",
-            "options": {
-                "A": "Someone steals funds entrusted to them",
-                "B": "A company overpays tax",
-                "C": "An employee works overtime",
-                "D": "An auditor makes an error"
+                "A": "Pressure, Opportunity, Rationalization",
+                "B": "Motive, Evidence, Intent",
+                "C": "Opportunity, Access, Control",
+                "D": "Pressure, Motive, Deception"
             },
             "correct": "A",
-            "explanation": "Embezzlement occurs when someone steals funds entrusted to them."
+            "explanation": "The Fraud Triangle explains that fraud commonly arises when someone feels pressure, has an opportunity to commit fraud, and rationalizes their actions."
         },
         {
             "round_number": 1,
-            "difficulty": "INTERMEDIATE",
-            "text": "Which forensic principle is most important when handling original evidence?",
+            "difficulty": "EASY",
+            "text": "What is asset misappropriation?",
             "options": {
-                "A": "Modify the evidence before analysis",
-                "B": "Preserve the integrity of the original evidence",
-                "C": "Analyze the original device whenever possible",
-                "D": "Delete irrelevant files before acquisition"
+                "A": "Manipulating financial statements",
+                "B": "Stealing or misusing organizational assets",
+                "C": "Paying excessive taxes",
+                "D": "Underreporting earnings"
             },
             "correct": "B",
-            "explanation": "Preserving the integrity of original evidence is crucial in digital forensics to ensure its admissibility in court and to maintain the trustworthiness of the investigation."
+            "explanation": "Asset misappropriation means taking or using a company's money, property, or other assets for personal use without permission."
+        },
+        {
+            "round_number": 1,
+            "difficulty": "EASY",
+            "text": "Which control helps reduce fraud risk?",
+            "options": {
+                "A": "Segregation of duties",
+                "B": "Increasing sales targets",
+                "C": "Fewer approvals",
+                "D": "Eliminating audits"
+            },
+            "correct": "A",
+            "explanation": "Segregation of duties means dividing important tasks among different people so one person cannot easily commit and hide fraud."
         },
         {
             "round_number": 1,
             "difficulty": "INTERMEDIATE",
-            "text": "What does MD5 hashing primarily provide in digital forensics?",
+            "text": "During a bank statement review, you notice several payments to a vendor with vague descriptions such as 'Consulting Services.' What would be the MOST useful next step?",
             "options": {
-                "A": "Encryption",
-                "B": "Authentication of a user's identity",
-                "C": "A value used to verify data integrity",
-                "D": "Password recovery"
+                "A": "Assume the payments are legitimate",
+                "B": "Obtain the invoices, contracts, and evidence of services provided",
+                "C": "Contact the vendor and accuse them of fraud",
+                "D": "Remove the transactions from the analysis"
+            },
+            "correct": "B",
+            "explanation": "Check the supporting documents to confirm the payments were for real services and were properly authorized."
+        },
+        {
+            "round_number": 1,
+            "difficulty": "INTERMEDIATE",
+            "text": "Which of the following is most closely associated with occupational fraud?",
+            "options": {
+                "A": "Fraud committed by customers against a company",
+                "B": "Fraud committed between unrelated companies",
+                "C": "Fraud committed by an employee against their employer",
+                "D": "Fraud committed exclusively online"
             },
             "correct": "C",
-            "explanation": "MD5 hashing provides a unique digital fingerprint for data, allowing investigators to verify that the data has not been altered."
+            "explanation": "Occupational fraud happens when an employee uses their job to steal from, deceive, or misuse the organization for personal benefit."
         },
         {
             "round_number": 1,
             "difficulty": "INTERMEDIATE",
-            "text": "Which forensic tool is commonly associated with forensic disk imaging and evidence acquisition?",
+            "text": "Enron's fraud primarily involved the manipulation of:",
             "options": {
-                "A": "Encase Forensic",
-                "B": "FTK Imager",
-                "C": "Autopsy",
-                "D": "Cellebrite Physical Analyzer"
+                "A": "Payroll records",
+                "B": "Vendor files",
+                "C": "Tax returns",
+                "D": "Financial statements"
+            },
+            "correct": "D",
+            "explanation": "Enron's fraud involved making financial statements look healthier than they really were by hiding debt and overstating financial performance."
+        },
+        {
+            "round_number": 1,
+            "difficulty": "HARD",
+            "text": "What governance weakness was particularly significant in the Theranos case?",
+            "options": {
+                "A": "Excessive employee turnover",
+                "B": "Limited independent technical scrutiny of the company's claims",
+                "C": "Weak employee attendance controls",
+                "D": "Poor customer-service procedures"
             },
             "correct": "B",
-            "explanation": "FTK Imager is a widely used tool for creating bit-for-bit copies of storage devices for digital forensics analysis."
+            "explanation": "Theranos lacked enough independent experts to properly check whether its blood-testing technology actually worked as claimed."
         },
         {
             "round_number": 1,
             "difficulty": "HARD",
-            "text": "What verification failure was central to the Wirecard scandal involving billions in reported cash?",
+            "text": "In the WEDCo case, what control weakness would be most relevant when forged documents were used to obtain financial benefits?",
             "options": {
-                "A": "Failure to independently verify reported funds",
-                "B": "Failure to conduct employee background checks",
-                "C": "Failure to encrypt financial records",
-                "D": "Failure to separate payroll duties"
+                "A": "Weak social-media monitoring",
+                "B": "Poor employee scheduling",
+                "C": "Lack of cybersecurity training",
+                "D": "Weak verification and authorization controls"
             },
-            "correct": "A",
-            "explanation": "The reported funds were not independently verified, allowing the company to claim billions in cash that did not actually exist."
+            "correct": "D",
+            "explanation": "If documents were not properly checked and approved, forged documents could be used to obtain money or other financial benefits."
         },
         {
             "round_number": 1,
             "difficulty": "HARD",
-            "text": "Frank Abagnale Jr. would frequently use aliases to commit check fraud and impersonate professionals such as pilots. One alias he used was Barry Allen, also known as?",
+            "text": "Cristiano Ronaldo was scammed out of $320,000 in 2017 by whom?",
             "options": {
-                "A": "Famous Baseball Player",
-                "B": "The Flash",
-                "C": "Actor",
-                "D": "Inventor (Toaster)"
+                "A": "His personal trainer",
+                "B": "His parents",
+                "C": "His travel agent",
+                "D": "His personal chef"
             },
-            "correct": "B",
-            "explanation": "The alias 'Barry Allen' was a reference to The Flash, the fictional superhero whose civilian identity is Barry Allen."
-        },
-        {
-            "round_number": 1,
-            "difficulty": "HARD",
-            "text": "Under which act was Gunvor S.A. convicted?",
-            "options": {
-                "A": "Foreign Corrupt Practices Act",
-                "B": "Foreign Extortion Prevention Act",
-                "C": "Travel Act",
-                "D": "Racketeer Influenced and Corrupt Organizations Act"
-            },
-            "correct": "A",
-            "explanation": "Gunvor S.A. was convicted under the <b>Foreign Corrupt Practices Act (FCPA)</b> for bribing foreign officials to secure business."
+            "correct": "C",
+            "explanation": "Cristiano Ronaldo was reportedly defrauded by his travel agent, who misused money connected to travel bookings."
         }
     ],
     2: [
         {
             "round_number": 2,
             "difficulty": "EASY",
-            "text": "Many large frauds continue for years because:",
+            "text": "Effective fraud prevention begins with:",
             "options": {
-                "A": "Stakeholders consistently challenge management",
-                "B": "Trusted individuals exploit their credibility",
-                "C": "Regulators respond immediately",
-                "D": "Controls operate perfectly"
+                "A": "Technology alone",
+                "B": "Strong ethical culture",
+                "C": "Higher profits",
+                "D": "Fewer employees"
             },
             "correct": "B",
-            "explanation": "Many large fraud schemes continue for years because trusted individuals exploit their credibility to gain access to resources and manipulate systems without detection."
+            "explanation": "Fraud prevention starts with a workplace culture that promotes honesty, integrity, and accountability."
         },
         {
             "round_number": 2,
             "difficulty": "EASY",
-            "text": "Which company claimed its technology could perform hundreds of blood tests from a tiny blood sample?",
+            "text": "Bernie Madoff's fraud was primarily what type of scheme?",
             "options": {
-                "A": "Medtronic",
-                "B": "Theranos",
-                "C": "Pfizer",
-                "D": "Roche"
-            },
-            "correct": "B",
-            "explanation": "Theranos claimed its technology could perform hundreds of blood tests from a tiny blood sample, but the claims were later found to be false."
-        },
-        {
-            "round_number": 2,
-            "difficulty": "EASY",
-            "text": "What is the defining feature of a Ponzi scheme?",
-            "options": {
-                "A": "Hidden taxes increase profits",
-                "B": "Fake invoices are submitted to customers",
-                "C": "Money from new investors is used to pay earlier investors",
-                "D": "Company assets are physically stolen"
+                "A": "Bribery scheme",
+                "B": "Tax scheme",
+                "C": "Ponzi scheme",
+                "D": "Cyberattack"
             },
             "correct": "C",
-            "explanation": "The defining feature of a Ponzi scheme is that money from new investors is used to pay returns to earlier investors, creating the illusion of profitability."
+            "explanation": "A Ponzi scheme uses money from new investors to pay earlier investors, instead of earning real investment profits."
+        },
+        {
+            "round_number": 2,
+            "difficulty": "EASY",
+            "text": "Which company collapsed following a major accounting fraud scandal in 2001?",
+            "options": {
+                "A": "Enron",
+                "B": "WorldCom",
+                "C": "Tyco",
+                "D": "Lehman Brothers"
+            },
+            "correct": "A",
+            "explanation": "Enron collapsed in 2001 after a major accounting fraud was exposed, involving hidden debt and misleading financial statements."
         },
         {
             "round_number": 2,
             "difficulty": "INTERMEDIATE",
-            "text": "Which European payments company collapsed after €1.9 billion was reported missing?",
+            "text": "Which cryptocurrency exchange collapsed amid fraud allegations in 2022?",
             "options": {
-                "A": "Coinbase",
-                "B": "Wirecard",
-                "C": "Klarna",
-                "D": "Paypal"
+                "A": "Binance",
+                "B": "Kraken",
+                "C": "Coinbase",
+                "D": "FTX"
             },
-            "correct": "B",
-            "explanation": "Wirecard was a European payments company that collapsed after reporting a loss of €1.9 billion."
+            "correct": "D",
+            "explanation": "FTX collapsed in 2022 after fraud involving the misuse of customer funds was uncovered."
         },
         {
             "round_number": 2,
@@ -533,67 +533,67 @@ QUESTION_BANK = {
         {
             "round_number": 2,
             "difficulty": "INTERMEDIATE",
-            "text": "Approximately how much was involved in the WorldCom accounting fraud?",
+            "text": "Which warning sign was associated with both Theranos and the Madoff scheme?",
             "options": {
-                "A": "$500 million",
-                "B": "$1 billion",
-                "C": "Over $10 billion",
-                "D": "$100 billion"
+                "A": "Excessive transparency",
+                "B": "Frequent independent verification",
+                "C": "Lack of transparency",
+                "D": "Strong corporate governance"
             },
             "correct": "C",
-            "explanation": "Approximately $11 billion was involved, making it one of the largest accounting frauds in U.S. history."
+            "explanation": "Both Theranos and Madoff kept important information hidden, making it difficult for investors and others to independently verify their claims."
         },
         {
             "round_number": 2,
             "difficulty": "INTERMEDIATE",
-            "text": "The 2002 movie Catch Me If You Can is based on the real-life story of what infamous fraudster?",
+            "text": "The movie Queenpins is based on the true story of two women who built a multi-million-dollar scheme by exploiting what?",
             "options": {
-                "A": "Barry Allen",
-                "B": "Frank Abagnale Jr.",
-                "C": "Bernie Madoff",
-                "D": "Barry Minkow"
+                "A": "Checks",
+                "B": "Lottery tickets",
+                "C": "Airline tickets",
+                "D": "Coupons"
             },
-            "correct": "B",
-            "explanation": "The film is based on Frank Abagnale Jr., who became known for impersonation and check fraud."
+            "correct": "D",
+            "explanation": "Queenpins is based on a fraud scheme involving counterfeit coupons that were sold to shoppers for profit."
         },
         {
             "round_number": 2,
             "difficulty": "HARD",
-            "text": "Which European bank helped Manuel Chang facilitate the $2 billion scheme?",
+            "text": "Which fraud principle links Hegestratos, MacGregor, and Ponzi?",
             "options": {
-                "A": "Deutsche Bank",
-                "B": "Credit Suisse",
-                "C": "UBS",
-                "D": "Barclays"
-            },
-            "correct": "B",
-            "explanation": "Credit Suisse helped facilitate the transactions used in the $2 billion scheme involving hidden debts and corrupt payments."
-        },
-        {
-            "round_number": 2,
-            "difficulty": "HARD",
-            "text": "What cryptocurrency did Shane Hampton and his co-conspirators manipulate?",
-            "options": {
-                "A": "Ethereum",
-                "B": "HYDRO",
-                "C": "Solana",
-                "D": "Litecoin"
-            },
-            "correct": "B",
-            "explanation": "The scheme involved manipulating the price and trading activity of Hydro (HYDRO) cryptocurrency for fraudulent profit."
-        },
-        {
-            "round_number": 2,
-            "difficulty": "HARD",
-            "text": "Malware copies bank credentials and transmits them only after a specific condition occurs. Which pairing best describes it?",
-            "options": {
-                "A": "Keylogger + logic bomb",
-                "B": "Worm + ransomware",
-                "C": "Trojan + adware",
-                "D": "Botnet + spoofing"
+                "A": "Misrepresentation for financial gain",
+                "B": "Insider trading",
+                "C": "Identity theft",
+                "D": "Market manipulation"
             },
             "correct": "A",
-            "explanation": "A keylogger captures sensitive credentials, while a logic bomb triggers the transmission when a specific condition is met."
+            "explanation": "Hegestratos, MacGregor, and Ponzi all used false or misleading claims to deceive people and obtain money."
+        },
+        {
+            "round_number": 2,
+            "difficulty": "HARD",
+            "text": "Which of the following is NOT considered a common indicator of system intrusion?",
+            "options": {
+                "A": "Unusual inbound and outbound network traffic",
+                "B": "Anomalies in user access to network files",
+                "C": "Unusual network or computer performance",
+                "D": "Employee logged into their system after hours"
+            },
+            "correct": "D",
+            "explanation": "Working after hours is not automatically a sign of system intrusion, because employees may have legitimate reasons to access the system outside normal hours."
+        },
+        {
+            "round_number": 2,
+            "difficulty": "HARD",
+            "text": "Content creators such as Scammer Payback and Kitboga have been able to build large online audiences by targeting and exposing individuals perpetrating what type of fraud?",
+            "options": {
+                "A": "Identity theft",
+                "B": "Technical support fraud",
+                "C": "Credit card skimming",
+                "D": "Insurance fraud"
+            },
+            "correct": "B",
+            "explanation": "Scammer Payback and Kitboga expose scammers who pretend to provide technical support to trick victims into paying money or giving access to their computers."
         }
     ]
 }
@@ -1892,7 +1892,7 @@ def leaderboard():
 @elimination_bp.route("/leaderboard-data")
 def leaderboard_data():
     connection = get_db()
-    players, correct = rank_players(connection)
+    players, _ = rank_players(connection)
 
     winners = {p["name"] for p in players if is_declared_winner(connection, p)}
     connection.close()
