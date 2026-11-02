@@ -61,12 +61,34 @@
             <strong>See you for Round {{ upcoming["round_number"] }}!</strong>
             <span><span id="fe-round-wait-done">{{ progress["done"] }}</span> of
             <span id="fe-round-wait-total">{{ progress["survivors"] }}</span> investigators done.
-            Check the big screen for the answers. You can close this page; if you keep
+            The answers and standings are below. You can close this page; if you keep
             it open it will start Round {{ upcoming["round_number"] }} by itself when the host does.</span>
         </div>
         {% endif %}
 
     </div>
+
+    {% if not released %}
+    {# Between rounds: the round's answers (once everyone has finished)
+       and live standings, for players who can't see the big screen. #}
+    <div class="fe-card fe-between">
+        <a class="fe-btn fe-btn-gold fe-btn-block" id="fe-answers-btn"
+           href="{{ url_for('elimination.review', name=name, round=cleared['round_number']) }}"
+           {% if player["late_joiner"] %}hidden{% endif %}>
+            &#128203; SEE ROUND {{ cleared["round_number"] }} ANSWERS
+        </a>
+        <div class="fe-between-locked" id="fe-answers-locked" {% if player["late_joiner"] %}hidden{% endif %}>
+            &#128274; Round {{ cleared["round_number"] }} answers unlock when everyone has finished.
+        </div>
+
+        <h2>&#127942; STANDINGS</h2>
+        <div class="fe-between-me" id="fe-between-me"></div>
+        <div id="fe-between-top"></div>
+
+        <h2 style="margin-top:18px;">&#127965;&#65039; ISLAND BATTLE <small>AVERAGE POINTS</small></h2>
+        <div id="fe-between-islands"></div>
+    </div>
+    {% endif %}
 
 </div>
 
@@ -85,6 +107,50 @@ document.addEventListener("DOMContentLoaded", function () {
     {% else %}
     // Wait here until the host opens the next round, then go straight in
     // so everyone starts together.
+    // Standings + answers unlock, refreshed every 15 seconds.
+    const answersBtn = document.getElementById("fe-answers-btn");
+    const answersLocked = document.getElementById("fe-answers-locked");
+    const isLate = {{ "true" if player["late_joiner"] else "false" }};
+    function esc(text) {
+        const div = document.createElement("div");
+        div.textContent = text == null ? "" : String(text);
+        return div.innerHTML;
+    }
+    function flag(p) {
+        return p.island ? '<img class="fe-flag" src="/static/flags/' + esc(p.island) + '.svg" alt="">' : "";
+    }
+    function loadStandings() {
+        fetch("{{ url_for('elimination.standings_data', name=name) }}", { cache: "no-store" })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!isLate) {
+                    answersBtn.hidden = !data.answers_unlocked;
+                    answersLocked.hidden = !!data.answers_unlocked;
+                }
+                document.getElementById("fe-between-me").innerHTML = data.me
+                    ? "You're <b>#" + data.me.place + "</b> of " + data.players + " with <b>" + data.me.score + " pts</b>"
+                    : "";
+                document.getElementById("fe-between-top").innerHTML = data.top.map(function (p) {
+                    return '<div class="fe-between-row' + (p.name === {{ name|tojson }} ? " me" : "") + '">'
+                        + '<span class="fe-between-place">' + p.place + "</span>"
+                        + '<span class="fe-between-name">' + flag(p) + esc(p.name)
+                        + (p.late ? ' <span class="fe-late-tag">DAY 2 ONLY</span>' : "") + "</span>"
+                        + '<span class="fe-between-score">' + p.score + "</span></div>";
+                }).join("");
+                const top = Math.max.apply(null, data.islands.map(function (i) { return i.average; }).concat([1]));
+                document.getElementById("fe-between-islands").innerHTML = data.islands.map(function (i) {
+                    return '<div class="fe-between-island">'
+                        + '<img src="/static/flags/' + esc(i.island) + '.svg" alt="">'
+                        + '<div><span>' + esc(i.island_name) + '</span><div class="fe-ib-bar"><i style="width:'
+                        + Math.max(4, Math.round(i.average / top * 100)) + '%"></i></div></div>'
+                        + "<b>" + i.average + "</b></div>";
+                }).join("");
+            })
+            .catch(function () {});
+    }
+    loadStandings();
+    setInterval(loadStandings, 15000);
+
     const doneEl = document.getElementById("fe-round-wait-done");
     const totalEl = document.getElementById("fe-round-wait-total");
     const timer = setInterval(function () {

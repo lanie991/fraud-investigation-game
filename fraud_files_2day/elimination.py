@@ -2392,6 +2392,49 @@ def display_data():
 # ANSWER REVIEW
 # =========================================================
 
+def answers_unlocked(progress, round_number):
+    """A round's answers are shown only once everyone has finished it, so
+    nobody can pass them on to players still answering."""
+    if round_number < progress["round"]:
+        return True
+    return (round_number == progress["round"]
+            and progress["phase"] in ("intermission", "finished", "winner"))
+
+
+@elimination_bp.route("/standings-data/<name>")
+def standings_data(name):
+    """Light standings for players' phones between rounds: the top 10,
+    the player's own place, and the Island Battle."""
+    connection = get_db()
+    config = get_config(connection)
+    players, _ = rank_players(connection)
+    progress = round_progress(connection, config)
+    connection.close()
+
+    me = next((i for i, p in enumerate(players, start=1) if p["name"] == name), None)
+    response = jsonify({
+        "top": [
+            {
+                "place": i,
+                "name": p["name"],
+                "island": p["island"] if p["island"] in ISLANDS else None,
+                "island_name": ISLANDS.get(p["island"], ""),
+                "avatar": AVATAR_IMAGES.get(p["avatar"]),
+                "score": p["score"] or 0,
+                "late": bool(p["late_joiner"]),
+            }
+            for i, p in enumerate(players[:10], start=1)
+        ],
+        "me": {"place": me, "score": players[me - 1]["score"] or 0} if me else None,
+        "players": len(players),
+        "islands": island_battle(players),
+        "answers_unlocked": answers_unlocked(progress, progress["round"]),
+        "round": progress["round"],
+    })
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @elimination_bp.route("/review/<name>")
 def review(name):
     connection = get_db()
@@ -2410,15 +2453,23 @@ def review(name):
         """,
         (player["id"],)
     ).fetchall()
+    progress = round_progress(connection, config)
     connection.close()
 
     active_rounds = get_active_rounds(config)
+    only_round = request.args.get("round", type=int)
 
     reviewed = []
+    locked_rounds = set()
     for row in history_rows:
         if row["round_number"] >= len(active_rounds):
             continue
         round_data = active_rounds[row["round_number"]]
+        if only_round and round_data["round_number"] != only_round:
+            continue
+        if not answers_unlocked(progress, round_data["round_number"]):
+            locked_rounds.add(round_data["round_number"])
+            continue
         reviewed.append({
             "round_number": round_data["round_number"],
             "difficulty": round_data["difficulty"],
@@ -2435,5 +2486,7 @@ def review(name):
         name=name,
         player=player,
         reviewed=reviewed,
+        locked_rounds=sorted(locked_rounds),
+        only_round=only_round,
         active_nav="play"
     )

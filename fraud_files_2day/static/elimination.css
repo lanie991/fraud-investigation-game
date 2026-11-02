@@ -4321,3 +4321,33 @@ body:has(.fe-hero) .fe-main {
 .fe-feedback-summary span { color: #94a3b8; font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; }
 .fe-feedback-summary strong { color: #facc15; font-family: "Rajdhani", sans-serif; font-size: 28px; }
 .fe-feedback-summary small { color: #94a3b8; }
+
+/* Between rounds on phones: answers + standings */
+.fe-between { width: 100%; max-width: 460px; margin: 16px auto 0; text-align: left; }
+.fe-between h2 { margin: 16px 0 10px; color: #f8fafc; font-family: "Rajdhani", sans-serif; font-size: 18px; letter-spacing: 0.06em; }
+.fe-between h2 small { color: #94a3b8; font-size: 11px; font-family: "JetBrains Mono", monospace; }
+.fe-between-locked { padding: 12px; border-radius: 10px; background: rgba(250, 204, 21, 0.1); color: #fde68a; font-size: 14px; text-align: center; }
+.fe-between-locked[hidden], .fe-between .fe-btn[hidden] { display: none; }
+.fe-between-me { margin-bottom: 10px; color: #cbd5e1; font-size: 15px; }
+.fe-between-me b { color: #facc15; }
+
+.fe-between-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.fe-between-row.me { border-radius: 10px; background: rgba(250, 204, 21, 0.12); }
+.fe-between-place { width: 24px; color: #64748b; font-family: "Rajdhani", sans-serif; font-size: 18px; font-weight: 800; }
+.fe-between-name { flex: 1; min-width: 0; overflow: hidden; color: #e2e8f0; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.fe-between-score { color: #facc15; font-family: "Rajdhani", sans-serif; font-size: 20px; font-weight: 800; }
+
+.fe-between-island { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.fe-between-island img { width: 28px; height: 20px; border-radius: 3px; object-fit: cover; }
+.fe-between-island > div { flex: 1; min-width: 0; }
+.fe-between-island span { color: #e2e8f0; font-size: 13px; font-weight: 700; }
+.fe-between-island b { width: 44px; color: #f8fafc; font-family: "Rajdhani", sans-serif; font-size: 18px; text-align: right; }
+.fe-feedback-wrap { flex-direction: column; align-items: center; }
+.fe-between { max-width: 560px; }

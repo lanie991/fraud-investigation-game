@@ -7,10 +7,16 @@
 <div class="fe-page">
 
     <div class="fe-kicker">CASE FILE</div>
-    <h1 class="fe-title">ANSWER REVIEW</h1>
-    <p class="fe-subtitle">Every question {{ name }} answered, round by round.</p>
+    <h1 class="fe-title">{{ "ROUND %d ANSWERS"|format(only_round) if only_round else "ANSWER REVIEW" }}</h1>
+    <p class="fe-subtitle">Every question {{ name }} answered{{ "" if only_round else ", round by round" }}.</p>
 
-    {% if not reviewed %}
+    {% for r in locked_rounds %}
+    <div class="fe-card">
+        <p style="color:#fbbf24; margin:0;">&#128274; Round {{ r }} answers unlock once everyone has finished Round {{ r }}. Check back in a few minutes!</p>
+    </div>
+    {% endfor %}
+
+    {% if not reviewed and not locked_rounds %}
     <div class="fe-card">
         <p style="color:#94a3b8; margin:0;">No answers recorded yet.</p>
     </div>
@@ -61,6 +67,9 @@
 
     <a href="{{ url_for('elimination.leaderboard') }}" class="fe-btn fe-btn-gold fe-btn-block" style="margin-top:10px;">
         VIEW LEADERBOARD
+    </a>
+    <a href="{{ url_for('elimination.join') }}" class="fe-btn fe-btn-ghost fe-btn-block" style="margin-top:10px;">
+        &#8592; BACK TO MY GAME
     </a>
 
 </div>
