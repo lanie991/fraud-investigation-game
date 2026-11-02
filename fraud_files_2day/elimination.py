@@ -453,7 +453,7 @@ QUESTION_BANK = {
         {
             "round_number": 1,
             "difficulty": "HARD",
-            "text": "In 2017, a Portuguese court convicted the person who scammed Cristiano Ronaldo out of about \u20ac288,000 (roughly $320,000). Who was it?",
+            "text": "Who scammed Cristiano Ronaldo out of about $320,000?",
             "options": {
                 "A": "His personal trainer",
                 "B": "His parents",
@@ -546,7 +546,7 @@ QUESTION_BANK = {
         {
             "round_number": 2,
             "difficulty": "INTERMEDIATE",
-            "text": "The movie Queenpins is based on a real multi-million-dollar scheme run by women in Arizona. What did they exploit?",
+            "text": "The movie Queenpins is based on a true story of a multi-million-dollar scheme that exploited what?",
             "options": {
                 "A": "Checks",
                 "B": "Lottery tickets",
