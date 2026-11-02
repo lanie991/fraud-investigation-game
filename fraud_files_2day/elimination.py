@@ -540,15 +540,15 @@ QUESTION_BANK = {
         {
             "round_number": 2,
             "difficulty": "INTERMEDIATE",
-            "text": "Forensic accountants use Benford's Law to help spot fraud. What does it look at?",
+            "text": "Anna Sorokin, known as \"Anna Delvey\", conned New York banks, hotels and friends by pretending to be what?",
             "options": {
-                "A": "How often employees take vacation",
-                "B": "How often each digit appears as the first digit in a set of numbers",
-                "C": "The number of approvals each payment receives",
-                "D": "How quickly invoices are paid"
+                "A": "A Russian princess",
+                "B": "A Silicon Valley tech CEO",
+                "C": "A wealthy German heiress",
+                "D": "A Hollywood film producer"
             },
-            "correct": "B",
-            "explanation": "In many real-world sets of numbers, 1 is the first digit about 30% of the time and 9 less than 5%. Made-up figures often don't follow this pattern, so a mismatch can flag numbers worth a closer look."
+            "correct": "C",
+            "explanation": "Sorokin posed as a wealthy German heiress to get loans, luxury hotel stays and private jets she never paid for, taking around $275,000. She was convicted in 2019; her story inspired Netflix's Inventing Anna."
         },
         {
             "round_number": 2,
