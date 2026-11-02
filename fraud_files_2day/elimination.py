@@ -1523,6 +1523,9 @@ def play(name):
         **question_position(active_rounds, player["question_index"]),
         streak=player["streak"] or 0,
         current_round=round_data["round_number"],
+        # First look at the first question of a round: play the "dun dun".
+        round_opening=(player["question_index"] == 0
+                       or starts_new_round(active_rounds, player["question_index"])) and elapsed < 2,
         timer_seconds=config["timer_seconds"],
         remaining_seconds=max(0, int(config["timer_seconds"] - elapsed)),
         lifelines_enabled=config["lifelines_enabled"],

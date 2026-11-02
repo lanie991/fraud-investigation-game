@@ -113,6 +113,11 @@
         <b>DID YOU KNOW?</b><span id="fe-ticker-text"></span>
     </div>
 
+    <!-- Browsers only allow sound after a click, so the big screen has a
+         button for the host to switch it on once. -->
+    <button type="button" class="fe-display-sound" id="fe-display-sound">&#128263; CLICK FOR SOUND</button>
+
+    <script src="{{ url_for('static', filename='elimination-sfx.js') }}"></script>
     <script src="{{ url_for('static', filename='elimination-confetti.js') }}"></script>
     <script>
         window.FE_CASE_FILES = {{ case_files|tojson }};
@@ -460,7 +465,20 @@
                 + '<div class="fe-display-mvp-points">+' + esc(mvp.points) + " pts</div>";
         }
 
-        // ---------- Spotlight: questions and case files take turns ----------
+        // ---------- Sound on the big screen ----------
+        const soundBtn = document.getElementById("fe-display-sound");
+        let soundOn = false;
+        soundBtn.addEventListener("click", function () {
+            soundOn = !soundOn;
+            if (window.FE_SFX) {
+                FE_SFX.setMuted(!soundOn);
+                if (soundOn && FE_SFX.playDunDun) FE_SFX.playDunDun();
+            }
+            soundBtn.innerHTML = soundOn ? "&#128266; SOUND ON" : "&#128263; CLICK FOR SOUND";
+            soundBtn.classList.toggle("on", soundOn);
+        });
+
+                // ---------- Spotlight: questions and case files take turns ----------
         const SLIDE_MS = 20000;
         const spotlightEl = document.getElementById("fe-spotlight");
         const slideEl = document.getElementById("fe-spotlight-slide");
@@ -482,7 +500,11 @@
         function nextSlot() {
             slot += 1;
             slotStarted = Date.now();
-            if (slotKind(slot) === "case") caseTurn = (caseTurn + 1) % caseFiles.length;
+            if (slotKind(slot) === "case") {
+                caseTurn = (caseTurn + 1) % caseFiles.length;
+                // New case file: "dun dun".
+                if (soundOn && window.FE_SFX && FE_SFX.playDunDun) FE_SFX.playDunDun();
+            }
             else questionTurn += 1;
             slideBar.style.transition = "none";
             slideBar.style.width = "100%";
