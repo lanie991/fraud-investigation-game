@@ -307,10 +307,15 @@ def initialize_database():
             (generate_pin(), DEFAULT_TIMER_SECONDS, json.dumps(pick_active_questions()))
         )
     else:
+        # Load the latest QUESTION_BANK after an update. The saved game
+        # (kept overnight in the database) holds its own copy of the
+        # questions, so refresh it whenever no game is in progress; a game
+        # that has started keeps the questions it began with.
         connection.execute(
             """
             UPDATE fe_config SET active_questions = ?
-            WHERE id = 1 AND (active_questions IS NULL OR active_questions = '')
+            WHERE id = 1 AND (active_questions IS NULL OR active_questions = ''
+                              OR status = 'lobby')
             """,
             (json.dumps(pick_active_questions()),)
         )
