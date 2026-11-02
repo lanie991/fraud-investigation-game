@@ -249,8 +249,9 @@ def initialize_database():
     if "island" not in existing_columns:
         connection.execute("ALTER TABLE fe_players ADD COLUMN island TEXT")
 
-    # Running streak and the breakdown of the last answer's points.
-    for column in ("streak", "last_speed_bonus", "last_streak_bonus"):
+    # Running streak and the breakdown of the last answer's points, and
+    # late_joiner = 1 for someone who missed Day 1 and only plays Round 2.
+    for column in ("streak", "last_speed_bonus", "last_streak_bonus", "late_joiner"):
         if column not in existing_columns:
             connection.execute(
                 f"ALTER TABLE fe_players ADD COLUMN {column} INTEGER DEFAULT 0"
@@ -1297,7 +1298,9 @@ def island_battle(players):
     player. `players` must already be ranked best first."""
     islands = {}
     for p in players:
-        if p["island"] not in ISLANDS:
+        # Day-2-only players don't count for their island (they only had
+        # one round to score in).
+        if p["island"] not in ISLANDS or ("late_joiner" in p.keys() and p["late_joiner"]):
             continue
         entry = islands.setdefault(p["island"], {
             "island": p["island"],
@@ -1339,7 +1342,7 @@ def host_results_csv():
     writer.writerow(
         ["Place", "Name", "Island"]
         + [f"Round {n} points" for n in numbers]
-        + ["Total points", "Correct answers", "Lifelines used", "Island champion"]
+        + ["Total points", "Correct answers", "Lifelines used", "Island champion", "Day 2 only"]
     )
     for place, p in enumerate(players, start=1):
         lifelines = (1 if p["fifty_fifty_used"] else 0) + (1 if p["ask_team_used"] else 0)
@@ -1347,7 +1350,8 @@ def host_results_csv():
             [place, p["name"], ISLANDS.get(p["island"], "")]
             + [by_round.get(p["id"], {}).get(n, 0) for n in numbers]
             + [p["score"] or 0, f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS}", lifelines,
-               "Yes" if p["name"] in champions else ""]
+               "Yes" if p["name"] in champions else "",
+               "Yes" if p["late_joiner"] else ""]
         )
     response = flask.Response("\ufeff" + buffer.getvalue(), mimetype="text/csv")
     response.headers["Content-Disposition"] = "attachment; filename=fraud-files-results.csv"
@@ -1395,6 +1399,34 @@ def join_status():
     return response
 
 
+def late_join_open(connection, config):
+    """Someone who missed Day 1 may join once Round 1 is over (between the
+    rounds, or while Round 2 is being played) to play Round 2 only."""
+    if config["status"] != "active":
+        return False
+    numbers = round_numbers(get_active_rounds(config))
+    if len(numbers) < 2:
+        return False
+    progress = round_progress(connection, config)
+    return (progress["phase"] == "intermission"
+            or (progress["phase"] == "playing" and progress["round"] >= numbers[1]))
+
+
+def add_late_joiner(connection, config, name, avatar, island):
+    """Add a Day-2-only player, starting at the first question of Round 2."""
+    active_rounds = get_active_rounds(config)
+    first_round = active_rounds[0]["round_number"]
+    start_index = sum(1 for q in active_rounds if q["round_number"] == first_round)
+    connection.execute(
+        """
+        INSERT INTO fe_players (name, avatar, island, status, phase, question_index,
+                                question_order, score, late_joiner)
+        VALUES (?, ?, ?, 'in', 'question', ?, ?, 0, 1)
+        """,
+        (name, avatar, island, start_index, json.dumps(shuffled_question_order(active_rounds)))
+    )
+
+
 @elimination_bp.route("/join", methods=["GET", "POST"])
 def join():
     connection = get_db()
@@ -1435,12 +1467,21 @@ def join():
             return redirect(url_for("elimination.waiting", name=existing["name"]))
         elif existing is not None:
             error = "That name is already taken this game. Try another."
-        elif config["status"] != "lobby":
-            error = "This game has already started. Ask the host to reset for a new game."
+        elif config["status"] != "lobby" and not late_join_open(connection, config):
+            error = ("Round 1 is being played right now, so new players can't join. "
+                     "If you missed it, you can join for Round 2 once Round 1 is over.")
         elif island not in ISLANDS:
             error = "Choose the island you're joining from."
         elif avatar not in AVATAR_IMAGES:
             error = "Choose an avatar."
+        elif config["status"] != "lobby":
+            # Missed Day 1: join for Round 2 only, starting at 0 points.
+            add_late_joiner(connection, config, name, avatar, island)
+            connection.commit()
+            connection.close()
+            session.permanent = True
+            session["fe_player_name"] = name
+            return redirect(url_for("elimination.waiting", name=name))
         else:
             connection.execute(
                 """
@@ -1463,9 +1504,11 @@ def join():
             return redirect(url_for("elimination.waiting", name=remembered))
 
     link_pin = request.args.get("pin", "").strip().upper()
+    late_open = late_join_open(connection, config)
     connection.close()
     return render_template(
         "fe_join.html",
+        late_join=late_open,
         pin_from_link=bool(link_pin) and link_pin == config["pin"],
         error=error,
         game_started=config["status"] != "lobby",
@@ -2211,7 +2254,8 @@ def display_data():
             "score": p["score"] or 0,
             "correct": f"{correct.get(p['id'], 0)}/{TOTAL_ROUNDS} correct",
             "status": status,
-            "round_number": round_number
+            "round_number": round_number,
+            "late": bool(p["late_joiner"]),
         })
 
     review_connection = get_db()

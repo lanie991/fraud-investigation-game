@@ -4226,3 +4226,29 @@ body:has(.fe-hero) .fe-main {
 .fe-practice-result span { display: block; margin: 4px 0; color: #e2e8f0; font-size: 14px; }
 .fe-practice-result small { color: #94a3b8; font-size: 12px; }
 .fe-display-review-grid[hidden] { display: none; }
+
+/* Day-2-only joiners */
+.fe-late-note {
+    margin: 4px 0 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(96, 165, 250, 0.12);
+    color: #93c5fd;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.fe-late-tag {
+    margin-left: 8px;
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: rgba(96, 165, 250, 0.18);
+    color: #93c5fd;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}

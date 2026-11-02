@@ -488,7 +488,8 @@
                     + (medal ? "fe-medal fe-medal-" + (index + 1) : "fe-rest") + '" data-name="' + esc(p.name) + '">'
                     + '<div class="fe-leaderboard-rank">' + (medal ? ["&#129351;", "&#129352;", "&#129353;"][index] : index + 1) + "</div>"
                     + '<div class="fe-player-avatar">' + avatarImg + "</div>"
-                    + '<div class="fe-leaderboard-name">' + flag(p) + "<span>" + esc(p.name) + "</span>" + arrow + "</div>"
+                    + '<div class="fe-leaderboard-name">' + flag(p) + "<span>" + esc(p.name) + "</span>"
+                    + (p.late ? '<span class="fe-late-tag">DAY 2 ONLY</span>' : "") + arrow + "</div>"
                     + '<div class="fe-leaderboard-score">'
                     + '<span class="fe-score-num" data-from="' + (before !== undefined ? before : p.score)
                     + '" data-to="' + p.score + '">' + (before !== undefined ? before : p.score) + "</span>"

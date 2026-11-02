@@ -8,7 +8,18 @@
 
     <div class="fe-card fe-join-card">
 
-        {% if game_started %}
+        {% if game_started and late_join %}
+        <h1>DAY 2: JOIN THE GAME</h1>
+        <p class="fe-subtitle" style="margin-bottom:12px;">
+            <b>Played on Day 1?</b> Just enter the same name you used &mdash;
+            your points are waiting for you.
+        </p>
+        <p class="fe-subtitle" style="margin-bottom:22px;">
+            <b>Missed Day 1?</b> You can still play Round 2! Enter your name and
+            pick your island and avatar. You'll start from 0 points and won't
+            count toward your island's average.
+        </p>
+        {% elif game_started %}
         <h1>REJOIN GAME</h1>
         <p class="fe-subtitle" style="margin-bottom:22px;">
             Game in progress. Enter the same name you joined with on day one
@@ -52,13 +63,17 @@
 
             {# Once the game has started only rejoining is possible, so the
                island and avatar (already saved) aren't asked for again. #}
-            {% if not game_started %}
+            {% if not game_started or late_join %}
+            {% set needed = "" if game_started else "required" %}
+            {% if game_started %}
+            <div class="fe-late-note">MISSED DAY 1? ALSO PICK THESE &darr;</div>
+            {% endif %}
             <div class="fe-field">
                 <label>YOUR ISLAND</label>
                 <div class="fe-island-grid">
                     {% for code, island_name in islands.items() %}
                     <label class="fe-island-option">
-                        <input type="radio" name="island" value="{{ code }}" required>
+                        <input type="radio" name="island" value="{{ code }}" {{ needed }}>
                         <span class="fe-island-card">
                             <img src="{{ url_for('static', filename='flags/' + code + '.svg') }}" alt="">
                             <span>{{ island_name }}</span>
@@ -73,7 +88,7 @@
                 <div class="fe-avatar-grid">
                     {% for value, filename in avatar_images.items() %}
                     <label class="fe-avatar-option">
-                        <input type="radio" name="avatar" value="{{ value }}" required>
+                        <input type="radio" name="avatar" value="{{ value }}" {{ needed }}>
                         <span class="fe-avatar-card">
                             <img src="{{ url_for('static', filename='avatars/' + filename) }}" alt="">
                         </span>
@@ -85,7 +100,7 @@
             {% endif %}
 
             <button type="submit" class="fe-btn fe-btn-gold fe-btn-block">
-                {{ "REJOIN" if game_started else "JOIN INVESTIGATION" }} &#8594;
+                {{ "JOIN / REJOIN" if (game_started and late_join) else "REJOIN" if game_started else "JOIN INVESTIGATION" }} &#8594;
             </button>
 
         </form>

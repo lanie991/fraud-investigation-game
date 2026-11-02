@@ -10,14 +10,23 @@
 
         <div class="fe-feedback-icon">&#127942;</div>
 
+        {% if player["late_joiner"] %}
+        <h1 class="fe-feedback-title">WELCOME, {{ name|upper }}!</h1>
+
+        <div class="fe-feedback-points">
+            You're in for <strong>Round {{ upcoming["round_number"] }}</strong>.
+            You start from 0 points &mdash; every correct answer counts!
+        </div>
+        {% else %}
         <h1 class="fe-feedback-title">CONGRATS, {{ name|upper }}!</h1>
 
         <div class="fe-feedback-points">
             You finished <strong>Round {{ cleared["round_number"] }}</strong>.
             Your score is saved.
         </div>
+        {% endif %}
 
-        {% if summary %}
+        {% if summary and not player["late_joiner"] %}
         <div class="fe-round-score">
             <div class="fe-round-score-total">
                 <strong>{{ summary.total }}</strong>
@@ -33,10 +42,12 @@
         </div>
         {% endif %}
 
+        {% if not player["late_joiner"] %}
         <p class="fe-round-cleared-next">
             Round {{ upcoming["round_number"] }} is on the next day.
             Come back with the <strong>same name and PIN</strong> to rejoin.
         </p>
+        {% endif %}
 
         {% if released %}
         <div class="fe-round-wait">

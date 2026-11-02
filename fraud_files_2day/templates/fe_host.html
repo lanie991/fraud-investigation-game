@@ -92,7 +92,7 @@
                         <img src="{{ url_for('static', filename='avatars/' + avatar_images[player['avatar']]) }}" alt="">
                         {% endif %}
                     </div>
-                    <div class="fe-player-name">{{ island_flag(player["island"]) }}{{ player["name"] }}</div>
+                    <div class="fe-player-name">{{ island_flag(player["island"]) }}{{ player["name"] }}{% if player["late_joiner"] %}<span class="fe-late-tag">DAY 2 ONLY</span>{% endif %}</div>
                     {% if player["phase"] == "finished" %}
                         <span class="fe-status-pill winner">FINISHED</span>
                     {% else %}
