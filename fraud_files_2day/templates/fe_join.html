@@ -11,8 +11,8 @@
         {% if game_started and late_join %}
         <h1>DAY 2: JOIN THE GAME</h1>
         <p class="fe-subtitle" style="margin-bottom:12px;">
-            <b>Played on Day 1?</b> Just enter the same name you used &mdash;
-            your points are waiting for you.
+            <b>Played on Day 1?</b> Enter the same name and pick the same
+            island you used &mdash; your points are waiting for you.
         </p>
         <p class="fe-subtitle" style="margin-bottom:22px;">
             <b>Missed Day 1?</b> You can still play Round 2! Enter your name and
@@ -22,8 +22,8 @@
         {% elif game_started %}
         <h1>REJOIN GAME</h1>
         <p class="fe-subtitle" style="margin-bottom:22px;">
-            Game in progress. Enter the same name you joined with on day one
-            to pick up where you left off.
+            Game in progress. Enter the same name and island you joined with
+            on Day 1 to pick up where you left off.
         </p>
         {% else %}
         <h1>JOIN GAME</h1>
@@ -35,7 +35,7 @@
             {% endif %}
         </p>
         <p class="fe-subtitle" style="margin:-12px 0 22px; font-size:13px;">
-            Lost your connection? Enter the same name and PIN to rejoin.
+            Lost your connection? Enter the same name and island to rejoin.
         </p>
         {% endif %}
 
@@ -46,8 +46,9 @@
         <form method="POST" action="{{ url_for('elimination.join') }}">
 
             <div class="fe-field">
-                <label for="player_name">YOUR NAME</label>
-                <input type="text" id="player_name" name="player_name" placeholder="Investigator name" required maxlength="30">
+                <label for="player_name">FIRST AND LAST NAME</label>
+                <input type="text" id="player_name" name="player_name" placeholder="e.g. Chad Smith" required maxlength="40" value="{{ prefill_name }}"
+                       autocomplete="name" pattern=".*\S+\s+\S+.*" title="Please enter your first and last name">
             </div>
 
             {% if pin_from_link %}
@@ -61,19 +62,14 @@
             </div>
             {% endif %}
 
-            {# Once the game has started only rejoining is possible, so the
-               island and avatar (already saved) aren't asked for again. #}
-            {% if not game_started or late_join %}
-            {% set needed = "" if game_started else "required" %}
-            {% if game_started %}
-            <div class="fe-late-note">MISSED DAY 1? ALSO PICK THESE &darr;</div>
-            {% endif %}
+            {# Everyone picks their island: new players to join, returning
+               players to prove it's them (it must match Day 1). #}
             <div class="fe-field">
-                <label>YOUR ISLAND</label>
+                <label>YOUR ISLAND{% if game_started %} <span style="color:#94a3b8;">(the same one as Day 1)</span>{% endif %}</label>
                 <div class="fe-island-grid">
                     {% for code, island_name in islands.items() %}
                     <label class="fe-island-option">
-                        <input type="radio" name="island" value="{{ code }}" {{ needed }}>
+                        <input type="radio" name="island" value="{{ code }}" required>
                         <span class="fe-island-card">
                             <img src="{{ url_for('static', filename='flags/' + code + '.svg') }}" alt="">
                             <span>{{ island_name }}</span>
@@ -83,6 +79,11 @@
                 </div>
             </div>
 
+            {% if not game_started or late_join %}
+            {% set needed = "" if game_started else "required" %}
+            {% if game_started %}
+            <div class="fe-late-note">MISSED DAY 1? ALSO PICK AN AVATAR &darr;</div>
+            {% endif %}
             <div class="fe-field">
                 <label>CHOOSE AN AVATAR</label>
                 <div class="fe-avatar-grid">

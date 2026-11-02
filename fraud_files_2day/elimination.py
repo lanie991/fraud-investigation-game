@@ -1442,7 +1442,8 @@ def join():
         )
 
     if request.method == "POST":
-        name = request.form.get("player_name", "").strip()
+        # Tidy spaces so "Chad   Smith " and "Chad Smith" are the same person.
+        name = " ".join(request.form.get("player_name", "").split())
         pin = request.form.get("game_pin", "").strip().upper()
         avatar = request.form.get("avatar", "").strip()
         island = request.form.get("island", "").strip()
@@ -1452,21 +1453,30 @@ def join():
             "SELECT * FROM fe_players WHERE name = ? COLLATE NOCASE", (name,)
         ).fetchone() if name else None
 
+        same_phone = existing is not None and session.get("fe_player_name") == existing["name"]
+
         if not name:
-            error = "Enter your investigator name."
+            error = "Enter your first and last name."
         elif pin != config["pin"]:
             error = "That game PIN doesn't match. Ask the host for the current PIN."
-        elif existing is not None and (
-                config["status"] != "lobby"
-                or session.get("fe_player_name") == name):
+        elif existing is not None and not same_phone and island not in ISLANDS:
+            error = "Choose the island you joined from on Day 1."
+        elif existing is not None and not same_phone and island != existing["island"]:
+            # Rejoining needs the same name AND island, so nobody can take
+            # over another player's points just by typing their name.
+            error = ("That name is already playing for a different island. If that's you, "
+                     "pick the same island you chose on Day 1. If not, add a middle initial "
+                     "(e.g. Chad R. Smith) so we can tell you apart.")
+        elif existing is not None:
+            # Same name and same island (or the same phone): it's them.
             # Rejoin: a player whose tab closed or phone died comes back
             # with the same name and PIN and carries on where they left off.
             connection.close()
             session.permanent = True
             session["fe_player_name"] = existing["name"]
             return redirect(url_for("elimination.waiting", name=existing["name"]))
-        elif existing is not None:
-            error = "That name is already taken this game. Try another."
+        elif len([word for word in name.split() if re.search(r"[A-Za-z]", word)]) < 2:
+            error = "Please enter your first AND last name (e.g. Chad Smith), so players with the same first name can be told apart."
         elif config["status"] != "lobby" and not late_join_open(connection, config):
             error = ("Round 1 is being played right now, so new players can't join. "
                      "If you missed it, you can join for Round 2 once Round 1 is over.")
@@ -1503,7 +1513,9 @@ def join():
             connection.close()
             return redirect(url_for("elimination.waiting", name=remembered))
 
-    link_pin = request.args.get("pin", "").strip().upper()
+    # Keep what they typed (and the PIN from their email link) after an error.
+    link_pin = (request.form.get("game_pin") if request.method == "POST"
+                else request.args.get("pin", "")).strip().upper()
     late_open = late_join_open(connection, config)
     connection.close()
     return render_template(
@@ -1514,7 +1526,8 @@ def join():
         game_started=config["status"] != "lobby",
         avatar_images=AVATAR_IMAGES,
         active_nav="play",
-        prefill_pin=request.args.get("pin", "").strip().upper()
+        prefill_pin=link_pin,
+        prefill_name=" ".join(request.form.get("player_name", "").split()) if request.method == "POST" else ""
     )
 
 
