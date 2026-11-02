@@ -1539,6 +1539,10 @@ def join():
             session["fe_player_name"] = name
             return redirect(url_for("elimination.waiting", name=name))
     else:
+        if request.args.get("switch"):
+            # "Not you?": forget who this phone was playing as (e.g. a
+            # borrowed phone) and show the join / rejoin form.
+            session.pop("fe_player_name", None)
         remembered = session.get("fe_player_name")
         if remembered and get_player(connection, remembered) is not None:
             connection.close()

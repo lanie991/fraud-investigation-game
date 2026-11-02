@@ -54,6 +54,13 @@
             {% block content %}{% endblock %}
         </main>
 
+        {% if active_nav == "play" and session.get("fe_player_name") %}
+        <div class="fe-switch-player">
+            Playing as <strong>{{ session.get("fe_player_name") }}</strong> &middot;
+            <a href="{{ url_for('elimination.join', switch=1, pin=request.args.get('pin', '')) }}">Not you? Switch player</a>
+        </div>
+        {% endif %}
+
         <nav class="fe-bottomnav">
             <a href="{{ url_for('elimination.home') }}" class="{{ 'active' if active_nav == 'home' else '' }}">
                 <span class="fe-nav-icon">&#8962;</span>

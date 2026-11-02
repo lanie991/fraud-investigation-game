@@ -4272,3 +4272,14 @@ body:has(.fe-hero) .fe-main {
 }
 
 .fe-suggest-name.picked { background: #facc15; color: #111111; }
+
+/* "Playing as X · Not you?" line above the bottom bar */
+.fe-switch-player {
+    padding: 10px 16px 90px;
+    color: #64748b;
+    font-size: 12px;
+    text-align: center;
+}
+
+.fe-switch-player strong { color: #94a3b8; }
+.fe-switch-player a { color: #93c5fd; }
