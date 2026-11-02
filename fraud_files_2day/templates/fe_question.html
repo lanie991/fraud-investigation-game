@@ -263,13 +263,4 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-{% if round_opening %}
-<script>
-// A new round begins: "dun dun".
-document.addEventListener("DOMContentLoaded", function () {
-    if (window.FE_SFX && FE_SFX.playDunDun) FE_SFX.playDunDun();
-});
-</script>
-{% endif %}
-
 {% endblock %}
