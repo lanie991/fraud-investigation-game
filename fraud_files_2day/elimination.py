@@ -540,15 +540,15 @@ QUESTION_BANK = {
         {
             "round_number": 2,
             "difficulty": "INTERMEDIATE",
-            "text": "What made Madoff's reported investment returns suspicious?",
+            "text": "Forensic accountants use Benford's Law to help spot fraud. What does it look at?",
             "options": {
-                "A": "They were always negative",
-                "B": "They were unusually consistent",
-                "C": "They followed the market exactly",
-                "D": "They were independently verified by several firms"
+                "A": "How often employees take vacation",
+                "B": "How often each digit appears as the first digit in a set of numbers",
+                "C": "The number of approvals each payment receives",
+                "D": "How quickly invoices are paid"
             },
             "correct": "B",
-            "explanation": "Madoff's reported returns were suspicious because they were remarkably consistent and showed unusually little volatility, even during periods of significant market fluctuations."
+            "explanation": "In many real-world sets of numbers, 1 is the first digit about 30% of the time and 9 less than 5%. Made-up figures often don't follow this pattern, so a mismatch can flag numbers worth a closer look."
         },
         {
             "round_number": 2,
