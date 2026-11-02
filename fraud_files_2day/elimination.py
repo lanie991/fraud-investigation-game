@@ -440,7 +440,7 @@ QUESTION_BANK = {
         {
             "round_number": 1,
             "difficulty": "HARD",
-            "text": "In the WEDCo case, what control weakness would be most relevant when forged documents were used to obtain financial benefits?",
+            "text": "In Bermuda's Wedco fraud case, what control weakness would be most relevant when forged documents were used to obtain financial benefits?",
             "options": {
                 "A": "Weak social-media monitoring",
                 "B": "Poor employee scheduling",
@@ -448,7 +448,7 @@ QUESTION_BANK = {
                 "D": "Weak verification and authorization controls"
             },
             "correct": "D",
-            "explanation": "If documents were not properly checked and approved, forged documents could be used to obtain money or other financial benefits."
+            "explanation": "A Wedco (West End Development Corporation) property manager forged two managers' signatures to approve rent reductions, costing Wedco more than $120,000. Proper verification and authorization checks would have caught the forged approvals. She was jailed for 3\u00bd years in 2025."
         },
         {
             "round_number": 1,
