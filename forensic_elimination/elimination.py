@@ -55,7 +55,7 @@ DEFAULT_TIMER_SECONDS = 20
 # The host password gates /host, /settings, and every host-control route
 # (start/kick/reset/settings). Set FE_HOST_PASSWORD in the environment to
 # override the default before deploying somewhere other players can reach.
-HOST_PASSWORD = os.environ.get("FE_HOST_PASSWORD", "forensics2024")
+HOST_PASSWORD = os.environ.get("FE_HOST_PASSWORD", "").strip() or "forensics2024"
 
 # Scoring: everyone plays every round.
 POINTS_CORRECT = 5
@@ -1578,8 +1578,10 @@ def timer(name):
 
     connection.close()
 
-    remaining = max(0, int(config["timer_seconds"] - elapsed))
-    return jsonify({"remaining_seconds": remaining, "closed": remaining <= 0})
+    exact = max(0.0, config["timer_seconds"] - (elapsed or 0))
+    remaining = int(exact)
+    return jsonify({"remaining_seconds": remaining, "remaining_exact": round(exact, 2),
+                    "closed": remaining <= 0})
 
 
 @elimination_bp.route("/feedback/<name>")
