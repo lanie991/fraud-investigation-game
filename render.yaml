@@ -2,10 +2,10 @@ services:
   - type: web
     name: forensic-elimination
     runtime: python
-    # Paid 0.5 CPU / 512 MB plan (formerly called "Starter", about $7/month)
-    # so ~70 players can play at once without lag. Switch back to "free"
+    # Paid 1 CPU / 2 GB plan (formerly "Standard", about $25/month), chosen
+    # by the host in Render for a ~70-player event. Switch back to "free"
     # after the event to stop paying.
-    plan: 0.5c-512mb
+    plan: 1c-2g
     rootDir: forensic_elimination
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --workers 1 --threads 8
