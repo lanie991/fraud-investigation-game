@@ -2,7 +2,9 @@ services:
   - type: web
     name: forensic-elimination
     runtime: python
-    plan: free
+    # Paid 1 CPU / 2 GB plan (about $25/month) the host chose for a
+    # ~70-player event. Change to "free" after the event to stop paying.
+    plan: 1c-2g
     rootDir: forensic_elimination
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --workers 1 --threads 8
