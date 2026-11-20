@@ -246,6 +246,13 @@ def initialize_database():
         )
     """)
 
+    # When each player's phone last checked in, so the host can spot (and
+    # drop) people who wandered off mid-game.
+    if "last_seen" not in {
+        row["name"] for row in connection.execute("PRAGMA table_info(fe_players)")
+    }:
+        connection.execute("ALTER TABLE fe_players ADD COLUMN last_seen TEXT")
+
     history_columns = {
         row["name"]
         for row in connection.execute("PRAGMA table_info(fe_answer_history)")
@@ -970,6 +977,86 @@ def island_context():
     return {"islands": ISLANDS, "app_version": APP_VERSION}
 
 
+# A player counts as inactive after this long without their phone checking in.
+INACTIVE_AFTER_SECONDS = 120
+
+# Pages a player's phone loads or keeps checking while they play.
+PLAYER_ENDPOINTS = {
+    "elimination.play", "elimination.timer", "elimination.status",
+    "elimination.waiting", "elimination.feedback", "elimination.advance",
+    "elimination.round_cleared", "elimination.round_status", "elimination.results",
+}
+
+
+@elimination_bp.before_app_request
+def note_player_activity():
+    """Record that this player is still here. A player the host dropped
+    who comes back is simply back in the game."""
+    if request.endpoint not in PLAYER_ENDPOINTS:
+        return
+    name = (request.view_args or {}).get("name")
+    if not name:
+        return
+    connection = get_db()
+    connection.execute(
+        """
+        UPDATE fe_players
+        SET last_seen = datetime('now'),
+            status = CASE WHEN status = 'dropped' THEN 'in' ELSE status END
+        WHERE name = ?
+          AND (last_seen IS NULL OR last_seen < datetime('now', '-15 seconds')
+               OR status = 'dropped')
+        """,
+        (name,)
+    )
+    connection.commit()
+    connection.close()
+
+
+def inactive_seconds(connection, player):
+    """Seconds since the player's phone last checked in (None if never)."""
+    if not player["last_seen"]:
+        return None
+    return int(connection.execute(
+        "SELECT (julianday('now') - julianday(?)) * 86400 AS s", (player["last_seen"],)
+    ).fetchone()["s"] or 0)
+
+
+@elimination_bp.route("/host/drop/<name>", methods=["POST"])
+@host_required
+def host_drop(name):
+    """Stop waiting for a player who left. They keep the points they earned
+    and carry on if they come back."""
+    connection = get_db()
+    connection.execute(
+        "UPDATE fe_players SET status = 'dropped' WHERE name = ? AND status = 'in' AND phase != 'finished'",
+        (name,)
+    )
+    connection.commit()
+    connection.close()
+    return redirect(url_for("elimination.host"))
+
+
+@elimination_bp.route("/host/drop-inactive", methods=["POST"])
+@host_required
+def host_drop_inactive():
+    """Drop everyone whose phone hasn't checked in for a couple of minutes."""
+    connection = get_db()
+    config = get_config(connection)
+    if config["status"] == "active":
+        connection.execute(
+            """
+            UPDATE fe_players SET status = 'dropped'
+            WHERE status = 'in' AND phase != 'finished' AND phase != 'lobby'
+              AND (last_seen IS NULL OR last_seen < datetime('now', ?))
+            """,
+            (f"-{INACTIVE_AFTER_SECONDS} seconds",)
+        )
+        connection.commit()
+    connection.close()
+    return redirect(url_for("elimination.host"))
+
+
 @elimination_bp.route("/version")
 def version():
     response = jsonify({"version": APP_VERSION})
@@ -1103,12 +1190,23 @@ def host():
         "SELECT * FROM fe_players ORDER BY joined_at"
     ).fetchall()
     progress = round_progress(connection, config)
+    idle = {p["id"]: inactive_seconds(connection, p) for p in players}
     connection.close()
+
+    # Players still being waited for whose phone has gone quiet.
+    inactive = {
+        p["id"] for p in players
+        if config["status"] == "active" and p["status"] == "in"
+        and p["phase"] not in ("finished", "lobby")
+        and (idle[p["id"]] is None or idle[p["id"]] >= INACTIVE_AFTER_SECONDS)
+    }
 
     return render_template(
         "fe_host.html",
         config=config,
         progress=progress,
+        idle=idle,
+        inactive=inactive,
         players=players,
         total_rounds=TOTAL_ROUNDS,
         avatar_images=AVATAR_IMAGES,
@@ -1825,6 +1923,8 @@ def leaderboard_data():
     for p in players:
         if p["name"] in winners:
             status = "WINNER"
+        elif p["status"] == "dropped":
+            status = "LEFT"
         elif p["phase"] == "finished":
             status = "FINISHED"
         else:
@@ -1944,6 +2044,8 @@ def display_data():
         if p["name"] in winners:
             status = "WINNER"
             finished_count += 1
+        elif p["status"] == "dropped":
+            status = "LEFT"
         elif p["phase"] == "finished":
             status = "FINISHED"
             finished_count += 1

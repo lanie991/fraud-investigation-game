@@ -37,21 +37,43 @@
                 <h2>PLAYERS ({{ players|length }})</h2>
             </div>
 
+            {% if inactive %}
+            <form method="POST" action="{{ url_for('elimination.host_drop_inactive') }}" class="fe-drop-all"
+                  onsubmit="return confirm('Stop waiting for the {{ inactive|length }} inactive player(s)? They keep their points and carry on if they come back.');">
+                <span>&#9888; {{ inactive|length }} player{{ "s" if inactive|length != 1 else "" }} inactive for 2+ minutes &mdash; the round is waiting for them.</span>
+                <button type="submit" class="fe-btn fe-btn-gold">DROP ALL INACTIVE</button>
+            </form>
+            {% endif %}
+
             {% if players %}
                 {% for player in players %}
-                <div class="fe-player-row">
+                {% set gone = player["id"] in inactive %}
+                <div class="fe-player-row{% if gone %} fe-player-inactive{% endif %}">
                     <div class="fe-player-avatar">
                         {% if player["avatar"] in avatar_images %}
                         <img src="{{ url_for('static', filename='avatars/' + avatar_images[player['avatar']]) }}" alt="">
                         {% endif %}
                     </div>
-                    <div class="fe-player-name">{{ island_flag(player["island"]) }}{{ player["name"] }}</div>
-                    {% if player["phase"] == "finished" %}
+                    <div class="fe-player-name">
+                        {{ island_flag(player["island"]) }}{{ player["name"] }}
+                        {% if gone %}
+                        <small class="fe-inactive-note">&#9888; inactive {{ ((idle[player["id"]] or 0) // 60) or "" }}{{ "m" if (idle[player["id"]] or 0) >= 60 else "" }}{{ "" if idle[player["id"]] is not none else " (never checked in)" }}</small>
+                        {% endif %}
+                    </div>
+                    {% if player["status"] == "dropped" %}
+                        <span class="fe-status-pill eliminated" title="Dropped by the host. They carry on if they come back.">LEFT</span>
+                    {% elif player["phase"] == "finished" %}
                         <span class="fe-status-pill winner">FINISHED</span>
                     {% else %}
                         <span class="fe-status-pill in">{{ [player["question_index"], total_rounds] | min }}/{{ total_rounds }}</span>
                     {% endif %}
                     <span class="fe-host-score">{{ player["score"] or 0 }} pts</span>
+                    {% if gone %}
+                    <form method="POST" action="{{ url_for('elimination.host_drop', name=player['name']) }}"
+                          onsubmit="return confirm('Stop waiting for {{ player['name']|e }}? They keep their points and can carry on if they come back.');">
+                        <button type="submit" class="fe-player-drop" title="Stop waiting for this player">DROP</button>
+                    </form>
+                    {% endif %}
                     <form method="POST"
                           action="{{ url_for('elimination.host_kick', name=player['name']) }}"
                           onsubmit="return confirm('Remove {{ player['name']|e }} from the game?');">

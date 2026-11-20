@@ -3737,3 +3737,34 @@ body:has(.fe-hero) .fe-main {
     .fe-dossier-flag { margin-top: 12px; }
     .fe-spot-faces { margin-top: 12px; }
 }
+
+/* Inactive / dropped players on the host page */
+.fe-player-inactive { border-color: rgba(248, 113, 113, 0.5) !important; }
+.fe-inactive-note { display: block; margin-top: 2px; color: #f87171; font-size: 11px; font-weight: 700; }
+
+.fe-player-drop {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(250, 204, 21, 0.5);
+    background: rgba(250, 204, 21, 0.1);
+    color: #facc15;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+}
+
+.fe-drop-all {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(248, 113, 113, 0.5);
+    background: rgba(248, 113, 113, 0.1);
+}
+
+.fe-drop-all span { flex: 1; min-width: 180px; color: #fecaca; font-size: 13px; font-weight: 700; }
